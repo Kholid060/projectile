@@ -1,0 +1,63 @@
+{
+  "name": "vite-electron-builder",
+  "private": true,
+  "engines": {
+    "node": ">=v14.16"
+  },
+  "main": "packages/main/dist/index.cjs",
+  "scripts": {
+    "buildEnvTypes": "node scripts/buildEnvTypes.js",
+    "build": "node scripts/build.js",
+    "precompile": "cross-env MODE=production npm run build",
+    "compile": "electron-builder build --config electron-builder.config.js --dir --config.asar=false",
+    "pretest": "cross-env MODE=test npm run build",
+    "test": "node tests/app.spec.js",
+    "watch": "node scripts/watch.js",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+  },
+  "browserslist": [
+    "Chrome 91"
+  ],
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged",
+    "pre-push": "npm run typecheck"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue}": "eslint --cache --fix"
+  },
+  "dependencies": {
+    "@mdi/js": "^5.9.55",
+    "@tiptap/starter-kit": "^2.0.0-beta.76",
+    "@tiptap/vue-3": "^2.0.0-beta.40",
+    "electron-store": "^8.0.0",
+    "electron-updater": "^4.3.9",
+    "fabric": "^4.5.0",
+    "gitconfiglocal": "^2.1.0",
+    "muuri": "^0.9.4",
+    "simple-git": "^2.39.0",
+    "vue": "^3.0.11",
+    "vue-mdijs": "^0.5.0",
+    "vue-router": "^4.0.8",
+    "vuedraggable": "^4.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-eslint": "^8.0.1",
+    "@tailwindcss/typography": "^0.4.1",
+    "@vitejs/plugin-vue": "^1.2.3",
+    "autoprefixer": "^10.2.6",
+    "cross-env": "^7.0.3",
+    "electron": "^13.1.0",
+    "electron-builder": "^22.11.5",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier-vue": "^3.1.0",
+    "eslint-plugin-vue": "^7.10.0",
+    "lint-staged": "^11.0.0",
+    "postcss": "^8.3.0",
+    "simple-git-hooks": "^2.4.1",
+    "spectron": "^15.0.0",
+    "tailwindcss": "^2.1.4",
+    "vite": "^2.3.6"
+  }
+}
