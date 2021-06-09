@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import { remote } from "electron";
+import { remote } from 'electron';
 
 export default {
   setup() {

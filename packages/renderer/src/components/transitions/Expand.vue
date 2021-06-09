@@ -16,9 +16,9 @@ export default {
       const { width } = getComputedStyle(element);
 
       element.style.width = width;
-      element.style.position = "absolute";
-      element.style.visibility = "hidden";
-      element.style.height = "auto";
+      element.style.position = 'absolute';
+      element.style.visibility = 'hidden';
+      element.style.height = 'auto';
 
       const { height } = getComputedStyle(element);
 
@@ -34,7 +34,7 @@ export default {
       });
     }
     function afterEnter(element) {
-      element.style.height = "auto";
+      element.style.height = 'auto';
     }
     function leave(element) {
       const { height } = getComputedStyle(element);

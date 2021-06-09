@@ -28,11 +28,11 @@ export default {
   props: {
     size: {
       type: [String, Number],
-      default: "24",
+      default: '24',
     },
     color: {
       type: String,
-      default: "text-primary",
+      default: 'text-primary',
     },
   },
 };

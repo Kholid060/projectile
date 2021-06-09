@@ -50,25 +50,25 @@ export default {
     },
     modelValue: {
       type: String,
-      default: "",
+      default: '',
     },
     prependIcon: {
       type: String,
-      default: "",
+      default: '',
     },
     label: {
       type: String,
-      default: "",
+      default: '',
     },
     type: {
       type: String,
-      default: "text",
+      default: 'text',
     },
     placeholder: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-  emits: ["update:modelValue"],
+  emits: ['update:modelValue'],
 };
 </script>

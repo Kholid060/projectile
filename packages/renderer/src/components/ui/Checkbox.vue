@@ -32,11 +32,11 @@ export default {
       default: false,
     },
   },
-  emits: ["update:modelValue", "change"],
+  emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
     function changeHandler({ target: { checked } }) {
-      emit("update:modelValue", checked);
-      emit("change", checked);
+      emit('update:modelValue', checked);
+      emit('change', checked);
     }
 
     return {

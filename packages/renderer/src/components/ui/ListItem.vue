@@ -30,7 +30,7 @@ export default {
     small: Boolean,
     tag: {
       type: String,
-      default: "div",
+      default: 'div',
     },
   },
 };

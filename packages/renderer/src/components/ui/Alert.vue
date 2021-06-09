@@ -31,30 +31,30 @@ export default {
     },
     variant: {
       type: String,
-      default: "primary",
+      default: 'primary',
     },
     dismissible: Boolean,
   },
-  emits: ["update:modelValue", "close"],
+  emits: ['update:modelValue', 'close'],
   setup(props, { emit }) {
     const variants = {
       primary: {
-        color: "text-primary bg-blue-100",
-        icon: "information-circle",
+        color: 'text-primary bg-blue-100',
+        icon: 'information-circle',
       },
       error: {
-        color: "bg-red-100 text-red-500",
-        icon: "x-circle",
+        color: 'bg-red-100 text-red-500',
+        icon: 'x-circle',
       },
       warning: {
-        color: "text-yellow-500 bg-yellow-100",
-        icon: "exclamaction",
+        color: 'text-yellow-500 bg-yellow-100',
+        icon: 'exclamaction',
       },
     };
 
     function close() {
-      emit("update:modelValue", false);
-      emit("close");
+      emit('update:modelValue', false);
+      emit('close');
     }
 
     return {

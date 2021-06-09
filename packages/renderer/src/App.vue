@@ -8,8 +8,8 @@
   <app-bottom-menu></app-bottom-menu>
 </template>
 <script>
-import AppBottomMenu from "./components/app/AppBottomMenu.vue";
-import AppSidebar from "./components/app/AppSidebar.vue";
+import AppBottomMenu from './components/app/AppBottomMenu.vue';
+import AppSidebar from './components/app/AppSidebar.vue';
 
 export default {
   components: { AppBottomMenu, AppSidebar },

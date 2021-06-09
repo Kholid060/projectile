@@ -12,13 +12,13 @@ export default {
   props: {
     mode: {
       type: String,
-      default: "out-in",
+      default: 'out-in',
     },
     direction: {
       type: String,
-      default: "bottom",
+      default: 'bottom',
       validator(value) {
-        return ["top", "right", "bottom", "left"].includes(value);
+        return ['top', 'right', 'bottom', 'left'].includes(value);
       },
     },
     group: {

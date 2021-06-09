@@ -1,4 +1,4 @@
-import VMdijs from "vue-mdijs";
+import VMdijs from 'vue-mdijs';
 import {
   mdiClipboardTextOutline,
   mdiViewGridOutline,
@@ -9,7 +9,7 @@ import {
   mdiClose,
   mdiMagnify,
   mdiFilterOutline,
-} from "@mdi/js";
+} from '@mdi/js';
 
 VMdijs.add({
   mdiClipboardTextOutline,

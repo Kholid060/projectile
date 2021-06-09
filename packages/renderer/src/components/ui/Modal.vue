@@ -50,7 +50,7 @@
   </div>
 </template>
 <script>
-import { ref, watch } from "vue";
+import { ref, watch } from 'vue';
 
 export default {
   props: {
@@ -60,36 +60,36 @@ export default {
     },
     teleportTo: {
       type: String,
-      default: "body",
+      default: 'body',
     },
     contentClass: {
       type: String,
-      default: "max-w-rounded-lg",
+      default: 'max-w-rounded-lg',
     },
     customContent: Boolean,
     persist: Boolean,
     blur: Boolean,
     disabledTeleport: Boolean,
   },
-  emits: ["close", "update:modelValue"],
+  emits: ['close', 'update:modelValue'],
   setup(props, { emit }) {
     const show = ref(false);
     const modalContent = ref(null);
 
     function toggleBodyOverflow(value) {
-      document.body.classList.toggle("overflow-hidden", value);
+      document.body.classList.toggle('overflow-hidden', value);
     }
     function closeModal() {
       if (props.persist) return;
 
       show.value = false;
-      emit("close", false);
-      emit("update:modelValue", false);
+      emit('close', false);
+      emit('update:modelValue', false);
 
       toggleBodyOverflow(false);
     }
     function keyupHandler({ code }) {
-      if (code === "Escape") closeModal();
+      if (code === 'Escape') closeModal();
     }
 
     watch(
@@ -102,8 +102,8 @@ export default {
     );
 
     watch(show, (value) => {
-      if (value) window.addEventListener("keyup", keyupHandler);
-      else window.removeEventListener("keyup", keyupHandler);
+      if (value) window.addEventListener('keyup', keyupHandler);
+      else window.removeEventListener('keyup', keyupHandler);
     });
 
     return {

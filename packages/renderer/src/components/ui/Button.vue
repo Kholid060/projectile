@@ -25,7 +25,7 @@
   </component>
 </template>
 <script>
-import UiSpinner from "./Spinner.vue";
+import UiSpinner from './Spinner.vue';
 
 export default {
   components: { UiSpinner },
@@ -36,22 +36,22 @@ export default {
     circle: Boolean,
     color: {
       type: String,
-      default: "",
+      default: '',
     },
     tag: {
       type: String,
-      default: "button",
+      default: 'button',
     },
     variant: {
       type: String,
-      default: "default",
+      default: 'default',
     },
   },
   setup() {
     const variants = {
-      default: "bg-gray-100 bg-opacity-5 hover:bg-opacity-10",
-      primary: "bg-primary text-white hover:bg-indigo-600",
-      danger: "bg-red-500 text-white hover:bg-red-600",
+      default: 'bg-gray-100 bg-opacity-5 hover:bg-opacity-10',
+      primary: 'bg-primary text-white hover:bg-indigo-600',
+      danger: 'bg-red-500 text-white hover:bg-red-600',
     };
 
     return {

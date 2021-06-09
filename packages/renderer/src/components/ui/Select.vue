@@ -26,24 +26,24 @@ export default {
   props: {
     modelValue: {
       type: [String, Number],
-      default: "",
+      default: '',
     },
     label: {
       type: String,
-      default: "",
+      default: '',
     },
     placeholder: {
       type: String,
-      default: "",
+      default: '',
     },
     block: Boolean,
     showDetail: Boolean,
   },
-  emits: ["update:modelValue", "change"],
+  emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
     function emitValue({ target }) {
-      emit("update:modelValue", target.value);
-      emit("change", target.value);
+      emit('update:modelValue', target.value);
+      emit('change', target.value);
     }
 
     return {
