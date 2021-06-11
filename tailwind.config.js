@@ -6,6 +6,12 @@ module.exports = {
     extend: {
       colors: {
         primary: '#4e33ff',
+        gray: {
+          '1000': '#0e131f',
+        },
+      },
+      borderColor: {
+        DEFAULT: 'rgba(255, 255, 255, 0.05)',
       },
     },
     container: {

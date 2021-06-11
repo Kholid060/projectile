@@ -1,7 +1,8 @@
-import {app, BrowserWindow} from 'electron';
-import {join} from 'path';
-import {URL} from 'url';
-
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { join } from 'path';
+import { URL } from 'url';
+import { readFile } from 'fs/promises';
+import store from './lib/electron-store';
 
 const isSingleInstance = app.requestSingleInstanceLock();
 
@@ -86,6 +87,26 @@ app.on('window-all-closed', () => {
   }
 });
 
+ipcMain.handle('select-dir', async () => {
+  try {
+    const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+
+    if (canceled) return { canceled };
+
+    const packageJSONPath = join(filePaths[0], 'package.json');
+    const packageJSON = JSON.parse(await readFile(packageJSONPath));
+
+    return { path: filePaths[0], config: packageJSON };
+  } catch (error) {
+    throw new Error('Can\'t find package.json file');
+  }
+});
+
+ipcMain.handle('storage-get', (event, { key, def }) => Promise.resolve(store.get(key, def)));
+ipcMain.handle('storage-set', (event, { key, value }) => Promise.resolve(store.set(key, value)));
+ipcMain.handle('storage-delete', (event, key) => Promise.resolve(store.delete(key)));
+ipcMain.handle('storage-has', (event, key) => Promise.resolve(store.delete(key)));
+ipcMain.handle('storage-clear', () => Promise.resolve(store.clear()));
 
 app.whenReady()
   .then(createWindow)

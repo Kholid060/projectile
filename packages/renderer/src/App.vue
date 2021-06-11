@@ -8,13 +8,16 @@
   <app-bottom-menu></app-bottom-menu>
 </template>
 <script>
+import { useStore } from 'vuex';
 import AppBottomMenu from './components/app/AppBottomMenu.vue';
 import AppSidebar from './components/app/AppSidebar.vue';
 
 export default {
   components: { AppBottomMenu, AppSidebar },
   setup() {
-    console.log(window);
+    const store = useStore();
+
+    store.dispatch('retrieve');
   },
 };
 </script>

@@ -9,8 +9,9 @@
       bottom-0
       w-full
       left-0
-      bg-black bg-opacity-25
+      bg-gray-1000
       text-gray-300
+      border-t
     "
   >
     <v-mdi name="mdi-console" size="20"></v-mdi>

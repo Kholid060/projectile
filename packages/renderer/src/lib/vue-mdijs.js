@@ -9,6 +9,8 @@ import {
   mdiClose,
   mdiMagnify,
   mdiFilterOutline,
+  mdiFolderOpenOutline,
+  mdiStarOutline,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -21,6 +23,8 @@ VMdijs.add({
   mdiClose,
   mdiMagnify,
   mdiFilterOutline,
+  mdiFolderOpenOutline,
+  mdiStarOutline,
 });
 
 export default VMdijs;

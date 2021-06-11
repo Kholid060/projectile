@@ -1,7 +1,7 @@
 <template>
   <div class="inline-block input-ui">
     <label class="relative">
-      <span v-if="label" class="text-sm mb-1">{{ label }}</span>
+      <span v-if="label" class="text-sm text-gray-200 mb-1">{{ label }}</span>
       <div class="flex items-center">
         <v-mdi
           v-if="prependIcon"
@@ -24,7 +24,7 @@
             'opacity-75 pointer-events-none': disabled,
             'pl-10': prependIcon,
           }"
-          v-bind="{ readonly: disabled || null, placeholder, type }"
+          v-bind="{ readonly: (disabled || readonly) || null, placeholder, type }"
           :value="modelValue"
           @input="$emit('update:modelValue', $event.target.value)"
         />
@@ -45,6 +45,10 @@ export default {
       default: false,
     },
     autofocus: {
+      type: Boolean,
+      default: false,
+    },
+    readonly: {
       type: Boolean,
       default: false,
     },

@@ -7,27 +7,12 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
-          class="
-            bg-black
-            p-5
-            overflow-y-auto
-            bg-opacity-20
-            modal-ui__content-container
-            z-50
-            flex
-            justify-center
-            items-end
-            md:items-center
-          "
+          class="bg-black p-5 overflow-y-auto bg-opacity-40 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
           @click.self="closeModal"
         >
           <slot v-if="customContent"></slot>
-          <ui-card
-            v-else
-            class="modal-ui__content shadow-rounded-lg w-full"
-            :class="[contentClass]"
-          >
+          <ui-card v-else class="modal-ui__content shadow-lg w-full" :class="[contentClass]">
             <div class="mb-4">
               <div class="flex items-center justify-between">
                 <span class="content-header">
@@ -35,7 +20,7 @@
                 </span>
                 <v-mdi
                   v-show="!persist"
-                  class="text-gray-600 cursor-pointer"
+                  class="text-gray-300 cursor-pointer"
                   name="mdi-close"
                   size="20"
                   @click="closeModal"
@@ -64,7 +49,7 @@ export default {
     },
     contentClass: {
       type: String,
-      default: 'max-w-rounded-lg',
+      default: 'max-w-lg',
     },
     customContent: Boolean,
     persist: Boolean,
