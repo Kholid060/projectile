@@ -97,7 +97,7 @@ export default {
       state.editId = '';
     }
     function deleteProject({ id, name }) {
-      const confirm = window.confirm(`Are you sure want to delete ${name}?`);
+      const confirm = window.confirm(`Are you sure want to delete "${name}"?`);
 
       if (confirm) store.dispatch('projects/delete', id);
     }

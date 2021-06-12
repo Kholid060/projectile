@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { join } from 'path';
 import { URL } from 'url';
 import { readFile } from 'fs/promises';
+import gitconfig from 'gitconfiglocal';
 import store from './lib/electron-store';
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -87,6 +88,18 @@ app.on('window-all-closed', () => {
   }
 });
 
+function getRepository(path) {
+  return new Promise((resolve) => {
+    gitconfig(path, (err, config) => {
+      if (err) return resolve('');
+
+      const repository = config.remote?.origin?.url ?? '';
+
+      resolve(repository.replace(/\.git$/, ''));
+    });
+  });
+}
+
 ipcMain.handle('select-dir', async () => {
   try {
     const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
@@ -101,7 +114,7 @@ ipcMain.handle('select-dir', async () => {
     throw new Error('Can\'t find package.json file');
   }
 });
-
+ipcMain.handle('get-repository', (event, path) => getRepository(path));
 ipcMain.handle('storage-get', (event, { key, def }) => Promise.resolve(store.get(key, def)));
 ipcMain.handle('storage-set', (event, { key, value }) => Promise.resolve(store.set(key, value)));
 ipcMain.handle('storage-delete', (event, key) => Promise.resolve(store.delete(key)));

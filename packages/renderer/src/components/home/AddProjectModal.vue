@@ -65,25 +65,29 @@ export default {
           toast.error("Can't find package.json");
         });
     }
-    function importProject() {
+    async function importProject() {
       if (!project.name || !project.path) return;
 
-      const copy = { ...project };
+      try {
+        const copy = { ...project };
+        delete copy.show;
 
-      delete copy.show;
+        const repository = await ipcRenderer.invoke(
+          'get-repository',
+          copy.path
+        );
+        copy.repository = repository;
 
-      store
-        .dispatch('projects/add', copy)
-        .then((result) => {
-          emit('added', result);
+        const result = await store.dispatch('projects/add', copy);
 
-          project.show = false;
-          project.name = project.path = '';
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error(error);
-        });
+        emit('added', result);
+
+        project.show = false;
+        project.name = project.path = '';
+      } catch (error) {
+        console.error(error);
+        toast.error(error.message || error);
+      }
     }
 
     return {
