@@ -3,7 +3,10 @@
     <div ref="targetEl" class="ui-popover__trigger inline-block">
       <slot name="trigger"></slot>
     </div>
-    <div ref="content" class="ui-popover__content bg-white p-4 rounded-xl shadow-xl">
+    <div
+      ref="content"
+      class="ui-popover__content bg-white p-4 rounded-xl shadow-xl"
+    >
       <slot></slot>
     </div>
   </div>
@@ -49,7 +52,9 @@ export default {
     );
 
     onMounted(() => {
-      const target = props.to ? document.querySelector(props.to) : targetEl.value;
+      const target = props.to
+        ? document.querySelector(props.to)
+        : targetEl.value;
 
       instance.value = createTippy(target, {
         role: 'popover',

@@ -29,6 +29,7 @@
     "@mdi/js": "^5.9.55",
     "@tiptap/starter-kit": "^2.0.0-beta.76",
     "@tiptap/vue-3": "^2.0.0-beta.40",
+    "deepmerge": "^4.2.2",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "fabric": "^4.5.0",

@@ -11,6 +11,9 @@ import {
   mdiFilterOutline,
   mdiFolderOpenOutline,
   mdiStarOutline,
+  mdiPencilOutline,
+  mdiDeleteOutline,
+  mdiStar,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -25,6 +28,9 @@ VMdijs.add({
   mdiFilterOutline,
   mdiFolderOpenOutline,
   mdiStarOutline,
+  mdiPencilOutline,
+  mdiDeleteOutline,
+  mdiStar,
 });
 
 export default VMdijs;

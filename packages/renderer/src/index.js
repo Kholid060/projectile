@@ -10,4 +10,10 @@ import './assets/css/tailwind.css';
 import './assets/css/style.css';
 import './assets/css/fonts.css';
 
-createApp(App).use(router).use(store).use(compsUi).use(Toast).use(vueMdijs).mount('#app');
+createApp(App)
+  .use(router)
+  .use(store)
+  .use(compsUi)
+  .use(Toast)
+  .use(vueMdijs)
+  .mount('#app');

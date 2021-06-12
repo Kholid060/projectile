@@ -105,7 +105,7 @@ ipcMain.handle('select-dir', async () => {
 ipcMain.handle('storage-get', (event, { key, def }) => Promise.resolve(store.get(key, def)));
 ipcMain.handle('storage-set', (event, { key, value }) => Promise.resolve(store.set(key, value)));
 ipcMain.handle('storage-delete', (event, key) => Promise.resolve(store.delete(key)));
-ipcMain.handle('storage-has', (event, key) => Promise.resolve(store.delete(key)));
+ipcMain.handle('storage-has', (event, key) => Promise.resolve(store.has(key)));
 ipcMain.handle('storage-clear', () => Promise.resolve(store.clear()));
 
 app.whenReady()

@@ -24,7 +24,7 @@
             'opacity-75 pointer-events-none': disabled,
             'pl-10': prependIcon,
           }"
-          v-bind="{ readonly: (disabled || readonly) || null, placeholder, type }"
+          v-bind="{ readonly: disabled || readonly || null, placeholder, type }"
           :value="modelValue"
           @input="$emit('update:modelValue', $event.target.value)"
         />
@@ -34,11 +34,6 @@
 </template>
 <script>
 export default {
-  directives: {
-    autofocus: (el, { value }) => {
-      if (value) el.focus();
-    },
-  },
   props: {
     disabled: {
       type: Boolean,

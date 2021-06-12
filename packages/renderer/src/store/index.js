@@ -7,12 +7,12 @@ const store = new createStore({
   mutations: {
     updateState(state, { key, value }) {
       state[key] = value;
-    }
+    },
   },
   actions: {
     retrieve({ dispatch }) {
       dispatch('projects/retrieve');
-    }
+    },
   },
 });
 

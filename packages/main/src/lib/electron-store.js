@@ -8,6 +8,11 @@ const scheme = {
         properties: {
           name: { type: 'string' },
           path: { type: 'string' },
+          repository: { type: 'string' },
+          description: {
+            type: 'string',
+            default: '',
+          },
           createdAt: {
             type: 'number',
             default: Date.now(),
@@ -21,8 +26,8 @@ const scheme = {
       },
     },
   },
-}
+};
 
 const store = new Store({ scheme });
-
+console.log(store.path);
 export default store;

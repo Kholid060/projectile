@@ -10,6 +10,6 @@ export function useStorage() {
     set: (key, value) => invokeEvent('set', { key, value }),
     has: (key) => invokeEvent('has', key),
     delete: (key) => invokeEvent('has', key),
-    clear: (key) => invokeEvent('clear'),
-  }
+    clear: () => invokeEvent('clear'),
+  };
 }
