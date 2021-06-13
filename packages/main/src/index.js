@@ -99,6 +99,12 @@ function getRepository(path) {
     });
   });
 }
+async function getPackageJSON(path) {
+  const packageJSONPath = join(path, 'package.json');
+  const packageJSON = JSON.parse(await readFile(packageJSONPath));
+
+  return packageJSON;
+}
 
 ipcMain.handle('select-dir', async () => {
   try {
@@ -106,14 +112,14 @@ ipcMain.handle('select-dir', async () => {
 
     if (canceled) return { canceled };
 
-    const packageJSONPath = join(filePaths[0], 'package.json');
-    const packageJSON = JSON.parse(await readFile(packageJSONPath));
+    const packageJSON = await getPackageJSON(filePaths[0]);
 
     return { path: filePaths[0], config: packageJSON };
   } catch (error) {
     throw new Error('Can\'t find package.json file');
   }
 });
+ipcMain.handle('get-packageJSON', (event, path) => getPackageJSON(path));
 ipcMain.handle('get-repository', (event, path) => getRepository(path));
 ipcMain.handle('storage-get', (event, { key, def }) => Promise.resolve(store.get(key, def)));
 ipcMain.handle('storage-set', (event, { key, value }) => Promise.resolve(store.set(key, value)));

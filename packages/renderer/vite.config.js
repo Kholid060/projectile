@@ -1,11 +1,12 @@
 /* eslint-disable */
 import eslint from '@rollup/plugin-eslint';
-import {join} from 'path';
+import { join } from 'path';
 import { builtinModules } from 'module';
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
-import {chrome} from '../../electron-vendors.config.json';
-import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
+import pages from 'vite-plugin-pages';
+import { chrome } from '../../electron-vendors.config.json';
+import { loadAndSetEnv } from '../../scripts/loadAndSetEnv.mjs';
 
 
 const PACKAGE_ROOT = __dirname;
@@ -29,6 +30,9 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    pages({
+      pagesDir: 'src/pages',
+    }),
     {
       ...eslint({
         include: ['./src/**/*.vue', './src/**/*.js'],

@@ -64,6 +64,7 @@
     "simple-git-hooks": "^2.4.1",
     "spectron": "^15.0.0",
     "tailwindcss": "^2.1.4",
-    "vite": "^2.3.6"
+    "vite": "^2.3.6",
+    "vite-plugin-pages": "^0.13.1"
   }
 }

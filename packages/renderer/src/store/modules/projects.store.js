@@ -29,6 +29,7 @@ export default {
 
       return result;
     },
+    get: (state) => (id) => state.data[id] || {},
   },
   mutations: {
     updateState(state, { key, value }) {
@@ -80,10 +81,8 @@ export default {
     delete({ commit, state }, projectId) {
       return new Promise((resolve) => {
         commit('deleteProject', projectId);
-        console.log(state.data);
-        storage.set({ projects: state.data }).then(async () => {
-          console.log(await storage.get('projects'));
 
+        storage.set('projects', merge({}, state.data)).then(() => {
           resolve();
         });
       });

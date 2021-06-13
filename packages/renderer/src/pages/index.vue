@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 container">
+  <div class="p-5 container">
     <home-nav
       v-model:viewType="state.viewType"
       v-model:search="state.search"
@@ -20,6 +20,11 @@
     </div>
   </div>
 </template>
+<route>
+{
+  name: 'home',
+}
+</route>
 <script>
 import { computed, shallowReactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
@@ -35,14 +40,9 @@ export default {
       search: '',
       viewType: 'grid',
     });
-    const projects = computed(() => {
-      const projects = store.getters['projects/home'];
-
-      return {
-        recent: filterProjects(projects.recent),
-        starred: filterProjects(projects.starred),
-      };
-    });
+    const projects = computed(() =>
+      filterProjects(store.getters['projects/home'])
+    );
 
     function filterProjects(projects) {
       const filter = ({ name }) =>

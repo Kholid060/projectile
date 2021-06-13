@@ -14,6 +14,7 @@ import {
   mdiStarOutline,
   mdiPencilOutline,
   mdiDeleteOutline,
+  mdiPuzzleOutline,
   mdiStar,
 } from '@mdi/js';
 
@@ -32,6 +33,7 @@ VMdijs.add({
   mdiStarOutline,
   mdiPencilOutline,
   mdiDeleteOutline,
+  mdiPuzzleOutline,
   mdiStar,
 });
 
