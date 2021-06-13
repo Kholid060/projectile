@@ -5,7 +5,7 @@
     </div>
     <div
       ref="content"
-      class="ui-popover__content bg-white p-4 rounded-xl shadow-xl"
+      class="ui-popover__content bg-gray-800 p-4 rounded-lg shadow-xl"
     >
       <slot></slot>
     </div>
@@ -76,6 +76,6 @@ export default {
 </script>
 <style>
 .tippy-box[role~='popover'] > .tippy-svg-arrow {
-  fill: white !important;
+  fill: theme('colors.gray.800') !important;
 }
 </style>

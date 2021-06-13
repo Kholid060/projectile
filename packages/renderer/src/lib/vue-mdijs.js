@@ -2,6 +2,7 @@ import VMdijs from 'vue-mdijs';
 import {
   mdiClipboardTextOutline,
   mdiViewGridOutline,
+  mdiViewListOutline,
   mdiGithub,
   mdiHomeOutline,
   mdiConsole,
@@ -19,6 +20,7 @@ import {
 VMdijs.add({
   mdiClipboardTextOutline,
   mdiViewGridOutline,
+  mdiViewListOutline,
   mdiGithub,
   mdiHomeOutline,
   mdiConsole,

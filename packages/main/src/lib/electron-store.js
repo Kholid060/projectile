@@ -9,10 +9,6 @@ const scheme = {
           name: { type: 'string' },
           path: { type: 'string' },
           repository: { type: 'string' },
-          description: {
-            type: 'string',
-            default: '',
-          },
           createdAt: {
             type: 'number',
             default: Date.now(),

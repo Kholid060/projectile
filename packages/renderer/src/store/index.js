@@ -3,7 +3,9 @@ import modules from './modules';
 
 const store = new createStore({
   modules,
-  state: () => ({}),
+  state: () => ({
+    searchQuery: '',
+  }),
   mutations: {
     updateState(state, { key, value }) {
       state[key] = value;

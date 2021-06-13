@@ -12,6 +12,23 @@ export default {
   getters: {
     all: (state) =>
       Object.entries(state.data).map(([id, value]) => ({ id, ...value })),
+    home: (state) => {
+      const result = { recent: [], starred: [] };
+
+      Object.entries(state.data).forEach(([id, value]) => {
+        const data = Object.assign({}, { id }, value);
+
+        if (data.starred) return result.starred.push(data);
+
+        result.recent.push(data);
+      });
+
+      result.recent = result.recent.sort((a, b) =>
+        a.createdAt > b.createdAt ? -1 : 1
+      );
+
+      return result;
+    },
   },
   mutations: {
     updateState(state, { key, value }) {
@@ -38,6 +55,8 @@ export default {
 
         const id = nanoid();
 
+        data.createdAt = Date.now();
+
         storage.set(`projects.${id}`, data).then(async () => {
           commit('addProject', { id, data });
           console.log(await storage.get('projects'));
@@ -58,10 +77,12 @@ export default {
         });
       });
     },
-    delete({ commit }, projectId) {
+    delete({ commit, state }, projectId) {
       return new Promise((resolve) => {
-        storage.delete(`projects.${projectId}`).then(() => {
-          commit('deleteProject', projectId);
+        commit('deleteProject', projectId);
+        console.log(state.data);
+        storage.set({ projects: state.data }).then(async () => {
+          console.log(await storage.get('projects'));
 
           resolve();
         });
@@ -69,6 +90,7 @@ export default {
     },
     retrieve({ commit }) {
       storage.get('projects', {}).then((projects) => {
+        console.log(projects);
         commit('updateState', {
           key: 'data',
           value: projects,
