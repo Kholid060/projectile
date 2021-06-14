@@ -50,7 +50,7 @@ export default {
   setup() {
     const variants = {
       default: 'bg-gray-100 bg-opacity-5 hover:bg-opacity-10',
-      primary: 'bg-primary text-white hover:bg-indigo-600',
+      primary: 'bg-primary text-white hover:bg-blue-600',
       danger: 'bg-red-500 text-white hover:bg-red-600',
     };
 

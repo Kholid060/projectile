@@ -16,6 +16,8 @@ import {
   mdiDeleteOutline,
   mdiPuzzleOutline,
   mdiStar,
+  mdiAlertOutline,
+  mdiDownloadOutline,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -35,6 +37,8 @@ VMdijs.add({
   mdiDeleteOutline,
   mdiPuzzleOutline,
   mdiStar,
+  mdiAlertOutline,
+  mdiDownloadOutline,
 });
 
 export default VMdijs;

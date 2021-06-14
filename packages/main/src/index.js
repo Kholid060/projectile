@@ -3,6 +3,7 @@ import { join } from 'path';
 import { URL } from 'url';
 import { readFile } from 'fs/promises';
 import gitconfig from 'gitconfiglocal';
+import fetch from 'node-fetch';
 import store from './lib/electron-store';
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -118,6 +119,13 @@ ipcMain.handle('select-dir', async () => {
   } catch (error) {
     throw new Error('Can\'t find package.json file');
   }
+});
+ipcMain.handle('fetch-npm-registry', async (event, path) => {
+  /* to do: cache result to the storage in case of offline */
+  const response = await fetch(`https://registry.npmjs.org${path}`);
+  const data = await response.json();
+
+  return data;
 });
 ipcMain.handle('get-packageJSON', (event, path) => getPackageJSON(path));
 ipcMain.handle('get-repository', (event, path) => getRepository(path));

@@ -1,9 +1,12 @@
 <template>
   <div class="packages px-5 pt-5 h-full flex flex-col">
     <div class="flex items-center mb-8">
-      <h2 class="text-2xl font-semibold">{{ project.name }}</h2>
-      <div class="flex-grow"></div>
+      <div class="flex-1 text-overflow pr-8">
+        <h2 class="text-2xl font-semibold text-overflow">{{ project.name }}</h2>
+        <p class="text-sm text-gray-300">{{ project.path }}</p>
+      </div>
       <ui-input
+        v-model="state.search"
         prepend-icon="mdi-magnify"
         placeholder="Search package..."
       ></ui-input>
@@ -30,33 +33,15 @@
         </ui-list>
       </div>
       <div class="flex-1 px-5 space-y-2 pb-5">
-        <div
-          v-for="item in packages"
-          :key="item.id"
-          class="
-            p-5
-            rounded-lg
-            border
-            hover:bg-gray-100 hover:bg-opacity-5
-            transition
-            flex
-            items-center
-          "
-        >
-          <div class="flex-1">
-            <p>{{ item.name }}</p>
-            <p class="text-gray-300 w-32 inline-block">
-              version: {{ item.version }}
-            </p>
-            <p class="text-gray-300 inline-block ml-12">
-              latest:
-              <span class="text-blue-500">{{ item.version }}</span>
-            </p>
-          </div>
-          <ui-button icon class="text-red-500">
-            <v-mdi name="mdi-delete-outline"></v-mdi>
-          </ui-button>
-        </div>
+        <keep-alive>
+          <package-card
+            v-for="item in packages"
+            :key="item.id"
+            :cache="state.packageCache[item.id]"
+            v-bind="{ item }"
+            @retrieved="state.packageCache[item.id] = $event"
+          ></package-card>
+        </keep-alive>
       </div>
     </div>
   </div>
@@ -70,8 +55,10 @@
 import { computed, onMounted, shallowReactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
+import PackageCard from '@/components/package/PackageCard.vue';
 
 export default {
+  components: { PackageCard },
   setup() {
     const projectFilters = [
       { name: 'All', id: 'all' },
@@ -84,9 +71,11 @@ export default {
     const { ipcRenderer } = window.electron;
 
     const state = shallowReactive({
-      activeFilter: 'all',
       deps: [],
+      search: '',
       devDeps: [],
+      activeFilter: 'all',
+      packageCache: {},
     });
 
     const project = computed(() =>
@@ -94,17 +83,23 @@ export default {
     );
     const packages = computed(() => {
       if (state.activeFilter === 'all')
-        return [].concat(state.deps, state.devDeps);
+        return searchFilter([].concat(state.deps, state.devDeps));
 
-      return state[state.activeFilter];
+      return searchFilter(state[state.activeFilter]);
     });
 
-    function convertDeps(obj) {
+    function convertDeps(obj, type) {
       return Object.entries(obj).map(([name, version]) => ({
+        id: `${name}__${type}`,
+        type,
         name,
-        version,
-        id: `${name}__${version}`,
+        version: version.replace(/^[\^~]/, ''),
       }));
+    }
+    function searchFilter(items) {
+      return items.filter(({ name }) =>
+        name.toLocaleLowerCase().match(state.search.toLocaleLowerCase())
+      );
     }
 
     onMounted(() => {
@@ -113,8 +108,8 @@ export default {
         .then((config) => {
           if (!config) return;
 
-          state.deps = convertDeps(config.dependencies || {});
-          state.devDeps = convertDeps(config.devDependencies || {});
+          state.deps = convertDeps(config.dependencies || {}, 'deps');
+          state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
         });
     });
 
