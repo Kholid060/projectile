@@ -33,15 +33,13 @@
         </ui-list>
       </div>
       <div class="flex-1 px-5 space-y-2 pb-5">
-        <keep-alive>
-          <package-card
-            v-for="item in packages"
-            :key="item.id"
-            :cache="state.packageCache[item.id]"
-            v-bind="{ item }"
-            @retrieved="state.packageCache[item.id] = $event"
-          ></package-card>
-        </keep-alive>
+        <package-card
+          v-for="item in packages"
+          :key="item.id"
+          :cache="state.packageCache"
+          v-bind="{ item }"
+          @retrieved="state.packageCache[item.name] = $event"
+        ></package-card>
       </div>
     </div>
   </div>
@@ -114,6 +112,7 @@ export default {
     });
     onUnmounted(() => {
       state.packageCache = {};
+      console.log(state.packageCache);
     });
 
     return {

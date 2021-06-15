@@ -83,13 +83,33 @@ export default {
       latestVersion: '-',
     });
 
+    function getLatestVersion(currentVersion, versions) {
+      if (versions[currentVersion]) {
+        return {
+          isLatest: true,
+          latestVersion: versions[currentVersion],
+        };
+      }
+
+      const latestVersion =
+        maxSatisfying(Object.values(versions), `>=${currentVersion}`) ||
+        currentVersion;
+      const isLessThanLatest = semverLt(currentVersion, latestVersion);
+
+      return {
+        latestVersion: latestVersion || '-',
+        isLatest: currentVersion === latestVersion || !isLessThanLatest,
+      };
+    }
+
     onMounted(() => {
       intersect.observe(container.value, () => {
-        if (props.cache.retrieved) {
-          currentPackage.value = props.cache;
+        if (props.cache[props.item.name]) {
+          currentPackage.value = props.cache[props.item.name];
 
           return;
         }
+
 
         ipcRenderer
           .invoke(
@@ -101,24 +121,19 @@ export default {
 
             const currentVersion = props.item.version;
 
-            if (versions[currentVersion]) {
-              currentPackage.value = {
-                isLatest: true,
-                latestVersion: versions[currentVersion],
-              };
-            } else {
-              const latestVersion =
-                maxSatisfying(Object.values(versions), `>=${currentVersion}`) ||
-                currentVersion;
-              const isLessThanLatest = semverLt(currentVersion, latestVersion);
+            currentPackage.value = getLatestVersion(currentVersion, versions);
 
-              currentPackage.value = {
-                latestVersion: latestVersion || '-',
-                isLatest: currentVersion === latestVersion || !isLessThanLatest,
-              };
+            const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
+            localStorage.setItem('packages', JSON.stringify({ ...lsCache, [props.item.name]: versions }));
+
+            emit('retrieved', currentPackage.value);
+          })
+          .catch((error) => {
+            const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
+
+            if (lsCache[props.item.name]) {
+              currentPackage.value = getLatestVersion(props.item.version, lsCache[props.item.name]);
             }
-
-            emit('retrieved', { ...currentPackage.value, retrieved: true });
           });
       });
     });
