@@ -22,6 +22,7 @@ const scheme = {
       },
     },
   },
+  packagesCache: {},
 };
 
 const store = new Store({ scheme });

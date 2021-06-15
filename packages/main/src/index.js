@@ -122,10 +122,25 @@ ipcMain.handle('select-dir', async () => {
 });
 ipcMain.handle('fetch-npm-registry', async (event, path) => {
   /* to do: cache result to the storage in case of offline */
-  const response = await fetch(`https://registry.npmjs.org${path}`);
-  const data = await response.json();
+  const isFetchPackageVersion = path.includes('dist-tags');
+  const { 3: packageName } = path.split('/');
 
-  return data;
+  try {
+    const response = await fetch(`https://registry.npmjs.org${path}`);
+    const result = await response.json();
+
+    if (isFetchPackageVersion) {
+      store.set(`packagesCache.${packageName}`, result);
+    }
+
+    return result;
+  } catch (error) {
+    if (isFetchPackageVersion) {
+      return store.get(`packagesCache.${packageName}`, { empty: true });
+    }
+
+    return error;
+  }
 });
 ipcMain.handle('get-packageJSON', (event, path) => getPackageJSON(path));
 ipcMain.handle('get-repository', (event, path) => getRepository(path));

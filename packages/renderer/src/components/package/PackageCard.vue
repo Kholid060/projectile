@@ -57,9 +57,9 @@
 </template>
 <script>
 import { ref, onMounted } from 'vue';
-import { useIntersect } from '@/composable/intersect';
 import maxSatisfying from 'semver/ranges/max-satisfying';
 import semverLt from 'semver/functions/lt';
+import { useIntersect } from '@/composable/intersect';
 
 export default {
   props: {
@@ -97,6 +97,8 @@ export default {
             `/-/package/${props.item.name}/dist-tags`
           )
           .then((versions) => {
+            if (versions.empty) return;
+
             const currentVersion = props.item.version;
 
             if (versions[currentVersion]) {

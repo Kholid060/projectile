@@ -52,7 +52,7 @@
 }
 </route>
 <script>
-import { computed, onMounted, shallowReactive } from 'vue';
+import { computed, onMounted, shallowReactive, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import PackageCard from '@/components/package/PackageCard.vue';
@@ -111,6 +111,9 @@ export default {
           state.deps = convertDeps(config.dependencies || {}, 'deps');
           state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
         });
+    });
+    onUnmounted(() => {
+      state.packageCache = {};
     });
 
     return {
