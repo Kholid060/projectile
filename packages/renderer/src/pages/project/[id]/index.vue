@@ -10,7 +10,12 @@
         prepend-icon="mdi-magnify"
         placeholder="Search package..."
       ></ui-input>
-      <ui-button variant="primary" icon class="ml-4">
+      <ui-button
+        variant="primary"
+        icon
+        class="ml-4"
+        @click="state.addPackage = true"
+      >
         <v-mdi name="mdi-plus"></v-mdi>
       </ui-button>
     </div>
@@ -42,6 +47,7 @@
         ></package-card>
       </div>
     </div>
+    <add-package-modal v-model="state.addPackage"></add-package-modal>
   </div>
 </template>
 <route>
@@ -54,9 +60,10 @@ import { computed, onMounted, shallowReactive, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import PackageCard from '@/components/package/PackageCard.vue';
+import AddPackageModal from '@/components/package/AddPackageModal.vue';
 
 export default {
-  components: { PackageCard },
+  components: { PackageCard, AddPackageModal },
   setup() {
     const projectFilters = [
       { name: 'All', id: 'all' },
@@ -72,6 +79,7 @@ export default {
       deps: [],
       search: '',
       devDeps: [],
+      addPackage: true,
       activeFilter: 'all',
       packageCache: {},
     });

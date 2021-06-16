@@ -3,11 +3,13 @@
     <label class="relative">
       <span v-if="label" class="text-sm text-gray-200 mb-1">{{ label }}</span>
       <div class="flex items-center">
-        <v-mdi
-          v-if="prependIcon"
-          class="ml-2 text-gray-300 absolute left-0"
-          :name="prependIcon"
-        ></v-mdi>
+        <slot name="prepend">
+          <v-mdi
+            v-if="prependIcon"
+            class="ml-2 text-gray-300 absolute left-0"
+            :name="prependIcon"
+          ></v-mdi>
+        </slot>
         <input
           v-autofocus="autofocus"
           class="
@@ -22,7 +24,7 @@
           "
           :class="{
             'opacity-75 pointer-events-none': disabled,
-            'pl-10': prependIcon,
+            'pl-10': prependIcon || $slots.prepend,
           }"
           v-bind="{ readonly: disabled || readonly || null, placeholder, type }"
           :value="modelValue"

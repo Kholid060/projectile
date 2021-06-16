@@ -18,6 +18,8 @@ import {
   mdiStar,
   mdiAlertOutline,
   mdiDownloadOutline,
+  mdiInformationOutline,
+  mdiImageOutline,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -39,6 +41,8 @@ VMdijs.add({
   mdiStar,
   mdiAlertOutline,
   mdiDownloadOutline,
+  mdiInformationOutline,
+  mdiImageOutline,
 });
 
 export default VMdijs;

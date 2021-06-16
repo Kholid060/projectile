@@ -5,7 +5,7 @@
     </div>
     <div
       ref="content"
-      class="ui-popover__content bg-gray-800 p-4 rounded-lg shadow-xl"
+      class="ui-popover__content bg-gray-700 p-4 rounded-lg shadow-xl"
     >
       <slot></slot>
     </div>
@@ -34,7 +34,8 @@ export default {
       default: false,
     },
   },
-  setup(props) {
+  emits: ['show', 'trigger'],
+  setup(props, { emit }) {
     const targetEl = ref(null);
     const content = ref(null);
     const instance = shallowRef(null);
@@ -64,6 +65,8 @@ export default {
         trigger: props.trigger,
         interactive: true,
         appendTo: () => document.body,
+        onShow: (instance) => emit('show', instance) || true,
+        onTrigger: () => emit('trigger'),
       });
     });
 
@@ -76,6 +79,6 @@ export default {
 </script>
 <style>
 .tippy-box[role~='popover'] > .tippy-svg-arrow {
-  fill: theme('colors.gray.800') !important;
+  fill: theme('colors.gray.700') !important;
 }
 </style>

@@ -2,7 +2,7 @@
   <component
     :is="tag"
     role="button"
-    class="ui-button relative"
+    class="ui-button relative transition"
     :class="[
       color ? color : variants[variant],
       icon ? 'p-2' : 'py-2 px-4',

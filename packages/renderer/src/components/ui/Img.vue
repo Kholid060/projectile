@@ -1,13 +1,13 @@
 <template>
   <div ref="imageContainer" class="image-ui relative">
-    <div class="flex justify-center items-center">
+    <div class="flex justify-center items-center h-full w-full">
       <slot v-if="state.loading" name="loading">
         <div
           class="absolute h-full rounded-lg bg-input-dark w-full animate-pulse"
         ></div>
       </slot>
       <slot v-else-if="state.error" name="error">
-        <p class="text-lighter text-center">Failed to load image</p>
+        <v-mdi name="mdi-image-outline" class="text-gray-300"></v-mdi>
       </slot>
       <div
         v-else

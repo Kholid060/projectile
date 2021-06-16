@@ -10,6 +10,8 @@
         transition
         bg-gray-100 bg-opacity-5
         hover:bg-opacity-10
+        px-4
+        py-2
       "
       :value="modelValue"
       @change="emitValue"
@@ -56,5 +58,8 @@ export default {
 .ui-select__arrow {
   top: 50%;
   transform: translateY(-50%) rotate(90deg);
+}
+.ui-select option {
+  background-color: theme('colors.gray.700');
 }
 </style>

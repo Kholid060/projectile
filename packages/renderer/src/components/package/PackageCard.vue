@@ -110,7 +110,6 @@ export default {
           return;
         }
 
-
         ipcRenderer
           .invoke(
             'fetch-npm-registry',
@@ -124,15 +123,31 @@ export default {
             currentPackage.value = getLatestVersion(currentVersion, versions);
 
             const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
-            localStorage.setItem('packages', JSON.stringify({ ...lsCache, [props.item.name]: versions }));
+            localStorage.setItem(
+              'packages',
+              JSON.stringify({
+                ...lsCache,
+                [props.item.name]: { ...versions, lastUpdated: Date.now() },
+              })
+            );
 
             emit('retrieved', currentPackage.value);
           })
-          .catch((error) => {
+          .catch(() => {
             const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
+            const cachePackage = lsCache[props.item.name];
 
-            if (lsCache[props.item.name]) {
-              currentPackage.value = getLatestVersion(props.item.version, lsCache[props.item.name]);
+            if (Date.now() > cachePackage.lastUpdated + 6.048e8) {
+              delete lsCache[props.item.name];
+              localStorage.setItem('packages', lsCache);
+              return;
+            }
+
+            if (cachePackage) {
+              currentPackage.value = getLatestVersion(
+                props.item.version,
+                cachePackage
+              );
             }
           });
       });
