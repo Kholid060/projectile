@@ -33,7 +33,7 @@ a[role="button"] {
 }
 
 .scroll::-webkit-scrollbar-thumb {
-  @apply bg-gray-700;
+  @apply bg-gray-600;
   border-radius: 8px;
 }
 

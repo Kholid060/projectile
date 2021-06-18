@@ -16,11 +16,12 @@
         lazy
         :alt="`${item.name} Icon`"
         :src="`https://avatars.dicebear.com/api/identicon/${item.name}.svg`"
-        class="h-5 w-5"
+        class="h-5 w-5 cursor-pointer"
+        @click="showDetails"
       ></ui-img>
     </div>
     <div class="flex-1">
-      <p>{{ item.name }}</p>
+      <p class="cursor-pointer" @click="showDetails">{{ item.name }}</p>
       <p
         class="leading-none text-gray-300 w-40 inline-block text-overflow"
         :title="item.version"
@@ -59,6 +60,7 @@
 import { ref, onMounted } from 'vue';
 import maxSatisfying from 'semver/ranges/max-satisfying';
 import semverLt from 'semver/functions/lt';
+import emitter from 'tiny-emitter/instance';
 import { useIntersect } from '@/composable/intersect';
 
 export default {
@@ -100,6 +102,9 @@ export default {
         latestVersion: latestVersion || '-',
         isLatest: currentVersion === latestVersion || !isLessThanLatest,
       };
+    }
+    function showDetails() {
+      emitter.emit('package-details', props.item.name);
     }
 
     onMounted(() => {
@@ -155,6 +160,7 @@ export default {
 
     return {
       container,
+      showDetails,
       currentPackage,
     };
   },

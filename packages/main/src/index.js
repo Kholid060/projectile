@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { join } from 'path';
 import { URL } from 'url';
 import { readFile } from 'fs/promises';
+import { shell } from 'electron';
 import gitconfig from 'gitconfiglocal';
 import fetch from 'node-fetch';
 import store from './lib/electron-store';
@@ -58,6 +59,12 @@ const createWindow = async () => {
     if (env.MODE === 'development') {
       mainWindow?.webContents.openDevTools();
     }
+  });
+
+  mainWindow?.webContents.on('new-window', (event, url) => {
+    event.preventDefault();
+
+    shell.openExternal(url);
   });
 
   /**

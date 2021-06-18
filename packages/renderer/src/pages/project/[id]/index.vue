@@ -1,28 +1,11 @@
 <template>
-  <div class="packages px-5 pt-5 h-full flex flex-col">
-    <div class="flex items-center mb-8">
-      <div class="flex-1 text-overflow pr-8">
-        <h2 class="text-2xl font-semibold text-overflow">{{ project.name }}</h2>
-        <p class="text-sm text-gray-300">{{ project.path }}</p>
-      </div>
-      <ui-input
-        v-model="state.search"
-        prepend-icon="mdi-magnify"
-        placeholder="Search package..."
-      ></ui-input>
-      <ui-button
-        variant="primary"
-        icon
-        class="ml-4"
-        @click="state.addPackage = true"
-      >
-        <v-mdi name="mdi-plus"></v-mdi>
-      </ui-button>
-    </div>
+  <div class="packages px-5 pt-5 h-full flex flex-col container">
+    <package-nav
+      v-model:search="state.search"
+      :project="project"
+      @addPackage="state.addPackage = true"
+    ></package-nav>
     <div class="flex items-start space-x-2 overflow-auto scroll flex-1">
-      <!-- <ui-button color="bg-primary bg-opacity-10 text-primary">All</ui-button>
-      <ui-button>Dependencies</ui-button>
-      <ui-button>Dev Dependencies</ui-button> -->
       <div class="w-64 p-5 border rounded-lg sticky top-0">
         <p class="text-gray-300 mb-3">Filter by</p>
         <ui-list class="space-y-1">
@@ -48,6 +31,7 @@
       </div>
     </div>
     <add-package-modal v-model="state.addPackage"></add-package-modal>
+    <package-details></package-details>
   </div>
 </template>
 <route>
@@ -61,9 +45,11 @@ import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import PackageCard from '@/components/package/PackageCard.vue';
 import AddPackageModal from '@/components/package/AddPackageModal.vue';
+import PackageDetails from '@/components/package/PackageDetails.vue';
+import PackageNav from '@/components/package/PackageNav.vue';
 
 export default {
-  components: { PackageCard, AddPackageModal },
+  components: { PackageCard, AddPackageModal, PackageDetails, PackageNav },
   setup() {
     const projectFilters = [
       { name: 'All', id: 'all' },
@@ -79,7 +65,7 @@ export default {
       deps: [],
       search: '',
       devDeps: [],
-      addPackage: true,
+      addPackage: false,
       activeFilter: 'all',
       packageCache: {},
     });
@@ -120,7 +106,6 @@ export default {
     });
     onUnmounted(() => {
       state.packageCache = {};
-      console.log(state.packageCache);
     });
 
     return {

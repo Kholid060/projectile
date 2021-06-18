@@ -3,7 +3,10 @@
     <div class="bg-gray-800 rounded-lg max-w-xl w-full pb-5">
       <div class="flex items-center p-5">
         <p class="flex-1">Add package</p>
-        <v-mdi name="mdi-close"></v-mdi>
+        <v-mdi
+          name="mdi-close"
+          @click="$emit('update:modelValue', false)"
+        ></v-mdi>
       </div>
       <form class="flex items-center px-5 pb-5" @submit.prevent="searchPackage">
         <ui-input
@@ -18,17 +21,16 @@
           Search
         </ui-button>
       </form>
-      <div class="px-5 mb-2 flex items-center">
+      <div v-if="state.searchResults.total" class="px-5 mb-2 flex items-center">
         <ui-select v-model="state.installOn" placeholder="Install on">
           <option value="deps">Main Dependencies</option>
           <option value="dev-deps">Dev Dependencies</option>
         </ui-select>
         <div class="flex-grow"></div>
-        <p v-if="state.searchResults.total">
-          {{ state.searchResults.total }} packages founds
-        </p>
+        <p>{{ state.searchResults.total }} packages founds</p>
       </div>
       <div
+        v-if="state.searchResults.results"
         class="space-y-2 scroll overflow-auto px-5 pb-5"
         style="max-height: calc(100vh - 250px)"
       >
@@ -46,18 +48,12 @@
           "
         >
           <ui-img
-            :src="getPackageImageUrl(item.package.links.repository)"
+            :src="
+              getPackageIcon(item.package.links.repository, item.package.name)
+            "
             class="h-10 w-10 rounded-full mr-2 overflow-hidden"
-          >
-            <template #error>
-              <div class="bg-gray-100 bg-opacity-5 p-2">
-                <img
-                  :src="`https://avatars.dicebear.com/api/identicon/${item.package.name}.svg`"
-                  class="w-6"
-                />
-              </div>
-            </template>
-          </ui-img>
+            lazy
+          ></ui-img>
           <div class="text-overflow flex-1 mr-4">
             <p class="text-overflow">
               {{ item.package.name }}
@@ -71,7 +67,7 @@
           </div>
           <ui-popover @show="fetchPkgVersions(item.package)">
             <template #trigger>
-              <ui-button icon class="mr-2">
+              <ui-button v-tooltip="'Install package'" icon class="mr-2">
                 <v-mdi name="mdi-download-outline"></v-mdi>
               </ui-button>
             </template>
@@ -107,7 +103,11 @@
               </template>
             </div>
           </ui-popover>
-          <ui-button icon>
+          <ui-button
+            v-tooltip="'Show details'"
+            icon
+            @click="packageDetails(item.package.name)"
+          >
             <v-mdi name="mdi-information-outline"></v-mdi>
           </ui-button>
         </div>
@@ -117,6 +117,8 @@
 </template>
 <script>
 import { reactive } from 'vue';
+import emitter from 'tiny-emitter/instance';
+import { getPackageIcon } from '@/utils/helper';
 
 export default {
   setup() {
@@ -134,12 +136,11 @@ export default {
       if (!state.query || state.loading) return;
 
       state.loading = true;
-
-      fetch(`https://api.npms.io/v2/search?q=${state.query}`)
-        .then((response) => response.json())
-        .then(({ results, total }) => {
+      ipcRenderer
+        .invoke('fetch-npm-registry', `/-/v1/search?text=${state.query}`)
+        .then(({ total, objects }) => {
           state.searchResults = {
-            results,
+            results: objects,
             total: total.toString(),
           };
           state.loading = false;
@@ -153,15 +154,6 @@ export default {
       state.query = '';
       state.searchResults = {};
       state.pkgVersion = {};
-    }
-    function getPackageImageUrl(repo) {
-      if (repo && repo.includes('github.com')) {
-        const user = repo.substring(0, repo.lastIndexOf('/'));
-
-        return `${user}.png`;
-      }
-
-      return '';
     }
     function fetchPkgVersions(pkg) {
       const isCacheExist =
@@ -192,13 +184,17 @@ export default {
           };
         });
     }
+    function packageDetails(name) {
+      emitter.emit('package-details', name);
+    }
 
     return {
       state,
       cleanUp,
       searchPackage,
+      packageDetails,
+      getPackageIcon,
       fetchPkgVersions,
-      getPackageImageUrl,
     };
   },
 };

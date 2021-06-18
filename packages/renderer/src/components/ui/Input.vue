@@ -28,7 +28,7 @@
           }"
           v-bind="{ readonly: disabled || readonly || null, placeholder, type }"
           :value="modelValue"
-          @input="$emit('update:modelValue', $event.target.value)"
+          @input="emitValue($event.target.value)"
         />
       </div>
     </label>
@@ -70,6 +70,16 @@ export default {
       default: '',
     },
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    function emitValue(value) {
+      emit('update:modelValue', value);
+      emit('change', value);
+    }
+
+    return {
+      emitValue,
+    };
+  },
 };
 </script>

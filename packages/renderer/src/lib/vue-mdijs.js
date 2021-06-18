@@ -4,7 +4,7 @@ import {
   mdiViewGridOutline,
   mdiViewListOutline,
   mdiGithub,
-  mdiHomeOutline,
+  mdiHome,
   mdiConsole,
   mdiPlus,
   mdiClose,
@@ -20,6 +20,7 @@ import {
   mdiDownloadOutline,
   mdiInformationOutline,
   mdiImageOutline,
+  mdiCloudDownloadOutline,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -27,7 +28,7 @@ VMdijs.add({
   mdiViewGridOutline,
   mdiViewListOutline,
   mdiGithub,
-  mdiHomeOutline,
+  mdiHome,
   mdiConsole,
   mdiPlus,
   mdiClose,
@@ -43,6 +44,7 @@ VMdijs.add({
   mdiDownloadOutline,
   mdiInformationOutline,
   mdiImageOutline,
+  mdiCloudDownloadOutline,
 });
 
 export default VMdijs;
