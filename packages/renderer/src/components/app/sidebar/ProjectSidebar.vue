@@ -1,4 +1,14 @@
 <template>
+  <ui-select
+    :model-value="$route.params.id"
+    placeholder="Recent projects"
+    class="w-full mb-4"
+    @change="changeRoute($event)"
+  >
+    <option v-for="project in projects" :key="project.id" :value="project.id">
+      {{ project.name }}
+    </option>
+  </ui-select>
   <ui-list class="space-y-1">
     <ui-list-item
       v-for="item in items"
@@ -13,6 +23,10 @@
   </ui-list>
 </template>
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
 export default {
   setup() {
     const items = [
@@ -29,9 +43,19 @@ export default {
         path: 'scripts',
       },
     ];
+    const store = useStore();
+    const router = useRouter();
+
+    const projects = computed(() => store.getters['projects/all']);
+
+    function changeRoute(id) {
+      router.push({ params: { id } });
+    }
 
     return {
       items,
+      projects,
+      changeRoute,
     };
   },
 };

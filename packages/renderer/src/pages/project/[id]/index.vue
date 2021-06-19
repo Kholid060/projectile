@@ -40,7 +40,7 @@
 }
 </route>
 <script>
-import { computed, onMounted, shallowReactive, onUnmounted } from 'vue';
+import { computed, onMounted, shallowReactive, onUnmounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import PackageCard from '@/components/package/PackageCard.vue';
@@ -93,8 +93,7 @@ export default {
         name.toLocaleLowerCase().match(state.search.toLocaleLowerCase())
       );
     }
-
-    onMounted(() => {
+    function getPackageJSON() {
       ipcRenderer
         .invoke('get-packageJSON', project.value.path)
         .then((config) => {
@@ -103,7 +102,11 @@ export default {
           state.deps = convertDeps(config.dependencies || {}, 'deps');
           state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
         });
-    });
+    }
+
+    watch(() => route.params.id, getPackageJSON);
+
+    onMounted(getPackageJSON);
     onUnmounted(() => {
       state.packageCache = {};
     });

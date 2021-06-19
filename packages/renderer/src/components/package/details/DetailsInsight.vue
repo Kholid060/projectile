@@ -5,7 +5,7 @@
     <div
       v-for="item in data"
       :key="item.day"
-      v-tooltip.bottom="`${item.day}: ${item.downloads}`"
+      v-tooltip:bottom.group="`${item.day}: ${item.downloads}`"
       :style="{ height: item.height }"
       class="
         flex-1
@@ -28,6 +28,7 @@
 <script>
 import { onMounted, ref, computed } from 'vue';
 import dayjs from 'dayjs';
+import { useGroupTooltip } from '@/composable/groupTooltip';
 import { formatNumber } from '@/utils/helper';
 
 export default {
@@ -62,6 +63,8 @@ export default {
           date.value += index === 0 ? currentDate : ` - ${currentDate}`;
         }
       });
+
+      useGroupTooltip();
     });
 
     return {

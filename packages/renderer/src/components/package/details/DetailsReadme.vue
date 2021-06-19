@@ -48,6 +48,8 @@ export default {
 
         if (isExternalLink) {
           link.target = '_blank';
+          link.title = url;
+
           return;
         }
 

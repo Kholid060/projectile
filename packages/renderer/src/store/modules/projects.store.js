@@ -11,7 +11,9 @@ export default {
   }),
   getters: {
     all: (state) =>
-      Object.entries(state.data).map(([id, value]) => ({ id, ...value })),
+      Object.entries(state.data)
+        .map(([id, value]) => ({ id, ...value }))
+        .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)),
     home: (state) => {
       const result = { recent: [], starred: [] };
 
