@@ -1,5 +1,5 @@
 <template>
-  <div class="packages px-5 pt-5 h-full flex flex-col container">
+  <div class="packages h-full flex flex-col container">
     <package-nav
       v-model:search="state.search"
       :project="project"
@@ -40,9 +40,7 @@
 }
 </route>
 <script>
-import { computed, onMounted, shallowReactive, onUnmounted, watch } from 'vue';
-import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
+import { computed, watch, shallowReactive, onUnmounted } from 'vue';
 import PackageCard from '@/components/package/PackageCard.vue';
 import AddPackageModal from '@/components/package/AddPackageModal.vue';
 import PackageDetails from '@/components/package/PackageDetails.vue';
@@ -50,16 +48,22 @@ import PackageNav from '@/components/package/PackageNav.vue';
 
 export default {
   components: { PackageCard, AddPackageModal, PackageDetails, PackageNav },
-  setup() {
+  props: {
+    packageJSON: {
+      type: Object,
+      default: () => ({}),
+    },
+    project: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  setup(props) {
     const projectFilters = [
       { name: 'All', id: 'all' },
       { name: 'Dependencies', id: 'deps' },
       { name: 'Dev Dependencies', id: 'devDeps' },
     ];
-
-    const store = useStore();
-    const route = useRoute();
-    const { ipcRenderer } = window.electron;
 
     const state = shallowReactive({
       deps: [],
@@ -70,9 +74,6 @@ export default {
       packageCache: {},
     });
 
-    const project = computed(() =>
-      store.getters['projects/get'](route.params.id)
-    );
     const packages = computed(() => {
       if (state.activeFilter === 'all')
         return searchFilter([].concat(state.deps, state.devDeps));
@@ -93,27 +94,19 @@ export default {
         name.toLocaleLowerCase().match(state.search.toLocaleLowerCase())
       );
     }
-    function getPackageJSON() {
-      ipcRenderer
-        .invoke('get-packageJSON', project.value.path)
-        .then((config) => {
-          if (!config) return;
+    watch(() => props.packageJSON, (config) => {
+      if (!config) return;
 
-          state.deps = convertDeps(config.dependencies || {}, 'deps');
-          state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
-        });
-    }
+      state.deps = convertDeps(config.dependencies || {}, 'deps');
+      state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
+    }, { immediate: true });
 
-    watch(() => route.params.id, getPackageJSON);
-
-    onMounted(getPackageJSON);
     onUnmounted(() => {
       state.packageCache = {};
     });
 
     return {
       state,
-      project,
       packages,
       projectFilters,
     };

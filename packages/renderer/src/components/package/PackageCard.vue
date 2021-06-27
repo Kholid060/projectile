@@ -149,6 +149,8 @@ export default {
             }
 
             if (cachePackage) {
+              delete cachePackage.lastUpdated;
+
               currentPackage.value = getLatestVersion(
                 props.item.version,
                 cachePackage

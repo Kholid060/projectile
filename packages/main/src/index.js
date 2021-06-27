@@ -5,9 +5,11 @@ import { readFile } from 'fs/promises';
 import { shell } from 'electron';
 import gitconfig from 'gitconfiglocal';
 import fetch from 'node-fetch';
+import nodePty from './lib/node-pty';
 import store from './lib/electron-store';
 
 const isSingleInstance = app.requestSingleInstanceLock();
+const allPtyProcess = {};
 
 if (!isSingleInstance) {
   app.quit();
@@ -61,11 +63,11 @@ const createWindow = async () => {
     }
   });
 
-  mainWindow?.webContents.on('new-window', (event, url) => {
-    event.preventDefault();
+  // mainWindow?.webContents.on('new-window', (event, url) => {
+  //   event.preventDefault();
 
-    shell.openExternal(url);
-  });
+  //   shell.openExternal(url);
+  // });
 
   /**
    * URL for main window.
@@ -144,6 +146,26 @@ ipcMain.handle('storage-set', (event, { key, value }) => Promise.resolve(store.s
 ipcMain.handle('storage-delete', (event, key) => Promise.resolve(store.delete(key)));
 ipcMain.handle('storage-has', (event, key) => Promise.resolve(store.has(key)));
 ipcMain.handle('storage-clear', () => Promise.resolve(store.clear()));
+
+ipcMain.on('node-pty', (event, options = {}) => {
+  if (!options.name) return;
+
+  const ptyProcess = nodePty.spawn(shell, [], {
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME,
+    env: process.env,
+    ...options,
+  });
+
+  if (options.write) ptyProcess.write(options.write);
+
+  ptyProcess.on('data', function(data) {
+    ipcMain.send('pty-data', { name: options.name, data });
+  });
+
+  allPtyProcess[options.name] = ptyProcess;
+});
 
 app.whenReady()
   .then(createWindow)

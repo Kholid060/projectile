@@ -13,7 +13,8 @@
     "pretest": "cross-env MODE=test npm run build",
     "test": "node tests/app.spec.js",
     "watch": "node scripts/watch.js",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "anu": "cd .\\node_modules\\node-pty && node-gyp rebuild --target=13.1.0 --arch=x64 --target_platform=darwin --dist-url=https://atom.io/download/atom-shell"
   },
   "browserslist": [
     "Chrome 91"
@@ -36,6 +37,7 @@
     "muuri": "^0.9.4",
     "nanoid": "^3.1.23",
     "node-fetch": "^2.6.1",
+    "node-pty": "^0.10.1",
     "node-pty-prebuilt-multiarch": "^0.10.1-pre.4",
     "semver": "^7.3.5",
     "tiny-emitter": "^2.1.0",
@@ -44,9 +46,7 @@
     "vue-mdijs": "^0.5.0",
     "vue-router": "^4.0.8",
     "vue-toastification": "^2.0.0-rc.1",
-    "vuedraggable": "^4.0.1",
     "vuex": "^4.0.1",
-    "vuex-persistedstate": "^4.0.0-beta.3",
     "xterm": "^4.13.0"
   },
   "devDependencies": {
@@ -58,6 +58,7 @@
     "electron": "^13.1.0",
     "electron-builder": "^22.11.5",
     "electron-devtools-installer": "^3.2.0",
+    "electron-rebuild": "^2.3.5",
     "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier-vue": "^3.1.0",

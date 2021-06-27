@@ -38,7 +38,7 @@ export default {
       },
       {
         name: 'Scripts',
-        id: 'project-scripts',
+        id: 'project-id-scripts',
         icon: 'mdi-clipboard-text-outline',
         path: 'scripts',
       },

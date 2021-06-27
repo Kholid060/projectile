@@ -1,7 +1,7 @@
 <template>
-  <div class="flex pb-6 h-screen">
-    <app-sidebar class="flex-shrink-0"></app-sidebar>
-    <main class="overflow-auto h-full flex-1 scroll">
+  <div>
+    <app-sidebar class="fixed h-full left-0 top-0"></app-sidebar>
+    <main class="pl-64 pb-6 h-screen overflow-auto scroll">
       <router-view />
     </main>
   </div>
