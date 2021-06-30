@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises';
 import { shell } from 'electron';
 import gitconfig from 'gitconfiglocal';
 import fetch from 'node-fetch';
-import nodePty from './lib/node-pty';
+import nodePty, { shell as nodePtyShell } from './lib/node-pty';
 import store from './lib/electron-store';
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -150,7 +150,7 @@ ipcMain.handle('storage-clear', () => Promise.resolve(store.clear()));
 ipcMain.on('node-pty', (event, options = {}) => {
   if (!options.name) return;
 
-  const ptyProcess = nodePty.spawn(shell, [], {
+  const ptyProcess = nodePty.spawn(nodePtyShell, [], {
     cols: 80,
     rows: 30,
     cwd: process.env.HOME,

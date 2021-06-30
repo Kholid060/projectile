@@ -37,6 +37,7 @@
 import { shallowReactive } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
+import Project from '@/models/project';
 
 export default {
   emits: ['added'],
@@ -56,6 +57,10 @@ export default {
         .invoke('select-dir')
         .then(({ canceled, path, config }) => {
           if (canceled) return;
+
+          const isDirExists = Project.query().where('path', path).exists();
+
+          if (isDirExists) return toast.error('You already add this directory');
 
           project.path = path;
           project.name = config.name || path.split('\\').pop();
@@ -78,7 +83,8 @@ export default {
         );
         copy.repository = repository;
 
-        const result = await store.dispatch('projects/add', copy);
+        const result = await Project.insert({ data: copy });
+        await store.dispatch('saveToStorage', 'projects');
 
         emit('added', result);
 

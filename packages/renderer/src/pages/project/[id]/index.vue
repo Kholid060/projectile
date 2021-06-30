@@ -10,7 +10,7 @@
         <p class="text-gray-300 mb-3">Filter by</p>
         <ui-list class="space-y-1">
           <ui-list-item
-            v-for="filter in projectFilters"
+            v-for="filter in packageFilters"
             :key="filter.id"
             :active="state.activeFilter === filter.id"
             class="cursor-pointer list-transition"
@@ -59,7 +59,7 @@ export default {
     },
   },
   setup(props) {
-    const projectFilters = [
+    const packageFilters = [
       { name: 'All', id: 'all' },
       { name: 'Dependencies', id: 'deps' },
       { name: 'Dev Dependencies', id: 'devDeps' },
@@ -94,12 +94,16 @@ export default {
         name.toLocaleLowerCase().match(state.search.toLocaleLowerCase())
       );
     }
-    watch(() => props.packageJSON, (config) => {
-      if (!config) return;
+    watch(
+      () => props.packageJSON,
+      (config) => {
+        if (!config) return;
 
-      state.deps = convertDeps(config.dependencies || {}, 'deps');
-      state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
-    }, { immediate: true });
+        state.deps = convertDeps(config.dependencies || {}, 'deps');
+        state.devDeps = convertDeps(config.devDependencies || {}, 'devDeps');
+      },
+      { immediate: true }
+    );
 
     onUnmounted(() => {
       state.packageCache = {};
@@ -108,7 +112,7 @@ export default {
     return {
       state,
       packages,
-      projectFilters,
+      packageFilters,
     };
   },
 };

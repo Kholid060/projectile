@@ -27,31 +27,41 @@
 </route>
 <script>
 import { computed, shallowReactive, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import Project from '@/models/project';
 import HomeNav from '@/components/home/HomeNav.vue';
 import HomeProjects from '@/components/home/HomeProjects.vue';
 
 export default {
   components: { HomeNav, HomeProjects },
   setup() {
-    const store = useStore();
-
     const state = shallowReactive({
       search: '',
       viewType: 'grid',
     });
-    const projects = computed(() =>
-      filterProjects(store.getters['projects/home'])
-    );
+    const projects = computed(() => {
+      const projects = Project.query()
+        .where(({ name }) =>
+          name.toLocaleLowerCase().includes(state.search.toLocaleLowerCase())
+        )
+        .orderBy('createdAt', 'desc')
+        .get();
+      const filteredProjects = filterProjects(projects);
+
+      return filteredProjects;
+    });
 
     function filterProjects(projects) {
-      const filter = ({ name }) =>
-        name.toLocaleLowerCase().match(state.search.toLocaleLowerCase());
-
-      return {
-        starred: projects.starred.filter(filter),
-        recent: projects.recent.filter(filter),
+      const result = {
+        recent: [],
+        starred: [],
       };
+
+      projects.forEach((project) => {
+        console.log(project.starred, project.starred ? 'starred' : 'recent');
+        result[project.starred ? 'starred' : 'recent'].push(project);
+      });
+      console.log(result, projects);
+      return result;
     }
 
     onMounted(() => {

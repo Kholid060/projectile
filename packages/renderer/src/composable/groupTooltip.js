@@ -1,23 +1,27 @@
-import { getCurrentInstance } from 'vue';
+import { getCurrentInstance, onMounted, shallowRef } from 'vue';
 import { createSingleton } from 'tippy.js';
 import createTippy, { defaultOptions } from '@/utils/createTippy';
 
 /* eslint-disable no-underscore-dangle */
-export function useGroupTooltip(element, options = {}) {
-  let tippyInstances = [];
+export function useGroupTooltip(elements, options = {}) {
+  const singleton = shallowRef(null);
 
-  if (Array.isArray(element)) {
-    tippyInstances = element.map((el) => el._tippy || createTippy(el));
-  } else {
-    const ctx = getCurrentInstance() && getCurrentInstance().ctx;
+  onMounted(() => {
+    let tippyInstances = [];
 
-    tippyInstances = ctx._tooltipGroup || [];
-  }
+    if (Array.isArray(elements)) {
+      tippyInstances = elements.map((el) => el._tippy || createTippy(el));
+    } else {
+      const ctx = getCurrentInstance() && getCurrentInstance().ctx;
 
-  const singleton = createSingleton(tippyInstances, {
-    ...defaultOptions,
-    ...options,
-    moveTransition: 'transform 0.2s ease-out',
+      tippyInstances = ctx._tooltipGroup || [];
+    }
+
+    singleton.value = createSingleton(tippyInstances, {
+      ...defaultOptions,
+      ...options,
+      moveTransition: 'transform 0.2s ease-out',
+    });
   });
 
   return singleton;

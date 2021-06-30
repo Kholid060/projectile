@@ -23,6 +23,14 @@ import {
   mdiCloudDownloadOutline,
   mdiCogOutline,
   mdiPlayOutline,
+  mdiViewDashboardOutline,
+  mdiDotsHorizontal,
+  mdiCheckboxMarkedCircleOutline,
+  mdiAlertCircleOutline,
+  mdiTextBoxOutline,
+  mdiSourcePull,
+  mdiRecordCircleOutline,
+  mdiCheck,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -49,6 +57,14 @@ VMdijs.add({
   mdiCloudDownloadOutline,
   mdiCogOutline,
   mdiPlayOutline,
+  mdiViewDashboardOutline,
+  mdiDotsHorizontal,
+  mdiCheckboxMarkedCircleOutline,
+  mdiAlertCircleOutline,
+  mdiTextBoxOutline,
+  mdiSourcePull,
+  mdiRecordCircleOutline,
+  mdiCheck,
 });
 
 export default VMdijs;

@@ -16,8 +16,8 @@
             z-50
             flex
             justify-center
-            items-end
-            md:items-center
+            scroll
+            items-center
           "
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
           @click.self="closeModal"
@@ -65,6 +65,10 @@ export default {
     contentClass: {
       type: String,
       default: 'max-w-lg',
+    },
+    position: {
+      type: String,
+      default: 'items-center',
     },
     customContent: Boolean,
     persist: Boolean,

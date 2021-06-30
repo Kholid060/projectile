@@ -39,6 +39,8 @@ export default {
     },
   },
   setup(props) {
+    useGroupTooltip();
+
     const date = ref('');
     const maxSize = ref(0);
     const data = computed(() => {
@@ -63,8 +65,6 @@ export default {
           date.value += index === 0 ? currentDate : ` - ${currentDate}`;
         }
       });
-
-      useGroupTooltip();
     });
 
     return {

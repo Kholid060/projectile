@@ -2,6 +2,8 @@
   <aside class="w-64 bg-gray-1000 p-5">
     <router-link to="/">Home...</router-link>
     <component :is="activeSidebar"></component>
+    <a href="https://vuex-orm.org" target="_blank">aanu</a>
+    <a href="https://google.com" target="_blank">google</a>
   </aside>
 </template>
 <script>

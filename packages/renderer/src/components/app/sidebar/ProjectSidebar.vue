@@ -9,7 +9,7 @@
       {{ project.name }}
     </option>
   </ui-select>
-  <ui-list class="space-y-1">
+  <ui-list class="space-y-1 text-gray-200">
     <ui-list-item
       v-for="item in items"
       :key="item.id"
@@ -24,8 +24,8 @@
 </template>
 <script>
 import { computed } from 'vue';
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import Project from '@/models/project';
 
 export default {
   setup() {
@@ -42,11 +42,18 @@ export default {
         icon: 'mdi-clipboard-text-outline',
         path: 'scripts',
       },
+      {
+        name: 'Boards',
+        id: 'project-id-boards',
+        icon: 'mdi-view-dashboard-outline',
+        path: 'boards',
+      },
     ];
-    const store = useStore();
     const router = useRouter();
 
-    const projects = computed(() => store.getters['projects/all']);
+    const projects = computed(() =>
+      Project.query().orderBy('createdAt', 'desc').get()
+    );
 
     function changeRoute(id) {
       router.push({ params: { id } });

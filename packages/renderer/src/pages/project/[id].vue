@@ -6,21 +6,20 @@
 <script>
 import { watch, computed, shallowRef } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from 'vuex';
+import Project from '@/models/project';
 
 export default {
   setup() {
     const route = useRoute();
-    const store = useStore();
     const { ipcRenderer } = window.electron;
 
     const packageJSON = shallowRef({});
 
-    const project = computed(() =>
-      store.getters['projects/get'](route.params.id)
-    );
+    const project = computed(() => Project.find(route.params.id));
 
     function getPackageJSON() {
+      if (!project.value) return;
+      console.log(project.value);
       ipcRenderer
         .invoke('get-packageJSON', project.value.path)
         .then((config) => {

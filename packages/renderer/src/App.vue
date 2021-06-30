@@ -6,6 +6,7 @@
     </main>
   </div>
   <app-bottom-menu></app-bottom-menu>
+  <ui-dialog></ui-dialog>
 </template>
 <script>
 import { useStore } from 'vuex';

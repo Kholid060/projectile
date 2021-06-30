@@ -1,7 +1,9 @@
 <template>
   <div class="inline-block input-ui">
     <label class="relative">
-      <span v-if="label" class="text-sm text-gray-200 mb-1">{{ label }}</span>
+      <span v-if="label" class="text-sm text-gray-200 mb-1 ml-1">
+        {{ label }}
+      </span>
       <div class="flex items-center">
         <slot name="prepend">
           <v-mdi

@@ -15,19 +15,7 @@
           :class="{ 'text-yellow-500': project.starred }"
         ></v-mdi>
       </ui-button>
-      <input
-        v-if="project.id === editId"
-        v-autofocus
-        :value="project.name"
-        class="bg-transparent rounded-md px-1 border w-5/12"
-        @blur="updateProjectName(project, $event)"
-        @keyup.enter="editId = ''"
-      />
-      <router-link
-        v-else
-        :to="`/project/${project.id}`"
-        class="w-5/12 text-overflow"
-      >
+      <router-link :to="`/project/${project.id}`" class="w-5/12 text-overflow">
         {{ project.name }}
       </router-link>
       <router-link
@@ -39,7 +27,7 @@
       <ui-button
         icon
         class="mr-4 hidden group-hover:block"
-        @click="editId = project.id"
+        @click="editProjectName(project)"
       >
         <v-mdi name="mdi-pencil-outline"></v-mdi>
       </ui-button>
@@ -48,7 +36,7 @@
       </ui-button>
     </ui-list-item>
   </ui-list>
-  <div v-else class="grid grid-cols-3 gap-5">
+  <div v-else class="grid grid-cols-4 gap-5">
     <transition-group-list>
       <ui-card
         v-for="project in projects"
@@ -56,15 +44,7 @@
         hover
         class="list-transition"
       >
-        <input
-          v-if="project.id === editId"
-          v-autofocus
-          :value="project.name"
-          class="bg-transparent rounded-md px-1 border w-full"
-          @blur="updateProjectName(project, $event)"
-          @keyup.enter="editId = ''"
-        />
-        <router-link v-else :to="`/project/${project.id}`">
+        <router-link :to="`/project/${project.id}`">
           {{ project.name }}
         </router-link>
         <router-link
@@ -84,7 +64,7 @@
             ></v-mdi>
           </ui-button>
           <div class="flex-grow"></div>
-          <ui-button icon class="mr-2" @click="editId = project.id">
+          <ui-button icon class="mr-2" @click="editProjectName(project)">
             <v-mdi name="mdi-pencil-outline"></v-mdi>
           </ui-button>
           <ui-button icon class="text-red-500" @click="deleteProject(project)">
@@ -96,8 +76,8 @@
   </div>
 </template>
 <script>
-import { ref } from 'vue';
-import { useStore } from 'vuex';
+import { useDialog } from '@/composable/dialog';
+import Project from '@/models/project';
 
 export default {
   props: {
@@ -108,30 +88,34 @@ export default {
     listView: Boolean,
   },
   setup() {
-    const store = useStore();
-    const editId = ref('');
+    const dialog = useDialog();
 
     function updateProject(id, data) {
-      store.dispatch('projects/update', { id, data });
+      Project.update({
+        where: id,
+        data,
+      });
     }
-    function updateProjectName({ id, name }, { target: { value } }) {
-      if (value && name !== value) {
-        updateProject(id, { name: value });
-      }
-
-      editId.value = '';
+    function editProjectName({ id, name }) {
+      dialog.prompt({
+        title: 'Project name',
+        label: 'Name',
+        input: name,
+        onConfirm(value) {
+          updateProject(id, { name: value });
+        },
+      });
     }
     function deleteProject({ id, name }) {
       const confirm = window.confirm(`Are you sure want to delete "${name}"?`);
 
-      if (confirm) store.dispatch('projects/delete', id);
+      if (confirm) Project.delete(id);
     }
 
     return {
-      editId,
       updateProject,
       deleteProject,
-      updateProjectName,
+      editProjectName,
     };
   },
 };

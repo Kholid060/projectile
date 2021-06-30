@@ -78,42 +78,19 @@
             <v-mdi name="mdi-home"></v-mdi>
           </a>
         </div>
-        <div
-          class="
-            flex
-            items-center
-            mb-4
-            mt-2
-            bg-gray-800
-            z-50
-            border-b
-            sticky
-            top-0
-          "
+        <ui-tabs
+          v-model="state.activeTab"
+          class="bg-gray-800 z-50 sticky top-0"
         >
-          <button
+          <ui-tab
             v-for="tab in tabs"
             :key="tab"
-            :class="[
-              tab === state.activeTab
-                ? 'border-primary text-blue-400'
-                : 'border-transparent',
-            ]"
-            class="
-              px-4
-              py-3
-              focus:ring-0
-              border-b-2
-              focus:ring-0
-              hover:text-blue-400
-              transition
-              capitalize
-            "
-            @click="state.activeTab = tab"
+            :value="tab"
+            class="capitalize"
           >
             {{ tab }}
-          </button>
-        </div>
+          </ui-tab>
+        </ui-tabs>
         <keep-alive>
           <component :is="`details-${state.activeTab}`" :pkg="pkg"></component>
         </keep-alive>

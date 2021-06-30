@@ -1,7 +1,7 @@
 <template>
   <div class="ui-popover inline-block" :class="{ hidden: to }">
     <div ref="targetEl" class="ui-popover__trigger inline-block">
-      <slot name="trigger"></slot>
+      <slot name="trigger" v-bind="{ isShow }"></slot>
     </div>
     <div
       ref="content"
@@ -38,6 +38,7 @@ export default {
   setup(props, { emit }) {
     const targetEl = ref(null);
     const content = ref(null);
+    const isShow = ref(false);
     const instance = shallowRef(null);
 
     watch(
@@ -65,14 +66,21 @@ export default {
         trigger: props.trigger,
         interactive: true,
         appendTo: () => document.body,
-        onShow: (instance) => emit('show', instance) || true,
+        onShow: (instance) => {
+          emit('show', instance);
+          isShow.value = true;
+        },
+        onHide: () => {
+          isShow.value = false;
+        },
         onTrigger: () => emit('trigger'),
       });
     });
 
     return {
-      targetEl,
+      isShow,
       content,
+      targetEl,
     };
   },
 };

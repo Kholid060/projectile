@@ -1,6 +1,8 @@
 <template>
   <label :class="[block ? 'block' : 'inline-block']">
-    <span v-if="label" class="text-gray-200 text-sm block">{{ label }}</span>
+    <span v-if="label" class="text-gray-200 text-sm block ml-1">{{
+      label
+    }}</span>
     <textarea
       ref="textarea"
       v-bind="{ value: modelValue, placeholder }"

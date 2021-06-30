@@ -44,3 +44,23 @@ export function formatNumber(num) {
 
   return suffix ? round(num / Math.pow(1000, base), 2) + suffix : '' + num;
 }
+
+export function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+  return result
+    ? [1, 2, 3].map((val) => parseInt(result[val], 16))
+    : [255, 255, 255];
+}
+
+export function getTextColor(rgb) {
+  if (!Array.isArray(rgb)) return console.error('Invalid param');
+
+  const brightness = Math.round(
+    (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) /
+      1000
+  );
+  const textColor = brightness > 125 ? 'black' : 'white';
+
+  return textColor;
+}

@@ -80,7 +80,7 @@
                 >
                   <ui-spinner></ui-spinner>
                 </div>
-                <ui-list v-else class="space-y-1">
+                <ui-list v-else class="space-y-1 max-h-64 overflow-auto scroll">
                   <ui-list-item
                     v-for="(version, name) in state.pkgVersion[
                       item.package.name

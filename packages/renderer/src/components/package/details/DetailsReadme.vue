@@ -77,38 +77,3 @@ export default {
   },
 };
 </script>
-<style>
-.prose thead {
-  color: white;
-}
-.prose hr {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-.prose th,
-.prose thead,
-.prose tr {
-  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
-}
-.prose img {
-  margin: 0 !important;
-  display: inline-block;
-}
-
-.prose pre,
-.prose code {
-  font-family: 'Fira Code', sans-serif;
-  @apply bg-black bg-opacity-20 rounded-lg;
-}
-
-.prose code {
-  @apply p-1 rounded-md !important;
-}
-
-.prose pre code {
-  padding: 0;
-  background-color: transparent;
-}
-.prose a {
-  color: theme('colors.blue.500') !important;
-}
-</style>
