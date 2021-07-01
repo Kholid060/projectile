@@ -11,19 +11,22 @@
     <p v-if="boards.length === 0" class="text-center text-gray-200">
       You have no boards
     </p>
-    <template v-else>
-      <div
-        class="flex space-x-6 scroll pb-4 overflow-auto"
-        style="height: calc(100vh - 6.5rem)"
-      >
+    <draggable
+      v-else
+      v-model="boards"
+      :animation="250"
+      item-key="id"
+      group="boards"
+      class="flex space-x-6 scroll pb-4 overflow-auto"
+      style="height: calc(100vh - 6.5rem)"
+    >
+      <template #item="{ element }">
         <board-column
-          v-for="board in boards"
-          v-bind="{ key: board.id, board, repository: project.repository }"
-          :key="board.id"
+          v-bind="{ board: element, repository: project.repository }"
           @modal="showModal"
         ></board-column>
-      </div>
-    </template>
+      </template>
+    </draggable>
     <ui-modal v-model="modalState.show" position="items-start">
       <template #header>
         <p>{{ modalState.type === 'issue' ? 'Add Issue Card' : 'Add Card' }}</p>
@@ -42,6 +45,7 @@
 import { computed, shallowReactive } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
+import Draggable from 'vuedraggable/src/vuedraggable';
 import { useDialog } from '@/composable/dialog';
 import Board from '@/models/board';
 import AddCard from '@/components/boards/AddCard.vue';
@@ -49,7 +53,7 @@ import BoardColumn from '@/components/boards/BoardColumn.vue';
 import AddIssueCard from '@/components/boards/AddIssueCard.vue';
 
 export default {
-  components: { AddCard, AddIssueCard, BoardColumn },
+  components: { AddCard, AddIssueCard, BoardColumn, Draggable },
   props: {
     packageJSON: {
       type: Object,
@@ -72,18 +76,31 @@ export default {
       boardId: '',
     });
 
-    const boards = computed(() =>
-      Board.query().where('projectId', route.params.id).with('cards').get()
-    );
+    const boards = computed({
+      get() {
+        return Board.query()
+          .where('projectId', route.params.id)
+          .orderBy('order')
+          .get();
+      },
+      set(value) {
+        const data = value.map((item, index) => ({ ...item, order: index }));
+
+        Board.update({ data });
+      },
+    });
 
     function addBoard() {
       dialog.prompt({
         title: 'Add board',
         label: 'Board name',
         onConfirm(name) {
+          const maxOrder = Board.query().max('order');
+
           Board.insert({
             data: {
               name,
+              order: maxOrder + 1,
               projectId: route.params.id,
             },
           });

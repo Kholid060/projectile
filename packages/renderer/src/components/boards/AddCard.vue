@@ -104,10 +104,17 @@ export default {
       card.data.tasks.splice(index, 1);
     }
     function saveCard() {
+      let maxOrder = Card.query().where('boardId', props.boardId).max('order');
+
+      if (card.id) {
+        maxOrder = card.order;
+      }
+
       Card.insertOrUpdate({
         data: {
           ...card,
           type: 'card',
+          order: card.id ? maxOrder : maxOrder + 1,
           id: card.id ? card.id : nanoid(),
           boardId: props.boardId,
         },

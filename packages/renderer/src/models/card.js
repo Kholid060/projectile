@@ -12,6 +12,7 @@ class Card extends Model {
       name: this.string(''),
       type: this.string(''),
       data: this.attr(null),
+      order: this.number(0),
       boardId: this.attr(null),
       description: this.string(''),
     };

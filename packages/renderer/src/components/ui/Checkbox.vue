@@ -7,8 +7,7 @@
       text-primary
       shadow-sm
       cursor-pointer
-      focus:border-primary
-      focus:ring focus:ring-primary
+      focus:border-primary focus:ring focus:ring-primary
       transition
       h-4
       w-4

@@ -116,7 +116,11 @@ export default {
     function addCard() {
       if (!props.boardId || state.selectedIssues.length === 0) return;
 
+      let maxOrder =
+        (Card.query().where('boardId', props.boardId).max('order') || 0) - 1;
+
       const data = state.selectedIssues.map((id) => ({
+        order: (maxOrder += 1),
         type: 'issue',
         boardId: props.boardId,
         data: issues.value.find((issue) => issue.id === id) || {},

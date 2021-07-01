@@ -55,28 +55,35 @@
         </ui-list>
       </ui-popover>
     </div>
-    <div class="space-y-2 overflow-auto flex-1 scroll pb-4">
-      <transition-group-list>
+    <draggable
+      v-model="cards"
+      :animation="500"
+      item-key="id"
+      group="cards"
+      class="space-y-2 overflow-auto flex-1 scroll"
+      @change="onDragChange"
+    >
+      <template #item="{ element }">
         <component
-          v-bind="{ key: card.id, card }"
-          v-for="card in board.cards"
-          :is="card.type === 'issue' ? 'board-issue-card' : 'board-card'"
-          :key="card.id"
-          class="transition-list"
+          v-bind="{ card: element }"
+          :is="element.type === 'issue' ? 'board-issue-card' : 'board-card'"
           @edit="$emit('modal', { ...$event, id: board.id })"
         ></component>
-      </transition-group-list>
-    </div>
+      </template>
+    </draggable>
   </div>
 </template>
 <script>
+import { computed } from 'vue';
+import Draggable from 'vuedraggable/src/vuedraggable';
 import { useDialog } from '@/composable/dialog';
 import Board from '@/models/board';
+import Card from '@/models/card';
 import BoardCard from './BoardCard.vue';
 import BoardIssueCard from './BoardIssueCard.vue';
 
 export default {
-  components: { BoardCard, BoardIssueCard },
+  components: { BoardCard, BoardIssueCard, Draggable },
   props: {
     board: {
       type: Object,
@@ -90,6 +97,22 @@ export default {
   emits: ['modal'],
   setup(props) {
     const dialog = useDialog();
+
+    const cards = computed({
+      get() {
+        return Card.query()
+          .where('boardId', props.board.id)
+          .orderBy('order')
+          .get();
+      },
+      set(value) {
+        const data = value.map((item, index) => ({ ...item, order: index }));
+        console.log(data);
+        Card.update({
+          data,
+        });
+      },
+    });
 
     function editBoard() {
       dialog.prompt({
@@ -116,10 +139,23 @@ export default {
         Board.delete(props.board.id);
       }
     }
+    function onDragChange(event) {
+      if (event.added) {
+        Card.update({
+          where: event.added.element.id,
+          data: {
+            order: event.added.newIndex,
+            boardId: props.board.id,
+          },
+        });
+      }
+    }
 
     return {
+      cards,
       editBoard,
       deleteBoard,
+      onDragChange,
     };
   },
 };

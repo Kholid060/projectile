@@ -1,6 +1,10 @@
 <template>
   <div class="px-5 pt-5 h-full">
-    <router-view v-bind="{ project, packageJSON }"></router-view>
+    <router-view v-slot="{ Component }">
+      <keep-alive include="MoviesList">
+        <component :is="Component" v-bind="{ project, packageJSON }" />
+      </keep-alive>
+    </router-view>
   </div>
 </template>
 <script>

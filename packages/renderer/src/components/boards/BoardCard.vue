@@ -1,10 +1,7 @@
 <template>
   <ui-card class="group">
     <div class="flex items-center">
-      <p
-        class="text-overflow font-semibold flex-1 cursor-pointer pr-2"
-        @click="editCard"
-      >
+      <p class="text-overflow flex-1 cursor-pointer pr-2" @click="editCard">
         {{ card.name }}
       </p>
       <ui-popover>

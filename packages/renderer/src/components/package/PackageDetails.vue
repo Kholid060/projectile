@@ -80,7 +80,7 @@
         </div>
         <ui-tabs
           v-model="state.activeTab"
-          class="bg-gray-800 z-50 sticky top-0"
+          class="bg-gray-800 z-50 sticky top-0 mb-4"
         >
           <ui-tab
             v-for="tab in tabs"

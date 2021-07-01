@@ -161,7 +161,7 @@ ipcMain.on('node-pty', (event, options = {}) => {
   if (options.write) ptyProcess.write(options.write);
 
   ptyProcess.on('data', function(data) {
-    ipcMain.send('pty-data', { name: options.name, data });
+    mainWindow.webContents.send('pty-data', { name: options.name, data });
   });
 
   allPtyProcess[options.name] = ptyProcess;

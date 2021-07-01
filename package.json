@@ -1,9 +1,6 @@
 {
   "name": "vite-electron-builder",
   "private": true,
-  "engines": {
-    "node": ">=v14.16"
-  },
   "main": "packages/main/dist/index.cjs",
   "scripts": {
     "buildEnvTypes": "node scripts/buildEnvTypes.js",
@@ -14,7 +11,7 @@
     "test": "node tests/app.spec.js",
     "watch": "node scripts/watch.js",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "anu": "cd .\\node_modules\\node-pty && node-gyp rebuild --target=13.1.0 --arch=x64 --target_platform=darwin --dist-url=https://atom.io/download/atom-shell"
+    "rebuild": "./node_modules/.bin/electron-rebuild.cmd"
   },
   "browserslist": [
     "Chrome 91"
@@ -24,10 +21,6 @@
   },
   "dependencies": {
     "@mdi/js": "^5.9.55",
-    "@tiptap/extension-task-item": "^2.0.0-beta.16",
-    "@tiptap/extension-task-list": "^2.0.0-beta.16",
-    "@tiptap/starter-kit": "^2.0.0-beta.76",
-    "@tiptap/vue-3": "^2.0.0-beta.40",
     "@vuex-orm/core": "^0.36.4",
     "@vuex-orm/plugin-search": "^0.23.4",
     "dayjs": "^1.10.5",
@@ -50,6 +43,7 @@
     "vue-mdijs": "^0.5.0",
     "vue-router": "^4.0.8",
     "vue-toastification": "^2.0.0-rc.1",
+    "vuedraggable": "^4.0.3",
     "vuex": "^4.0.1",
     "xterm": "^4.13.0"
   },

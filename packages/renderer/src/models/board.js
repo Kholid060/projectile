@@ -13,6 +13,7 @@ class Board extends Model {
       name: this.string(''),
       projectId: this.attr(null),
       cards: this.hasMany(Card, 'boardId'),
+      order: this.number(0),
       createdAt: this.number(Date.now()),
     };
   }
