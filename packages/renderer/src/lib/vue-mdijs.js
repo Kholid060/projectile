@@ -31,6 +31,7 @@ import {
   mdiSourcePull,
   mdiRecordCircleOutline,
   mdiCheck,
+  mdiPause,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -65,6 +66,7 @@ VMdijs.add({
   mdiSourcePull,
   mdiRecordCircleOutline,
   mdiCheck,
+  mdiPause,
 });
 
 export default VMdijs;

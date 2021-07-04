@@ -77,7 +77,6 @@ export default {
   emits: ['retrieved'],
   setup(props, { emit }) {
     const intersect = useIntersect();
-    const { ipcRenderer } = window.electron;
 
     const container = ref(null);
     const currentPackage = ref({
@@ -115,7 +114,7 @@ export default {
           return;
         }
 
-        ipcRenderer
+        window.ipcRenderer
           .invoke(
             'fetch-npm-registry',
             `/-/package/${props.item.name}/dist-tags`
@@ -142,7 +141,10 @@ export default {
             const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
             const cachePackage = lsCache[props.item.name];
 
-            if (Date.now() > cachePackage.lastUpdated + 6.048e8) {
+            if (
+              cachePackage &&
+              Date.now() > cachePackage.lastUpdated + 6.048e8
+            ) {
               delete lsCache[props.item.name];
               localStorage.setItem('packages', lsCache);
               return;

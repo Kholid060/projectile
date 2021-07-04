@@ -1,22 +1,23 @@
-import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, shell } from 'electron';
 import { join } from 'path';
 import { URL } from 'url';
 import { readFile } from 'fs/promises';
-import { shell } from 'electron';
+import { ipcMain } from 'electron-better-ipc';
 import gitconfig from 'gitconfiglocal';
 import fetch from 'node-fetch';
-import nodePty, { shell as nodePtyShell } from './lib/node-pty';
-import store from './lib/electron-store';
+import Store from 'electron-store';
+import * as terminalHandler from './utils/terminal/terminalHandler';
 
 const isSingleInstance = app.requestSingleInstanceLock();
-const allPtyProcess = {};
 
 if (!isSingleInstance) {
   app.quit();
   process.exit(0);
 }
 
+Store.initRenderer();
 app.disableHardwareAcceleration();
+app.allowRendererProcessReuse = false;
 
 /**
  * Workaround for TypeScript bug
@@ -43,8 +44,9 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false, // Use 'ready-to-show' event to show window
     webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
-      contextIsolation: env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
       enableRemoteModule: env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
     },
   });
@@ -98,17 +100,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-function getRepository(path) {
-  return new Promise((resolve) => {
-    gitconfig(path, (err, config) => {
-      if (err) return resolve('');
-
-      const repository = config.remote?.origin?.url ?? '';
-
-      resolve(repository.replace(/\.git$/, ''));
-    });
-  });
-}
 async function getPackageJSON(path) {
   const packageJSONPath = join(path, 'package.json');
   const packageJSON = JSON.parse(await readFile(packageJSONPath));
@@ -116,7 +107,7 @@ async function getPackageJSON(path) {
   return packageJSON;
 }
 
-ipcMain.handle('select-dir', async () => {
+ipcMain.answerRenderer('select-dir', async () => {
   try {
     const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
 
@@ -129,7 +120,7 @@ ipcMain.handle('select-dir', async () => {
     throw new Error('Can\'t find package.json file');
   }
 });
-ipcMain.handle('fetch-npm-registry', async (event, path) => {
+ipcMain.answerRenderer('fetch-npm-registry', async (path) => {
   try {
     const response = await fetch(`https://registry.npmjs.org${path}`);
     const result = await response.json();
@@ -139,33 +130,26 @@ ipcMain.handle('fetch-npm-registry', async (event, path) => {
     throw new Error(error);
   }
 });
-ipcMain.handle('get-packageJSON', (event, path) => getPackageJSON(path));
-ipcMain.handle('get-repository', (event, path) => getRepository(path));
-ipcMain.handle('storage-get', (event, { key, def }) => Promise.resolve(store.get(key, def)));
-ipcMain.handle('storage-set', (event, { key, value }) => Promise.resolve(store.set(key, value)));
-ipcMain.handle('storage-delete', (event, key) => Promise.resolve(store.delete(key)));
-ipcMain.handle('storage-has', (event, key) => Promise.resolve(store.has(key)));
-ipcMain.handle('storage-clear', () => Promise.resolve(store.clear()));
+ipcMain.answerRenderer('get-packageJSON', (path) => getPackageJSON(path));
+ipcMain.answerRenderer('get-repository', (path) => {
+  return new Promise((resolve) => {
+    gitconfig(path, (err, config) => {
+      if (err) return resolve('');
 
-ipcMain.on('node-pty', (event, options = {}) => {
-  if (!options.name) return;
+      const repository = config.remote?.origin?.url ?? '';
 
-  const ptyProcess = nodePty.spawn(nodePtyShell, [], {
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-    env: process.env,
-    ...options,
+      resolve(repository.replace(/\.git$/, ''));
+    });
   });
-
-  if (options.write) ptyProcess.write(options.write);
-
-  ptyProcess.on('data', function(data) {
-    mainWindow.webContents.send('pty-data', { name: options.name, data });
-  });
-
-  allPtyProcess[options.name] = ptyProcess;
 });
+ipcMain.answerRenderer('run-script', (options) => terminalHandler.runScript(options, mainWindow));
+ipcMain.answerRenderer('create-terminal', (options) => terminalHandler.cleanTerminals(options, mainWindow));
+ipcMain.answerRenderer('clean-terminals', terminalHandler.cleanTerminals);
+ipcMain.answerRenderer('write-terminal', terminalHandler.writeTerminal);
+ipcMain.answerRenderer('remove-terminal', terminalHandler.removeTerminal);
+ipcMain.answerRenderer('log-terminal', terminalHandler.logTerminal);
+ipcMain.answerRenderer('kill-terminal', terminalHandler.killTerminal);
+
 
 app.whenReady()
   .then(createWindow)

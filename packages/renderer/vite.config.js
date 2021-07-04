@@ -65,5 +65,26 @@ export default defineConfig({
     },
     emptyOutDir: true,
   },
+  // rollupOptions: {
+  //   external: ['electron', 'electron-store', 'node-pty', 'electron-updater'],
+  //   plugins: [
+  //     {
+  //       name: '@rollup/plugin-cjs2esm',
+  //       transform(code, filename) {
+  //         if (filename.includes('/node_modules/')) {
+  //           return code;
+  //         }
+
+  //         const cjsRegexp = /(const|let|var)[\n\s]+(\w+)[\n\s]*=[\n\s]*require\(["|'](.+)["|']\)/g;
+  //         const res = code.match(cjsRegexp);
+  //         if (res) {
+  //           // const Store = require('electron-store') -> import Store from 'electron-store'
+  //           code = code.replace(cjsRegexp, `import $2 from '$3'`);
+  //         }
+  //         return code;
+  //       },
+  //     },
+  //   ],
+  // },
 });
 

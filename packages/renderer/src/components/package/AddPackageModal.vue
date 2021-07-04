@@ -130,14 +130,12 @@ export default {
       pkgVersion: {},
     });
 
-    const { ipcRenderer } = window.electron;
-
     function searchPackage() {
       if (!state.query || state.loading) return;
 
       state.loading = true;
-      ipcRenderer
-        .invoke('fetch-npm-registry', `/-/v1/search?text=${state.query}`)
+      window.ipcRenderer
+        .callMain('fetch-npm-registry', `/-/v1/search?text=${state.query}`)
         .then(({ total, objects }) => {
           state.searchResults = {
             results: objects,
@@ -163,8 +161,8 @@ export default {
 
       state.pkgVersion[pkg.name] = { loading: true };
 
-      ipcRenderer
-        .invoke('fetch-npm-registry', `/-/package/${pkg.name}/dist-tags`)
+      window.ipcRenderer
+        .callMain('fetch-npm-registry', `/-/package/${pkg.name}/dist-tags`)
         .then((versions) => {
           delete versions.latest;
 

@@ -1,57 +1,26 @@
 import Store from 'electron-store';
 
 const scheme = {
-  projects: {
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        name: { type: 'string' },
-        path: { type: 'string' },
-        repository: { type: 'string' },
-        createdAt: {
-          type: 'number',
-          default: Date.now(),
+  terminals: {
+    type: 'object',
+    patternProperties: {
+      '[a-zA-Z0-9_:]': {
+        type: 'object',
+        properties: {
+          log: { type: 'string' },
+          isKilled: false,
+          isRunning: false,
         },
-        starred: {
-          type: 'boolean',
-          default: false,
-        },
-      },
-    },
-  },
-  boards: {
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        name: { type: 'string' },
-        projectId: { type: 'string' },
-        createdAt: {
-          type: 'number',
-          default: Date.now(),
-        },
-      },
-    },
-  },
-  cards: {
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        name: { type: 'string' },
-        type: { type: 'string' },
-        data: { type: 'object' },
-        boardId: { type: 'string' },
-        description: { type: 'string' },
       },
     },
   },
 };
 
-const store = new Store({ scheme });
+const store = new Store({
+  scheme,
+  watch: true,
+  name: 'terminal-log',
+  fileExtension: 'log',
+});
 console.log(store.path);
 export default store;

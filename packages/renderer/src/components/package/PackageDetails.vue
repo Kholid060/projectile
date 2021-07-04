@@ -121,7 +121,6 @@ export default {
       details: {},
       insight: {},
     });
-    const { ipcRenderer } = window.electron;
 
     function getPackageDetails(name) {
       state.show = true;
@@ -131,7 +130,7 @@ export default {
 
       const encodedName = encodeURIComponent(name);
       const promises = [
-        ipcRenderer.invoke('fetch-npm-registry', `/${encodedName}`),
+        window.ipcRenderer.callMain('fetch-npm-registry', `/${encodedName}`),
         fetch(
           `https://api.npmjs.org/downloads/range/last-month/${encodedName}`
         ),

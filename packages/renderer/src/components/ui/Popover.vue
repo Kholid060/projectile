@@ -66,8 +66,8 @@ export default {
         trigger: props.trigger,
         interactive: true,
         appendTo: () => document.body,
-        onShow: (instance) => {
-          emit('show', instance);
+        onShow: (event) => {
+          emit('show', event);
           isShow.value = true;
         },
         onHide: () => {

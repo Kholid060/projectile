@@ -43,6 +43,8 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'electron',
+        'node-pty',
+        'node-pty-prebuilt-multiarch',
         /**
          * semver can not be bundled
          * @see https://github.com/npm/node-semver/issues/381

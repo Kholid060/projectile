@@ -135,6 +135,7 @@ export default {
       const cacheKey = `api_${route.params.id}`;
 
       try {
+        /* eslint-disable-next-line */
         throw new Error();
         const apiURL = props.repository.replace(
           'github.com/',
