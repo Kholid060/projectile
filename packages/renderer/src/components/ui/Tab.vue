@@ -4,10 +4,9 @@
       value === activeTab
         ? 'border-primary text-blue-400'
         : 'border-transparent',
+      padding,
     ]"
     class="
-      px-4
-      py-3
       focus:ring-0
       border-b-2
       focus:ring-0
@@ -28,7 +27,10 @@ export default {
     value: {
       type: String,
       default: '',
-      required: true,
+    },
+    padding: {
+      type: String,
+      default: 'py-3 px-4',
     },
   },
   setup() {

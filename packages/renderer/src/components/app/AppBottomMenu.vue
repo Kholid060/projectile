@@ -11,11 +11,40 @@
       left-0
       bg-gray-1000
       text-gray-300
-      border-t
     "
+    :class="{ 'border-t': !state.showTerminals }"
   >
-    <v-mdi name="mdi-console" size="20"></v-mdi>
+    <v-mdi
+      name="mdi-console"
+      size="20"
+      class="cursor-pointer"
+      :class="{ 'text-primary': state.showTerminals }"
+      @click="state.showTerminals = !state.showTerminals"
+    ></v-mdi>
+    <ui-popover trigger="click mouseenter" class="ml-2">
+      <template #trigger>
+        <ui-spinner size="18" class="cursor-pointer"></ui-spinner>
+      </template>
+    </ui-popover>
     <div class="flex-grow"></div>
     <v-mdi name="mdi-github" size="20"></v-mdi>
   </div>
+  <bottom-terminals v-show="state.showTerminals"></bottom-terminals>
 </template>
+<script>
+import { shallowReactive } from 'vue';
+import BottomTerminals from './bottom/BottomTerminals.vue';
+
+export default {
+  components: { BottomTerminals },
+  setup() {
+    const state = shallowReactive({
+      showTerminals: true,
+    });
+
+    return {
+      state,
+    };
+  },
+};
+</script>

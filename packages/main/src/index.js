@@ -143,7 +143,7 @@ ipcMain.answerRenderer('get-repository', (path) => {
   });
 });
 ipcMain.answerRenderer('run-script', (options) => terminalHandler.runScript(options, mainWindow));
-ipcMain.answerRenderer('create-terminal', (options) => terminalHandler.cleanTerminals(options, mainWindow));
+ipcMain.answerRenderer('create-terminal', (options) => terminalHandler.createTerminal(options, mainWindow));
 ipcMain.answerRenderer('clean-terminals', terminalHandler.cleanTerminals);
 ipcMain.answerRenderer('write-terminal', terminalHandler.writeTerminal);
 ipcMain.answerRenderer('remove-terminal', terminalHandler.removeTerminal);

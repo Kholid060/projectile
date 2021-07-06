@@ -144,18 +144,22 @@ export default {
     );
 
     function toggleScript() {
-      console.log(terminal.value.status);
       if (terminal.value.status === 'running') {
         window.ipcRenderer.callMain('kill-terminal', terminalId.value);
       } else {
+        const command = props.packageJSON.scripts[state.activeScript];
+
         window.ipcRenderer.callMain('run-script', {
           useChildProcess: true,
           name: terminalId.value,
           cwd: props.project.path,
-          command: props.packageJSON.scripts[state.activeScript],
+          command,
         });
 
-        state.terminals[terminalId.value].status = 'running';
+        state.terminals[terminalId.value] = {
+          log: command + '\n\n',
+          status: 'running',
+        };
       }
     }
 

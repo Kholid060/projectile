@@ -115,7 +115,7 @@ export default {
         }
 
         window.ipcRenderer
-          .invoke(
+          .callMain(
             'fetch-npm-registry',
             `/-/package/${props.item.name}/dist-tags`
           )

@@ -12,7 +12,7 @@
   </div>
 </template>
 <script>
-import { ref, onMounted, watch, shallowRef } from 'vue';
+import { ref, onMounted, watch, shallowRef, onUnmounted } from 'vue';
 import createTippy from '@/utils/createTippy';
 
 export default {
@@ -75,6 +75,9 @@ export default {
         },
         onTrigger: () => emit('trigger'),
       });
+    });
+    onUnmounted(() => {
+      instance.value.destroy();
     });
 
     return {

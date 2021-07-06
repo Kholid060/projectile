@@ -10,6 +10,10 @@
     </option>
   </ui-select>
   <ui-list class="space-y-1 text-gray-200">
+    <ui-list-item tag="router-link" to="/">
+      <v-mdi name="mdi-home-variant-outline" class="mr-2"></v-mdi>
+      <span>Home</span>
+    </ui-list-item>
     <ui-list-item
       v-for="item in items"
       :key="item.id"

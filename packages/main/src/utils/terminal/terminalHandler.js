@@ -7,7 +7,7 @@ export function createTerminal(options, mainWindow) {
   const terminal = new Terminal(options, mainWindow);
 
   terminals[options.name] = terminal;
-
+  console.log(Object.keys(terminals));
   return options.name;
 }
 
@@ -28,8 +28,7 @@ export function writeTerminal({ name, command }) {
 
 export function killTerminal(name) {
   const terminal = terminals[name];
-  console.log(name);
-  console.log(terminal?.isRunning);
+
   if (terminal) {
     terminal.kill();
   }

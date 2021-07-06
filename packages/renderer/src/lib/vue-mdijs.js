@@ -32,6 +32,9 @@ import {
   mdiRecordCircleOutline,
   mdiCheck,
   mdiPause,
+  mdiReload,
+  mdiHomeVariantOutline,
+  mdiBackspaceOutline,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -67,6 +70,9 @@ VMdijs.add({
   mdiRecordCircleOutline,
   mdiCheck,
   mdiPause,
+  mdiReload,
+  mdiHomeVariantOutline,
+  mdiBackspaceOutline,
 });
 
 export default VMdijs;

@@ -34,5 +34,7 @@ export default function (el, options = {}) {
 
   fitAddon.fit();
 
+  Object.assign(terminal, { fitAddon });
+
   return terminal;
 }

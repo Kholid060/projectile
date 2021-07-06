@@ -16,7 +16,7 @@ export default class Terminal {
     this.name = options.name;
     this.cwd = options.cwd || process.cwd();
     this.command = options.command;
-    this.useChildProcess = options.useChildProcess;
+    this.useChildProcess = options.useChildProcess || false;
     this.args = options.args || [];
     this.cols = 80;
     this.rows = 30;
@@ -31,11 +31,12 @@ export default class Terminal {
 
     this.batcher.on('flush', (data) => {
       const log = store.get(`terminals.${this.name}.log`, '');
+
       store.set(`terminals.${this.name}`, {
         log: log + data,
         status: 'running',
       });
-
+      console.log(data);
       ipcMain.callRenderer(this.mainWindow, 'pty-data', {
         data,
         status: 'running',
@@ -46,15 +47,10 @@ export default class Terminal {
     this.run();
   }
 
-  run(shell) {
+  run() {
     if (this.isRunning) return;
 
     this.isRunning = true;
-
-    if (os.platform() === 'win32' && shell !== defaultShell && !this.useChildProcess) {
-      shell = defaultShell;
-      this.args.unshift('/c');
-    }
 
     const env = getPtyEnv(this.details);
 
@@ -66,16 +62,17 @@ export default class Terminal {
       cwd: this.cwd,
       env,
     };
-    console.log(this.useChildProcess);
+
     this.useChildProcess
       ? this.childProcess(ptyArgs, ptyOptions)
-      : this.nodePty(shell, ptyArgs, ptyOptions);
+      : this.nodePty(ptyArgs, ptyOptions);
   }
 
   onData(data) {
     if (!this.isRunning) {
       return;
     }
+
     this.batcher.write(data);
   }
   onExit() {
@@ -97,8 +94,8 @@ export default class Terminal {
     this.pty.on('close', this.onExit.bind(this));
   }
 
-  nodePty(shell, args, options) {
-    this.pty = ptySpawn(shell, args, options);
+  nodePty(args, options) {
+    this.pty = ptySpawn(defaultShell, args, options);
 
     this.pty.on('data', this.onData.bind(this));
     this.pty.on('exit', this.onExit.bind(this));

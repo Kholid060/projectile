@@ -6,6 +6,9 @@
           {{ filter }}
         </option>
       </ui-select>
+      <ui-button v-tooltip="'Reload'" icon class="ml-2" @click="reloadIssues">
+        <v-mdi name="mdi-reload"></v-mdi>
+      </ui-button>
       <div class="flex-grow"></div>
       <ui-input
         v-model="state.search"
@@ -13,7 +16,13 @@
         placeholder="Search..."
       ></ui-input>
     </div>
-    <div class="grid grid-cols-2 gap-2 max-h-96 scroll overflow-auto mb-8">
+    <div v-if="state.loading" class="text-center my-4">
+      <ui-spinner size="36"></ui-spinner>
+    </div>
+    <div
+      v-else
+      class="grid grid-cols-2 gap-2 max-h-96 scroll overflow-auto mb-8"
+    >
       <div
         v-for="issue in issues"
         :key="issue.id"
@@ -130,34 +139,54 @@ export default {
         emit('save');
       });
     }
+    async function fetchIssues() {
+      const apiURL = props.repository.replace(
+        'github.com/',
+        'api.github.com/repos/'
+      );
+
+      const response = await fetch(apiURL + '/issues?state=all&per_page=100');
+      const limit = +response.headers.get('x-ratelimit-remaining');
+
+      if (limit === 0) throw new Error();
+
+      const data = await response.json();
+
+      return data;
+    }
+    async function reloadIssues() {
+      state.loading = true;
+
+      try {
+        state.issues = await fetchIssues();
+        state.loading = false;
+
+        localStorage.setItem(
+          `api_${route.params.id}`,
+          JSON.stringify(state.issues)
+        );
+      } catch (error) {
+        state.loading = false;
+      }
+    }
 
     onMounted(async () => {
       const cacheKey = `api_${route.params.id}`;
 
       try {
-        /* eslint-disable-next-line */
-        throw new Error();
-        const apiURL = props.repository.replace(
-          'github.com/',
-          'api.github.com/repos/'
-        );
-
-        const response = await fetch(apiURL + '/issues?state=all&per_page=100');
-        const limit = +response.headers.get('x-ratelimit-remaining');
-
-        if (limit === 0) throw new Error();
-
-        const data = await response.json();
+        const lsData = localStorage.getItem(cacheKey);
+        let data = lsData ? JSON.parse(lsData) : null;
+        console.log(data);
+        if (!data) {
+          data = await fetchIssues();
+        }
 
         state.issues = data;
+        state.loading = false;
 
         localStorage.setItem(cacheKey, JSON.stringify(data));
       } catch (error) {
-        const lsData = localStorage.getItem(cacheKey) || [];
-        const data = JSON.parse(lsData);
-
-        state.issues = data || [];
-        console.log(data);
+        state.loading = false;
       }
     });
 
@@ -166,6 +195,7 @@ export default {
       issues,
       filters,
       addCard,
+      reloadIssues,
       toggleSelectIssue,
     };
   },
