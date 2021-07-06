@@ -25,21 +25,21 @@
       manual
     >
       <ui-tab
-        v-for="(terminal, index) in state.terminals"
-        :key="terminal.id"
-        :value="terminal.id"
+        v-for="(terminal, id) in state.terminals"
+        :key="id"
+        :value="id"
         class="flex-shrink-0 group flex items-center text-left px-2 w-32 h-10"
         style="border-right-color: rgba(255, 255, 255, 0.05)"
         padding=""
       >
-        <p :title="terminal.name" class="flex-1 text-overflow">
-          {{ terminal.name }}
+        <p :title="terminal.title" class="flex-1 text-overflow">
+          {{ terminal.title || '~' }}
         </p>
         <v-mdi
           name="mdi-close"
           size="18"
           class="invisible group-hover:visible text-gray-200"
-          @click.stop="removeTerminal(terminal.id, index)"
+          @click.stop="removeTerminal(id, index)"
         ></v-mdi>
       </ui-tab>
       <button
@@ -50,48 +50,18 @@
         <v-mdi name="mdi-plus"></v-mdi>
       </button>
     </ui-tabs>
-    <!-- <div class="flex items-center p-2">
-      <select
-        class="text-sm bg-gray-100 rounded-md bg-opacity-5 p-1 capitalize"
-        v-model="state.activeTerminal"
-      >
-        <option
-          v-for="terminal in state.terminals"
-          :key="terminal.id"
-          :value="terminal.id"
-          class="bg-gray-700"
-        >
-          {{ terminal.name }}
-        </option>
-      </select>
-      <v-mdi
-        class="ml-2 cursor-pointer focus:outline-none"
-        name="mdi-plus"
-        @click="createTerminal"
-        v-tooltip="'Add terminal'"
-      ></v-mdi>
-      <div class="flex-grow"></div>
-      <v-mdi
-        class="mr-2 cursor-pointer text-gray-200"
-        size="20"
-        name="mdi-backspace-outline"
-        v-tooltip="'Clear logs'"
-      ></v-mdi>
-      <v-mdi
-        class="mr-2 cursor-pointer text-gray-200"
-        name="mdi-delete-outline"
-        v-tooltip="'Delete terminal'"
-      ></v-mdi>
-      <input
-        class="bg-gray-100 bg-opacity-5 py-1 px-2 text-sm rounded-md transition"
-        placeholder="Search..."
-      />
-    </div> -->
-    <bottom-terminal :active-terminal="state.activeTerminal"></bottom-terminal>
+    <bottom-terminal
+      v-if="state.activeTerminal && Object.keys(state.terminals).length !== 0"
+      @title="updateTerminalTitle"
+      :active-terminal="state.activeTerminal"
+    ></bottom-terminal>
+    <p class="my-4 text-center text-gray-200" v-else>
+      No terminal is selected
+    </p>
   </div>
 </template>
 <script>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { nanoid } from 'nanoid';
 import BottomTerminal from './BottomTerminal.vue';
 
@@ -102,14 +72,18 @@ export default {
 
     const container = ref(null);
     const state = reactive({
-      terminals: [],
+      terminals: {},
       activeTerminal: '',
     });
+
+    const terminal = computed(() => state.terminals[state.activeTerminal]);
 
     function mousemoveEvent(event) {
       const height = window.innerHeight - event.clientY - 20;
 
       if (event.clientY < 50 || height < 80) return;
+
+      localStorage.setItem('terminal-height', height);
 
       container.value.style.height = height + 'px';
     }
@@ -134,10 +108,9 @@ export default {
           cwd: window.homedir,
         })
         .then(() => {
-          state.terminals.push({
-            id,
-            name: `Terminal ${terminalId}`,
-          });
+          state.terminals[id] = {
+            title: `Terminal ${terminalId}`,
+          };
 
           state.activeTerminal = id;
         });
@@ -149,42 +122,55 @@ export default {
           clean: true,
         })
         .then(() => {
-          state.terminals.splice(index, 1);
+          delete state.terminals[id];
 
-          if (state.terminals.length >= 1 && state.activeTerminal === id) {
-            state.activeTerminal = state.terminals[0].id;
+          const terminalIds = Object.keys(state.terminals);
+
+          if (terminalIds.length >= 1 && state.activeTerminal === id) {
+            state.activeTerminal = terminalIds[0];
           }
-
-          window.ipcRenderer.callMain('log-terminal').then((value) => {
-            console.log(id);
-            console.log(value);
-          });
         });
+    }
+    function updateTerminalTitle(value) {
+      const isValidValue = (value.replace(/\s/g, '')).length >= 1;
+
+      state.terminals[state.activeTerminal].title = isValidValue ? value : '~';
     }
 
     onMounted(() => {
+      const cacheHeight = localStorage.getItem('terminal-height');
+
+      if (cacheHeight) {
+        container.value.style.height = cacheHeight + 'px';
+      }
+
       window.ipcRenderer.callMain('log-terminal').then((logs) => {
         Object.entries(logs).forEach(([key, value], index) => {
-          if (key.startsWith('terminal')) {
+          if (key.startsWith('terminal') && value.log) {
             terminalId += 1;
 
-            state.terminals.push({
-              id: key,
-              name: `Terminal ${terminalId}`,
-              log: value.log,
-            });
-            console.log(state.terminals);
+            state.terminals[key] = {
+              title: `Terminal ${terminalId}`,
+            };
           }
         });
+
+        const activeTerminal = localStorage.getItem('active-terminal');
+
+        if (activeTerminal && state.terminals[activeTerminal]) {
+          state.activeTerminal = activeTerminal;
+        }
       });
     });
 
     return {
       state,
+      terminal,
       container,
       initResize,
       removeTerminal,
       createTerminal,
+      updateTerminalTitle,
     };
   },
 };

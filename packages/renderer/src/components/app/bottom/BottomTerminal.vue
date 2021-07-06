@@ -6,7 +6,7 @@
   ></div>
 </template>
 <script>
-import { ref, onMounted, onUnmounted, shallowReactive } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import xterm from '@/lib/xterm';
 import { debounce } from '@/utils/helper';
 
@@ -17,7 +17,7 @@ export default {
       default: '',
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     let observer = null;
     let terminal = null;
     const blackListKeys = [
@@ -25,10 +25,6 @@ export default {
     ];
 
     const container = ref(null);
-    const commandInput = shallowReactive({
-      text: '',
-      index: 0,
-    });
 
     window.ipcRenderer.answerMain('pty-data', ({ data, status, name }) => {
       if (!terminal) return;
@@ -36,23 +32,35 @@ export default {
       terminal.write(data);
     });
 
+    function insertCacheLogs() {
+      if (!terminal) return;
+
+      localStorage.setItem('active-terminal', props.activeTerminal);
+
+      window.ipcRenderer.callMain('log-terminal', props.activeTerminal).then((data) => {
+        terminal.reset();
+        terminal.write(data.log);
+      });
+    }
+
+    watch(() => props.activeTerminal, insertCacheLogs);
+
     onMounted(() => {
       terminal = xterm(container.value, {
         theme: { background: '#0e131f' },
       });
 
-      terminal.onKey(
-        debounce(({ key }) => {
-          window.ipcRenderer.callMain('write-terminal', {
-            name: props.activeTerminal,
-            command: key,
-          });
-        }),
-        200
-      );
+      insertCacheLogs();
+
+      terminal.onKey(({ key }) => {
+        window.ipcRenderer.callMain('write-terminal', {
+          name: props.activeTerminal,
+          command: key,
+        })
+      });
 
       terminal.onTitleChange((title) => {
-        console.log('title', title);
+        emit('title', title);
       });
 
       observer = new ResizeObserver(

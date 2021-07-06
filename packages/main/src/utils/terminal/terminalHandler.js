@@ -55,7 +55,7 @@ export async function cleanTerminals() {
 }
 
 export function logTerminal(id) {
-  if (!id) return store.get('terminals');
+  if (!id) return store.get('terminals', {});
 
   return store.get(`terminals.${id}`, { log: '', status: 'idle' });
 }

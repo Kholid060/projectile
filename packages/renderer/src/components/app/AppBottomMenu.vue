@@ -29,7 +29,7 @@
     <div class="flex-grow"></div>
     <v-mdi name="mdi-github" size="20"></v-mdi>
   </div>
-  <bottom-terminals v-show="state.showTerminals"></bottom-terminals>
+  <bottom-terminals v-if="state.showTerminals"></bottom-terminals>
 </template>
 <script>
 import { shallowReactive } from 'vue';
