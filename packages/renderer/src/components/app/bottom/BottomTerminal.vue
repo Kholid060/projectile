@@ -20,27 +20,29 @@ export default {
   setup(props, { emit }) {
     let observer = null;
     let terminal = null;
-    const blackListKeys = [
-      9, 13, 16, 17, 18, 19, 20, 27, 35, 36, 37, 38, 39, 40, 91, 93, 224,
-    ];
 
     const container = ref(null);
 
-    window.ipcRenderer.answerMain('terminal-pty-data', ({ data, status, name }) => {
-      if (!terminal || !name.startsWith('terminal')) return;
+    const ptyDataListener = window.ipcRenderer.answerMain(
+      'terminal-pty-data',
+      ({ data, name }) => {
+        if (!terminal || !name.startsWith('terminal')) return;
 
-      terminal.write(data);
-    });
+        terminal.write(data);
+      }
+    );
 
     function insertCacheLogs() {
       if (!terminal) return;
 
       localStorage.setItem('active-terminal', props.activeTerminal);
 
-      window.ipcRenderer.callMain('log-terminal', props.activeTerminal).then((data) => {
-        terminal.reset();
-        terminal.write(data.log);
-      });
+      window.ipcRenderer
+        .callMain('log-terminal', props.activeTerminal)
+        .then((data) => {
+          terminal.reset();
+          terminal.write(data.log);
+        });
     }
 
     watch(() => props.activeTerminal, insertCacheLogs);
@@ -56,7 +58,7 @@ export default {
         window.ipcRenderer.callMain('write-terminal', {
           name: props.activeTerminal,
           command: key,
-        })
+        });
       });
 
       terminal.onTitleChange((title) => {
@@ -77,6 +79,8 @@ export default {
     });
     onUnmounted(() => {
       if (observer) observer.disconnect();
+
+      ptyDataListener();
     });
 
     return {

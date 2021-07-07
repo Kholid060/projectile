@@ -22,11 +22,7 @@
       :class="{ 'text-primary': state.showTerminals }"
       @click="state.showTerminals = !state.showTerminals"
     ></v-mdi>
-    <ui-popover trigger="click mouseenter" class="ml-2">
-      <template #trigger>
-        <ui-spinner size="18" class="cursor-pointer"></ui-spinner>
-      </template>
-    </ui-popover>
+    <bottom-install-packages></bottom-install-packages>
     <div class="flex-grow"></div>
     <v-mdi name="mdi-github" size="20"></v-mdi>
   </div>
@@ -35,9 +31,10 @@
 <script>
 import { shallowReactive } from 'vue';
 import BottomTerminals from './bottom/BottomTerminals.vue';
+import BottomInstallPackages from './bottom/BottomInstallPackages.vue';
 
 export default {
-  components: { BottomTerminals },
+  components: { BottomTerminals, BottomInstallPackages },
   setup() {
     const state = shallowReactive({
       showTerminals: false,

@@ -25,6 +25,7 @@
           v-for="item in packages"
           :key="item.id"
           :cache="state.packageCache"
+          :project="project"
           v-bind="{ item }"
           @retrieved="state.packageCache[item.name] = $event"
         ></package-card>

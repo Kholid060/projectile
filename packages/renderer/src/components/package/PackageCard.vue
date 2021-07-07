@@ -48,18 +48,31 @@
         </span>
       </p>
     </div>
-    <ui-button v-if="!currentPackage.isLatest" icon class="mr-2">
+    <ui-button
+      v-if="!currentPackage.isLatest"
+      v-tooltip="'Install latest version'"
+      icon
+      class="mr-2"
+      @click="updatePackage('install')"
+    >
       <v-mdi name="mdi-download-outline"></v-mdi>
     </ui-button>
-    <ui-button icon class="text-red-500">
+    <ui-button
+      v-tooltip="'Delete package'"
+      icon
+      class="text-red-500"
+      @click="updatePackage('delete')"
+    >
       <v-mdi name="mdi-delete-outline"></v-mdi>
     </ui-button>
   </div>
 </template>
 <script>
 import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import maxSatisfying from 'semver/ranges/max-satisfying';
 import semverLt from 'semver/functions/lt';
+import semverValid from 'semver/functions/valid';
 import emitter from 'tiny-emitter/instance';
 import { useIntersect } from '@/composable/intersect';
 
@@ -73,10 +86,15 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    project: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   emits: ['retrieved'],
   setup(props, { emit }) {
     const intersect = useIntersect();
+    const store = useStore();
 
     const container = ref(null);
     const currentPackage = ref({
@@ -104,6 +122,23 @@ export default {
     }
     function showDetails() {
       emitter.emit('package-details', props.item.name);
+    }
+    function updatePackage(type) {
+      const validVersion = semverValid(currentPackage.value.latestVersion);
+
+      if (!validVersion) return;
+
+      store.dispatch('packagesQueue', {
+        type: 'add',
+        data: {
+          type,
+          id: `package__${props.project.id}__${props.item.name}`,
+          name: props.item.name,
+          version: validVersion,
+          path: props.project.path,
+          status: 'idle',
+        },
+      });
     }
 
     onMounted(() => {
@@ -165,6 +200,7 @@ export default {
     return {
       container,
       showDetails,
+      updatePackage,
       currentPackage,
     };
   },

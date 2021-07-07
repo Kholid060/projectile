@@ -33,11 +33,6 @@ export default class Terminal {
 
     this.batcher.on('flush', (data) => {
       const log = store.get(`terminals.${this.name}.log`, '');
-      let eventName = 'pty-data';
-
-      if (this.type) {
-        eventName = `${this.type}-${eventName}`;
-      }
 
       store.set(`terminals.${this.name}`, {
         log: log + data,

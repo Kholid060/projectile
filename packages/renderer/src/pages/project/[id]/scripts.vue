@@ -3,7 +3,11 @@
     <div class="flex items-center mb-6">
       <span
         class="h-4 w-4 rounded-full flex-shrink-0 mr-2"
-        :class="state.status[terminalId] === 'running' ? 'bg-green-500' : 'bg-gray-500'"
+        :class="
+          state.status[terminalId] === 'running'
+            ? 'bg-green-500'
+            : 'bg-gray-500'
+        "
       ></span>
       <p class="text-2xl leading-none mr-4 text-overflow font-semibold">
         {{ state.activeScript }}
@@ -53,17 +57,24 @@
       <div class="flex-1 h-full flex-shrink-0 overflow-auto">
         <ui-button
           class="mr-4"
-          :variant="state.status[terminalId] === 'running' ? 'danger' : 'primary'"
+          :variant="
+            state.status[terminalId] === 'running' ? 'danger' : 'primary'
+          "
           @click="toggleScript"
         >
           <v-mdi
             :name="
-              state.status[terminalId] === 'running' ? 'mdi-pause' : 'mdi-play-outline'
+              state.status[terminalId] === 'running'
+                ? 'mdi-pause'
+                : 'mdi-play-outline'
             "
             class="mr-1 -ml-1"
           ></v-mdi>
           <span
-            >{{ state.status[terminalId] === 'running' ? 'Stop' : 'Run' }} script</span
+            >{{
+              state.status[terminalId] === 'running' ? 'Stop' : 'Run'
+            }}
+            script</span
           >
         </ui-button>
         <ui-button>
@@ -97,7 +108,7 @@
   </div>
 </template>
 <script>
-import { watch, reactive, computed, onMounted, onUnmounted, ref } from 'vue';
+import { watch, reactive, computed, onUnmounted, ref } from 'vue';
 
 export default {
   props: {
@@ -127,7 +138,7 @@ export default {
       'script-pty-data',
       ({ data, status, name }) => {
         if (name === state.activeScript) {
-          state.logs += data
+          state.logs += data;
 
           setTimeout(() => {
             if (container.value && data.name === terminalId.value) {
@@ -167,12 +178,14 @@ export default {
     }
 
     watch(terminalId, (value) => {
-      window.ipcRenderer.callMain('log-terminal', value).then(({ log, status }) => {
-        state.logs = '';
+      window.ipcRenderer
+        .callMain('log-terminal', value)
+        .then(({ log, status }) => {
+          state.logs = '';
 
-        state.logs += log;
-        state.status[value] = status;
-      });
+          state.logs += log;
+          state.status[value] = status;
+        });
     });
     watch(
       () => props.packageJSON,

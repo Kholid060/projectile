@@ -52,12 +52,10 @@
     </ui-tabs>
     <bottom-terminal
       v-if="state.activeTerminal && Object.keys(state.terminals).length !== 0"
-      @title="updateTerminalTitle"
       :active-terminal="state.activeTerminal"
+      @title="updateTerminalTitle"
     ></bottom-terminal>
-    <p class="my-4 text-center text-gray-200" v-else>
-      No terminal is selected
-    </p>
+    <p v-else class="my-4 text-center text-gray-200">No terminal is selected</p>
   </div>
 </template>
 <script>
@@ -87,12 +85,12 @@ export default {
 
       container.value.style.height = height + 'px';
     }
-    function mouseupEvent(event) {
+    function mouseupEvent() {
       document.body.classList.remove('select-none');
       document.documentElement.removeEventListener('mousemove', mousemoveEvent);
       document.documentElement.removeEventListener('mouseup', mouseupEvent);
     }
-    function initResize(event) {
+    function initResize() {
       document.body.classList.add('select-none');
       document.documentElement.addEventListener('mousemove', mousemoveEvent);
       document.documentElement.addEventListener('mouseup', mouseupEvent);
@@ -116,7 +114,7 @@ export default {
           state.activeTerminal = id;
         });
     }
-    function removeTerminal(id, index) {
+    function removeTerminal(id) {
       window.ipcRenderer
         .callMain('remove-terminal', {
           name: id,
@@ -133,7 +131,7 @@ export default {
         });
     }
     function updateTerminalTitle(value) {
-      const isValidValue = (value.replace(/\s/g, '')).length >= 1;
+      const isValidValue = value.replace(/\s/g, '').length >= 1;
 
       state.terminals[state.activeTerminal].title = isValidValue ? value : '~';
     }
@@ -146,7 +144,7 @@ export default {
       }
 
       window.ipcRenderer.callMain('log-terminal').then((logs) => {
-        Object.entries(logs).forEach(([key, value], index) => {
+        Object.entries(logs).forEach(([key, value]) => {
           if (key.startsWith('terminal') && value.log) {
             terminalId += 1;
 
