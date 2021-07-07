@@ -26,8 +26,8 @@ export default {
 
     const container = ref(null);
 
-    window.ipcRenderer.answerMain('pty-data', ({ data, status, name }) => {
-      if (!terminal) return;
+    window.ipcRenderer.answerMain('terminal-pty-data', ({ data, status, name }) => {
+      if (!terminal || !name.startsWith('terminal')) return;
 
       terminal.write(data);
     });

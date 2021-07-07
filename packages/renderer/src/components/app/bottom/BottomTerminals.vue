@@ -105,6 +105,7 @@ export default {
       window.ipcRenderer
         .callMain('create-terminal', {
           name: id,
+          type: 'terminal',
           cwd: window.homedir,
         })
         .then(() => {

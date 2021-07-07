@@ -15,9 +15,10 @@
     :class="{ 'border-t': !state.showTerminals }"
   >
     <v-mdi
+      v-tooltip="'Terminals'"
       name="mdi-console"
       size="20"
-      class="cursor-pointer"
+      class="cursor-pointer focus:outline-none"
       :class="{ 'text-primary': state.showTerminals }"
       @click="state.showTerminals = !state.showTerminals"
     ></v-mdi>
@@ -39,7 +40,7 @@ export default {
   components: { BottomTerminals },
   setup() {
     const state = shallowReactive({
-      showTerminals: true,
+      showTerminals: false,
     });
 
     return {

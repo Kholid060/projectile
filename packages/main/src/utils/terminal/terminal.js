@@ -10,6 +10,7 @@ import store from '../../lib/electron-store';
 import { DataBatcher} from './dataBatcher';
 
 const pathDelimiter = os.platform() === 'win32' ? ';' : ':';
+const eventPrefix = (event, prefix) => prefix ? `${prefix}-${event}` : event;
 
 export default class Terminal {
   constructor(options = {}, mainWindow) {
@@ -18,6 +19,7 @@ export default class Terminal {
     this.command = options.command;
     this.useChildProcess = options.useChildProcess || false;
     this.args = options.args || [];
+    this.type = options.type;
     this.cols = 80;
     this.rows = 30;
 
@@ -31,13 +33,18 @@ export default class Terminal {
 
     this.batcher.on('flush', (data) => {
       const log = store.get(`terminals.${this.name}.log`, '');
+      let eventName = 'pty-data';
+
+      if (this.type) {
+        eventName = `${this.type}-${eventName}`;
+      }
 
       store.set(`terminals.${this.name}`, {
         log: log + data,
         status: 'running',
       });
-      console.log(data);
-      ipcMain.callRenderer(this.mainWindow, 'pty-data', {
+      console.log(eventPrefix('pty-data', this.type));
+      ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-data', this.type), {
         data,
         status: 'running',
         name: this.name,
@@ -76,7 +83,7 @@ export default class Terminal {
     this.batcher.write(data);
   }
   onExit() {
-    ipcMain.callRenderer(this.mainWindow, 'pty-exit', { name: this.name });
+    ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-exit', this.type), { name: this.name });
     store.set(`terminals.${this.name}.status`, 'idle');
 
     this.isRunning = false;

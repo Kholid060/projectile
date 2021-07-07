@@ -65,6 +65,10 @@ const createWindow = async () => {
     }
   });
 
+  mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow.setMenuBarVisibility(false);
+  });
+
   // mainWindow?.webContents.on('new-window', (event, url) => {
   //   event.preventDefault();
 

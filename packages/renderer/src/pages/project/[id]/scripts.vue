@@ -3,7 +3,7 @@
     <div class="flex items-center mb-6">
       <span
         class="h-4 w-4 rounded-full flex-shrink-0 mr-2"
-        :class="terminal.status === 'running' ? 'bg-green-500' : 'bg-gray-500'"
+        :class="state.status[terminalId] === 'running' ? 'bg-green-500' : 'bg-gray-500'"
       ></span>
       <p class="text-2xl leading-none mr-4 text-overflow font-semibold">
         {{ state.activeScript }}
@@ -11,6 +11,7 @@
       <div class="flex-grow"></div>
       <p
         v-if="packageJSON.scripts"
+        :title="packageJSON?.scripts[state.activeScript]"
         class="
           bg-black bg-opacity-20
           text-gray-200
@@ -39,7 +40,7 @@
           >
             <span
               :class="[
-                state.terminals[`${project.id}__${name}`]?.status === 'running'
+                state.status[`script__${project.id}__${name}`] === 'running'
                   ? 'bg-green-500'
                   : 'bg-gray-500',
               ]"
@@ -52,17 +53,17 @@
       <div class="flex-1 h-full flex-shrink-0 overflow-auto">
         <ui-button
           class="mr-4"
-          :variant="terminal.status === 'running' ? 'danger' : 'primary'"
+          :variant="state.status[terminalId] === 'running' ? 'danger' : 'primary'"
           @click="toggleScript"
         >
           <v-mdi
             :name="
-              terminal.status === 'running' ? 'mdi-pause' : 'mdi-play-outline'
+              state.status[terminalId] === 'running' ? 'mdi-pause' : 'mdi-play-outline'
             "
             class="mr-1 -ml-1"
           ></v-mdi>
           <span
-            >{{ terminal.status === 'running' ? 'Stop' : 'Run' }} script</span
+            >{{ state.status[terminalId] === 'running' ? 'Stop' : 'Run' }} script</span
           >
         </ui-button>
         <ui-button>
@@ -89,7 +90,7 @@
             whitespace-pre
           "
         >
-          {{ state.terminals[terminalId]?.log }}
+          {{ state.logs }}
         </div>
       </div>
     </div>
@@ -112,88 +113,77 @@ export default {
   setup(props) {
     const container = ref(null);
     const state = reactive({
-      terminals: {},
+      logs: '',
+      status: {},
+      parameters: {},
       activeScript: '',
     });
 
     const terminalId = computed(
-      () => `${props.project.id}__${state.activeScript}`
-    );
-    const terminal = computed(
-      () => state.terminals[terminalId.value] || { status: 'idle', log: '' }
+      () => `script__${props.project.id}__${state.activeScript}`
     );
 
     const ptyDataListener = window.ipcRenderer.answerMain(
-      'pty-data',
+      'script-pty-data',
       ({ data, status, name }) => {
-        state.terminals[name].log += data;
-        state.terminals[name].status = status;
+        if (name === state.activeScript) {
+          state.logs += data
 
-        setTimeout(() => {
-          if (container.value && data.name === terminalId.value) {
-            container.value.scrollTop = container.value.scrollHeight + 200;
-          }
-        }, 100);
+          setTimeout(() => {
+            if (container.value && data.name === terminalId.value) {
+              container.value.scrollTop = container.value.scrollHeight + 200;
+            }
+          }, 100);
+        }
+
+        state.status[name] = status;
       }
     );
     const ptyExitListener = window.ipcRenderer.answerMain(
-      'pty-exit',
+      'script-pty-exit',
       ({ name }) => {
-        state.terminals[name].status = 'idle';
+        state.status[name] = 'idle';
       }
     );
 
     function toggleScript() {
-      if (terminal.value.status === 'running') {
+      if (state.status[terminalId.value] === 'running') {
         window.ipcRenderer.callMain('kill-terminal', terminalId.value);
       } else {
         const command = props.packageJSON.scripts[state.activeScript];
 
         window.ipcRenderer.callMain('run-script', {
           useChildProcess: true,
+          type: 'script',
           name: terminalId.value,
           cwd: props.project.path,
           command,
         });
 
-        state.terminals[terminalId.value] = {
-          log: command + '\n\n',
-          status: 'running',
-        };
+        state.status[terminalId.value] = 'running';
+
+        if (!state.logs) state.logs = command + '\n\n';
       }
     }
 
+    watch(terminalId, (value) => {
+      window.ipcRenderer.callMain('log-terminal', value).then(({ log, status }) => {
+        state.logs = '';
+
+        state.logs += log;
+        state.status[value] = status;
+      });
+    });
     watch(
       () => props.packageJSON,
       ({ scripts }) => {
         if (!scripts) return;
 
-        const keys = Object.keys(scripts);
-
-        keys.forEach((key) => {
-          const id = `${props.project.id}__${key}`;
-
-          if (state.terminals[id]) return;
-
-          window.ipcRenderer.callMain('log-terminal', id).then((data) => {
-            console.log(id, data);
-            state.terminals[id] = data;
-          });
-        });
-
-        state.activeScript = keys[0];
+        state.activeScript = Object.keys(scripts)[0];
       },
       { immediate: true }
     );
 
-    onMounted(() => {
-      // to do: get data from lo
-      // let count = 0;
-      // setInterval(() => {
-      //   count += 1;
-      //   state.terminals += `Count: ${count} \n`;
-      // }, 500);
-    });
     onUnmounted(() => {
       ptyDataListener();
       ptyExitListener();
@@ -201,7 +191,6 @@ export default {
 
     return {
       state,
-      terminal,
       container,
       terminalId,
       toggleScript,
