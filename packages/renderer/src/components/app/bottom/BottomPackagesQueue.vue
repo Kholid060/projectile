@@ -21,7 +21,7 @@
               ? 'text-blue-400'
               : 'text-gray-200',
           ]"
-          :title="getText(pkg) + ` at ${pkg.path}`"
+          :title="getText(pkg)"
         >
           {{ getText(pkg) }}
         </p>
@@ -48,37 +48,60 @@ export default {
     const ptyDataListener = window.ipcRenderer.answerMain(
       'package-pty-data',
       (data) => {
-        console.log(data);
+        console.log('pak', data.data);
       }
     );
     const ptyExitListener = window.ipcRenderer.answerMain(
       'package-pty-exit',
-      (data) => {
-        console.log(data, 'exit');
+      ({ name }) => {
+        console.log('exit', name);
+        window.ipcRenderer
+        .callMain('remove-terminal', {
+          name,
+          clean: true,
+        })
+        .then(() => {
+          store.dispatch('nextPackageQueue');
+        });
       }
     );
 
     const unsubscribe = store.subscribe(({ type, payload }, state) => {
       if (type === 'addPackagesQueue' && !state.currentQueue) {
+        console.log('update queue');
         store.commit('updateState', {
           key: 'currentQueue',
           value: payload.id,
         });
-        // const command = payload.data.type === 'install' ? 'install' : 'remove';
-
-        // window.ipcRenderer.callMain('run-script', {
-        //   useChildProcess: true,
-        //   type: 'package',
-        //   name: payload.id,
-        //   cwd: payload.path,
-        //   command: (),
-        // });
       }
     });
     const unwatch = store.watch(
       (state) => state.currentQueue,
-      (value) => {
-        console.log(value, 'watch');
+      async (value) => {
+        try {
+          const pkg = store.state.packagesQueue.find(({ id }) => id === value);
+
+          if (!pkg) return;
+
+          const pkgManager = await window.ipcRenderer.callMain('get-package-manager', pkg.path)
+          const actions = {
+            install: pkgManager === 'npm' ? 'install' : 'add',
+            remove: pkgManager === 'npm' ? 'uninstall' : 'remove',
+          };
+          const param = pkg.location === 'devDeps' ? '-D' : '';
+          const pkgVersion = pkg.type === 'install' ? `@${pkg.version}` : '';
+          const command = `${pkgManager} ${actions[pkg.type]} ${pkg.name}${pkgVersion} ${param}`;
+
+          await window.ipcRenderer.callMain('run-script', {
+            useChildProcess: true,
+            type: 'package',
+            name: pkg.id,
+            cwd: pkg.path,
+            command,
+          });
+        } catch (error) {
+          console.error(error);
+        }
       }
     );
 
@@ -87,20 +110,15 @@ export default {
 
       if (data.type === 'install') text += `@${data.version}`;
 
-      return text;
+      return text + ` at ${data.path}`;
     }
     function abortAction(id) {
-      window.ipcRenderer
-        .callMain('remove-terminal', {
-          name: id,
-          clean: true,
-        })
-        .then(() => {
-          store.dispatch('packagesQueue', {
-            id,
-            type: 'delete',
-          });
+      window.ipcRenderer.callMain('kill-terminal', id).then(() => {
+        store.dispatch('packagesQueue', {
+          id,
+          type: 'delete',
         });
+      });
     }
 
     onUnmounted(() => {

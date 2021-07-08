@@ -4,10 +4,8 @@ import { exec } from 'child_process';
 import { homedir } from 'os';
 import osLocale from 'os-locale';
 import storage from './lib/electron-store';
-const pty = require('node-pty-prebuilt-multiarch');
 
 const api = {
-  pty,
   storage,
   ipcRenderer,
   osLocale: osLocale.sync(),

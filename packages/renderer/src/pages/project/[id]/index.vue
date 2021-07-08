@@ -6,19 +6,25 @@
       @addPackage="state.addPackage = true"
     ></package-nav>
     <div class="flex items-start space-x-2 overflow-auto scroll flex-1">
-      <div class="w-64 p-5 border rounded-lg sticky top-0">
-        <p class="text-gray-300 mb-3">Filter by</p>
-        <ui-list class="space-y-1">
-          <ui-list-item
-            v-for="filter in packageFilters"
-            :key="filter.id"
-            :active="state.activeFilter === filter.id"
-            class="cursor-pointer list-transition"
-            @click="state.activeFilter = filter.id"
-          >
-            {{ filter.name }}
-          </ui-list-item>
-        </ui-list>
+      <div class="w-64 sticky top-0">
+        <div class="p-5 border rounded-lg">
+          <p class="text-gray-300 mb-3">Filter by</p>
+          <ui-list class="space-y-1">
+            <ui-list-item
+              v-for="filter in packageFilters"
+              :key="filter.id"
+              :active="state.activeFilter === filter.id"
+              class="cursor-pointer list-transition"
+              @click="state.activeFilter = filter.id"
+            >
+              {{ filter.name }}
+            </ui-list-item>
+          </ui-list>
+        </div>
+        <button class="mx-2 mt-4 text-gray-300" @click="$emit('refresh')">
+          <v-mdi name="mdi-reload" class="mr-1"></v-mdi>
+          Refresh list
+        </button>
       </div>
       <div class="flex-1 px-5 space-y-2 pb-5">
         <package-card
@@ -42,6 +48,7 @@
 </route>
 <script>
 import { computed, watch, shallowReactive, onUnmounted } from 'vue';
+import emitter from 'tiny-emitter';
 import PackageCard from '@/components/package/PackageCard.vue';
 import AddPackageModal from '@/components/package/AddPackageModal.vue';
 import PackageDetails from '@/components/package/PackageDetails.vue';
@@ -59,6 +66,7 @@ export default {
       default: () => ({}),
     },
   },
+  emits: ['refresh'],
   setup(props) {
     const packageFilters = [
       { name: 'All', id: 'all' },
@@ -95,6 +103,7 @@ export default {
         name.toLocaleLowerCase().match(state.search.toLocaleLowerCase())
       );
     }
+
     watch(
       () => props.packageJSON,
       (config) => {

@@ -22,7 +22,7 @@
       :class="{ 'text-primary': state.showTerminals }"
       @click="state.showTerminals = !state.showTerminals"
     ></v-mdi>
-    <bottom-install-packages></bottom-install-packages>
+    <bottom-packages-queue></bottom-packages-queue>
     <div class="flex-grow"></div>
     <v-mdi name="mdi-github" size="20"></v-mdi>
   </div>
@@ -31,10 +31,10 @@
 <script>
 import { shallowReactive } from 'vue';
 import BottomTerminals from './bottom/BottomTerminals.vue';
-import BottomInstallPackages from './bottom/BottomInstallPackages.vue';
+import BottomPackagesQueue from './bottom/BottomPackagesQueue.vue';
 
 export default {
-  components: { BottomTerminals, BottomInstallPackages },
+  components: { BottomTerminals, BottomPackagesQueue },
   setup() {
     const state = shallowReactive({
       showTerminals: false,

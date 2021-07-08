@@ -22,8 +22,7 @@
   "dependencies": {
     "@mdi/js": "^5.9.55",
     "@vuex-orm/core": "^0.36.4",
-    "@vuex-orm/plugin-search": "^0.23.4",
-    "dayjs": "^1.10.5",
+    "dayjs": "1.10.6",
     "deepmerge": "^4.2.2",
     "default-shell": "^1.0.1",
     "electron-better-ipc": "^2.0.1",
@@ -37,7 +36,6 @@
     "nanoid": "^3.1.23",
     "node-fetch": "^2.6.1",
     "node-pty": "^0.10.1",
-    "node-pty-prebuilt-multiarch": "^0.10.1-pre.4",
     "os-locale": "^5.0.0",
     "semver": "^7.3.5",
     "shell-env": "^3.0.1",

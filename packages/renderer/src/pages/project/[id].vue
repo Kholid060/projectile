@@ -8,6 +8,7 @@
     <router-view
       v-if="project && packageJSON"
       v-bind="{ project, packageJSON }"
+      @refresh="getPackageJSON"
     ></router-view>
   </div>
 </template>
@@ -41,6 +42,7 @@ export default {
     return {
       project,
       packageJSON,
+      getPackageJSON,
     };
   },
 };

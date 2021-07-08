@@ -65,7 +65,11 @@
               {{ item.package.description }}
             </p>
           </div>
-          <ui-popover @show="fetchPkgVersions(item.package)">
+          <ui-spinner
+            v-if="$store.getters.isInQueue(generatePkgId($route.params.id, item.package.name))"
+            class="mr-2"
+          ></ui-spinner>
+          <ui-popover @show="fetchPkgVersions(item.package)" v-else>
             <template #trigger>
               <ui-button v-tooltip="'Install package'" icon class="mr-2">
                 <v-mdi name="mdi-download-outline"></v-mdi>
@@ -85,9 +89,11 @@
                     v-for="(version, name) in state.pkgVersion[
                       item.package.name
                     ].versions"
+                    v-close-popover
                     :key="name"
                     small
                     class="cursor-pointer"
+                    @click="installPackage({ name: item.package.name, version }, $route.params.id)"
                   >
                     <p class="w-6/12 text-overflow pr-2" :title="name">
                       {{ name }}
@@ -117,11 +123,15 @@
 </template>
 <script>
 import { reactive } from 'vue';
+import { useStore } from 'vuex';
 import emitter from 'tiny-emitter/instance';
 import { getPackageIcon } from '@/utils/helper';
+import Project from '@/models/project';
 
 export default {
   setup() {
+    const store = useStore();
+
     const state = reactive({
       query: '',
       loading: false,
@@ -185,13 +195,34 @@ export default {
     function packageDetails(name) {
       emitter.emit('package-details', name);
     }
+    function generatePkgId(projectId, name) {
+      return `package__${projectId}__${name}`;
+    }
+    function installPackage({ name, version }, projectId) {
+      const project = Project.find(projectId);
+
+      store.dispatch('packagesQueue', {
+        type: 'add',
+        data: {
+          type: 'install',
+          id: generatePkgId(projectId, name),
+          name: name,
+          version: version,
+          path: project.path,
+          status: 'idle',
+          location: state.installOn,
+        },
+      });
+    }
 
     return {
       state,
       cleanUp,
       searchPackage,
+      generatePkgId,
       packageDetails,
       getPackageIcon,
+      installPackage,
       fetchPkgVersions,
     };
   },

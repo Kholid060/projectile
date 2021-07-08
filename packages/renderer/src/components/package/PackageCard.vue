@@ -48,23 +48,26 @@
         </span>
       </p>
     </div>
-    <ui-button
-      v-if="!currentPackage.isLatest"
-      v-tooltip="'Install latest version'"
-      icon
-      class="mr-2"
-      @click="updatePackage('install')"
-    >
-      <v-mdi name="mdi-download-outline"></v-mdi>
-    </ui-button>
-    <ui-button
-      v-tooltip="'Delete package'"
-      icon
-      class="text-red-500"
-      @click="updatePackage('delete')"
-    >
-      <v-mdi name="mdi-delete-outline"></v-mdi>
-    </ui-button>
+    <ui-spinner v-if="$store.getters.isInQueue(generatePkgId())" size="22"></ui-spinner>
+    <template v-else>
+      <ui-button
+        v-if="!currentPackage.isLatest"
+        v-tooltip="'Install latest version'"
+        icon
+        class="mr-2"
+        @click="updatePackage('install')"
+      >
+        <v-mdi name="mdi-download-outline"></v-mdi>
+      </ui-button>
+      <ui-button
+        v-tooltip="'Delete package'"
+        icon
+        class="text-red-500"
+        @click="updatePackage('remove')"
+      >
+        <v-mdi name="mdi-delete-outline"></v-mdi>
+      </ui-button>
+    </template>
   </div>
 </template>
 <script>
@@ -103,10 +106,12 @@ export default {
     });
 
     function getLatestVersion(currentVersion, versions) {
-      if (versions[currentVersion]) {
+      const validVersion = semverValid(currentVersion);
+
+      if (versions[currentVersion] || !validVersion) {
         return {
           isLatest: true,
-          latestVersion: versions[currentVersion],
+          latestVersion: !validVersion ? '-' : versions[currentVersion],
         };
       }
 
@@ -123,20 +128,24 @@ export default {
     function showDetails() {
       emitter.emit('package-details', props.item.name);
     }
+    function generatePkgId() {
+      return `package__${props.project.id}__${props.item.name}`;
+    }
     function updatePackage(type) {
       const validVersion = semverValid(currentPackage.value.latestVersion);
 
-      if (!validVersion) return;
+      if (!validVersion && type === 'install') return;
 
       store.dispatch('packagesQueue', {
         type: 'add',
         data: {
           type,
-          id: `package__${props.project.id}__${props.item.name}`,
+          id: generatePkgId(),
           name: props.item.name,
           version: validVersion,
           path: props.project.path,
           status: 'idle',
+          location: props.item.type,
         },
       });
     }
@@ -175,11 +184,9 @@ export default {
           .catch(() => {
             const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
             const cachePackage = lsCache[props.item.name];
+            const isMoreThanAWeek = Date.now() > cachePackage.lastUpdated + 6.048e8;
 
-            if (
-              cachePackage &&
-              Date.now() > cachePackage.lastUpdated + 6.048e8
-            ) {
+            if (cachePackage && isMoreThanAWeek) {
               delete lsCache[props.item.name];
               localStorage.setItem('packages', lsCache);
               return;
@@ -201,6 +208,7 @@ export default {
       container,
       showDetails,
       updatePackage,
+      generatePkgId,
       currentPackage,
     };
   },

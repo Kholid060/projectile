@@ -11,6 +11,9 @@ const store = new createStore({
     currentQueue: '',
     packagesQueue: [],
   }),
+  getters: {
+    isInQueue: (state) => (id) => state.packagesQueue.some((pkg) => pkg.id === id),
+  },
   mutations: {
     updateState(state, { key, value }) {
       state[key] = value;
@@ -53,6 +56,19 @@ const store = new createStore({
           commit('deletePackagesQueue', packageIndex);
         }
       }
+    },
+    nextPackageQueue({ dispatch, state, commit }) {
+      if (state.currentQueue) {
+        dispatch('packagesQueue', {
+          type: 'delete',
+          id: state.currentQueue,
+        });
+      }
+
+      commit('updateState', {
+        key: 'currentQueue',
+        value: state.packagesQueue.length === 0 ? '' : state.packagesQueue[0].id,
+      });
     },
     retrieve() {
       const keys = ['projects', 'boards', 'cards'];
