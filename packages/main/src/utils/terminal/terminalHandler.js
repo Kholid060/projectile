@@ -48,6 +48,12 @@ export async function removeTerminal({ name, clean }) {
   return true;
 }
 
+export function removeProjectTerminals(id) {
+  Object.keys(terminals).forEach((key) => {
+    if (key.includes(id)) removeTerminal({ name: key, clean: true });
+  });
+}
+
 export async function cleanTerminals() {
   for (const key in terminals) {
     await removeTerminal({ name: key, clean: true });

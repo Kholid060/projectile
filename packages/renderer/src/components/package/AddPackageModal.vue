@@ -5,6 +5,7 @@
         <p class="flex-1">Add package</p>
         <v-mdi
           name="mdi-close"
+          class="cursor-pointer"
           @click="$emit('update:modelValue', false)"
         ></v-mdi>
       </div>

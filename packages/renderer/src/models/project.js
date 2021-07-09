@@ -19,8 +19,8 @@ class Project extends Model {
     };
   }
 
-  static afterDelete(model) {
-    console.log(model, 'ro')
+  static afterDelete({ id }) {
+    window.ipcRenderer.callMain('remove-project-terminals', id);
   }
 }
 

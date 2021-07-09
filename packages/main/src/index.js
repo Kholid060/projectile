@@ -170,6 +170,7 @@ ipcMain.answerRenderer('write-terminal', terminalHandler.writeTerminal);
 ipcMain.answerRenderer('remove-terminal', terminalHandler.removeTerminal);
 ipcMain.answerRenderer('log-terminal', terminalHandler.logTerminal);
 ipcMain.answerRenderer('kill-terminal', terminalHandler.killTerminal);
+ipcMain.answerRenderer('remove-project-terminals', terminalHandler.removeProjectTerminals);
 
 
 app.whenReady()
