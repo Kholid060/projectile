@@ -38,7 +38,7 @@
   </ui-popover>
 </template>
 <script>
-import { onUnmounted } from 'vue';
+import { onUnmounted, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
@@ -121,6 +121,25 @@ export default {
       });
     }
 
+    onMounted(() => {
+      window.ipcRenderer.callMain('log-terminal').then((data) => {
+        const packagesQueue = JSON.parse(localStorage.getItem('packages-queue') || '[]');
+
+        store.commit('updateState', {
+          key: 'packagesQueue',
+          value: packagesQueue,
+        });
+
+        Object.keys(data).forEach((key) => {
+          if (!key.startsWith('package')) return;
+
+          store.commit('updateState', {
+            key: 'currentQueue',
+            value: key,
+          });
+        });
+      });
+    });
     onUnmounted(() => {
       unwatch();
       unsubscribe();

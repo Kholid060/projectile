@@ -19,37 +19,45 @@
       style="cursor: n-resize"
       @mousedown="initResize"
     ></div>
-    <ui-tabs
-      v-model="state.activeTerminal"
-      class="text-sm text-gray-200 overflow-auto scroll"
-      manual
-    >
-      <ui-tab
-        v-for="(terminal, id) in state.terminals"
-        :key="id"
-        :value="id"
-        class="flex-shrink-0 group flex items-center text-left px-2 w-32 h-10"
-        style="border-right-color: rgba(255, 255, 255, 0.05)"
-        padding=""
+    <div class="flex items-center border-b">
+      <ui-tabs
+        v-model="state.activeTerminal"
+        class="text-sm border-b-0 flex-1 text-gray-200 overflow-auto scroll"
+        manual
       >
-        <p :title="terminal.title" class="flex-1 text-overflow">
-          {{ terminal.title || '~' }}
-        </p>
-        <v-mdi
-          name="mdi-close"
-          size="18"
-          class="invisible group-hover:visible text-gray-200"
-          @click.stop="removeTerminal(id, index)"
-        ></v-mdi>
-      </ui-tab>
+        <ui-tab
+          v-for="(terminal, id) in state.terminals"
+          :key="id"
+          :value="id"
+          class="flex-shrink-0 group flex items-center text-left px-2 w-32 h-10"
+          style="border-right-color: rgba(255, 255, 255, 0.05)"
+          padding=""
+        >
+          <p :title="terminal.title" class="flex-1 text-overflow">
+            {{ terminal.title || '~' }}
+          </p>
+          <v-mdi
+            name="mdi-close"
+            size="18"
+            class="invisible group-hover:visible text-gray-200"
+            @click.stop="removeTerminal(id, index)"
+          ></v-mdi>
+        </ui-tab>
+      </ui-tabs>
       <button
         v-tooltip="'Add terminal'"
-        class="h-10 focus:ring-0 focus:outline-none flex-shrink-0 ml-2"
+        class="h-10 focus:ring-0 focus:outline-none flex-shrink-0 mx-2"
         @click="createTerminal"
       >
         <v-mdi name="mdi-plus"></v-mdi>
       </button>
-    </ui-tabs>
+      <button
+        class="h-10 focus:ring-0 focus:outline-none flex-shrink-0 mx-2"
+        @click="$emit('close')"
+      >
+        <v-mdi name="mdi-close"></v-mdi>
+      </button>
+    </div>
     <bottom-terminal
       v-if="state.activeTerminal && Object.keys(state.terminals).length !== 0"
       :active-terminal="state.activeTerminal"
@@ -65,6 +73,7 @@ import BottomTerminal from './BottomTerminal.vue';
 
 export default {
   components: { BottomTerminal },
+  emits: ['close'],
   setup() {
     let terminalId = 0;
 

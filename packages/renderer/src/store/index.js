@@ -40,22 +40,23 @@ const store = new createStore({
         if (isInQueue) return;
 
         commit('addPackagesQueue', data);
-        return;
+      } else {
+        const packageIndex = state.packagesQueue.findIndex(
+          (item) => item.id === id
+        );
+
+        if (packageIndex !== -1) {
+          if (type === 'update') {
+            commit('updatePackagesQueue', { index: packageIndex, data });
+          }
+
+          if (type === 'delete') {
+            commit('deletePackagesQueue', packageIndex);
+          }
+        }
       }
 
-      const packageIndex = state.packagesQueue.findIndex(
-        (item) => item.id === id
-      );
-
-      if (packageIndex !== -1) {
-        if (type === 'update') {
-          commit('updatePackagesQueue', { index: packageIndex, data });
-        }
-
-        if (type === 'delete') {
-          commit('deletePackagesQueue', packageIndex);
-        }
-      }
+      localStorage.setItem('packages-queue', JSON.stringify(state.packagesQueue));
     },
     nextPackageQueue({ dispatch, state, commit }) {
       if (state.currentQueue) {

@@ -140,19 +140,24 @@ export default {
       });
     }
     async function fetchIssues() {
-      const apiURL = props.repository.replace(
-        'github.com/',
-        'api.github.com/repos/'
-      );
+      try {
+        const apiURL = props.repository.replace(
+          'github.com/',
+          'api.github.com/repos/'
+        );
 
-      const response = await fetch(apiURL + '/issues?state=all&per_page=100');
-      const limit = +response.headers.get('x-ratelimit-remaining');
+        const response = await fetch(apiURL + '/issues?state=all&per_page=100');
+        const limit = +response.headers.get('x-ratelimit-remaining');
 
-      if (limit === 0) throw new Error();
+        if (limit === 0 || !response.ok) return [];
 
-      const data = await response.json();
+        const data = await response.json();
 
-      return data;
+        return data;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
     }
     async function reloadIssues() {
       state.loading = true;
@@ -176,7 +181,7 @@ export default {
       try {
         const lsData = localStorage.getItem(cacheKey);
         let data = lsData ? JSON.parse(lsData) : null;
-        console.log(data);
+
         if (!data) {
           data = await fetchIssues();
         }

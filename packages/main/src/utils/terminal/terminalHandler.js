@@ -7,7 +7,7 @@ export function createTerminal(options, mainWindow) {
   const terminal = new Terminal(options, mainWindow);
 
   terminals[options.name] = terminal;
-  console.log(Object.keys(terminals));
+
   return options.name;
 }
 

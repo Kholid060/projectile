@@ -137,7 +137,7 @@ export default {
     const ptyDataListener = window.ipcRenderer.answerMain(
       'script-pty-data',
       ({ data, status, name }) => {
-        if (name === state.activeScript) {
+        if (name === terminalId.value) {
           state.logs += data;
 
           setTimeout(() => {

@@ -22,11 +22,12 @@ export default {
     let terminal = null;
 
     const container = ref(null);
+    const isDone = ref(false);
 
     const ptyDataListener = window.ipcRenderer.answerMain(
       'terminal-pty-data',
       ({ data, name }) => {
-        if (!terminal || !name.startsWith('terminal')) return;
+        if (!terminal || !name.startsWith('terminal') || !isDone.value) return;
 
         terminal.write(data);
       }
@@ -42,6 +43,7 @@ export default {
         .then((data) => {
           terminal.reset();
           terminal.write(data.log);
+          isDone.value = true;
         });
     }
 
