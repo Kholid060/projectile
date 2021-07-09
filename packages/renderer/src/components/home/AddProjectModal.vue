@@ -72,7 +72,7 @@ export default {
       if (!project.name || !project.path) return;
 
       try {
-        const copy = { ...project };
+        const copy = { ...project, createdAt: Date.now() };
         delete copy.show;
 
         const repository = await window.ipcRenderer.callMain(

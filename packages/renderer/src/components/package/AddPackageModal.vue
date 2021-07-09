@@ -24,7 +24,7 @@
       <div v-if="state.searchResults.total" class="px-5 mb-2 flex items-center">
         <ui-select v-model="state.installOn" placeholder="Install on">
           <option value="deps">Main Dependencies</option>
-          <option value="dev-deps">Dev Dependencies</option>
+          <option value="devDeps">Dev Dependencies</option>
         </ui-select>
         <div class="flex-grow"></div>
         <p>{{ state.searchResults.total }} packages founds</p>

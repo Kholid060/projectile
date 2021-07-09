@@ -27,7 +27,7 @@ export default {
 
     function getPackageJSON() {
       if (!project.value) return;
-      console.log(project.value);
+
       window.ipcRenderer
         .callMain('get-packageJSON', project.value.path)
         .then((config) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center mb-12">
+  <div class="flex items-center mb-6 p-5">
     <h2 class="text-2xl font-semibold">Projects</h2>
     <div class="flex-grow"></div>
     <ui-input

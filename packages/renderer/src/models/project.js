@@ -18,6 +18,10 @@ class Project extends Model {
       boards: this.hasMany(Board, 'projectId'),
     };
   }
+
+  static afterDelete(model) {
+    console.log(model, 'ro')
+  }
 }
 
 export default Project;

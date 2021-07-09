@@ -68,7 +68,6 @@ export default {
 
     const unsubscribe = store.subscribe(({ type, payload }, state) => {
       if (type === 'addPackagesQueue' && !state.currentQueue) {
-        console.log('update queue');
         store.commit('updateState', {
           key: 'currentQueue',
           value: payload.id,
@@ -91,7 +90,7 @@ export default {
           const param = pkg.location === 'devDeps' ? '-D' : '';
           const pkgVersion = pkg.type === 'install' ? `@${pkg.version}` : '';
           const command = `${pkgManager} ${actions[pkg.type]} ${pkg.name}${pkgVersion} ${param}`;
-
+          console.log(command);
           await window.ipcRenderer.callMain('run-script', {
             useChildProcess: true,
             type: 'package',
@@ -131,7 +130,9 @@ export default {
         });
 
         Object.keys(data).forEach((key) => {
-          if (!key.startsWith('package')) return;
+          const isKeyExist = packagesQueue.some((pkg) => pkg.id === key);
+
+          if (!key.startsWith('package') || !isKeyExist) return;
 
           store.commit('updateState', {
             key: 'currentQueue',
