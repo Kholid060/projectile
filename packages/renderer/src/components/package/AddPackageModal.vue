@@ -67,10 +67,14 @@
             </p>
           </div>
           <ui-spinner
-            v-if="$store.getters.isInQueue(generatePkgId($route.params.id, item.package.name))"
+            v-if="
+              $store.getters.isInQueue(
+                generatePkgId($route.params.id, item.package.name)
+              )
+            "
             class="mr-2"
           ></ui-spinner>
-          <ui-popover @show="fetchPkgVersions(item.package)" v-else>
+          <ui-popover v-else @show="fetchPkgVersions(item.package)">
             <template #trigger>
               <ui-button v-tooltip="'Install package'" icon class="mr-2">
                 <v-mdi name="mdi-download-outline"></v-mdi>
@@ -90,11 +94,16 @@
                     v-for="(version, name) in state.pkgVersion[
                       item.package.name
                     ].versions"
-                    v-close-popover
                     :key="name"
+                    v-close-popover
                     small
                     class="cursor-pointer"
-                    @click="installPackage({ name: item.package.name, version }, $route.params.id)"
+                    @click="
+                      installPackage(
+                        { name: item.package.name, version },
+                        $route.params.id
+                      )
+                    "
                   >
                     <p class="w-6/12 text-overflow pr-2" :title="name">
                       {{ name }}

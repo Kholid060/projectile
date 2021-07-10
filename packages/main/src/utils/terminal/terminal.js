@@ -38,7 +38,7 @@ export default class Terminal {
         log: log + data,
         status: 'running',
       });
-      console.log(eventPrefix('pty-data', this.type));
+
       ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-data', this.type), {
         data,
         status: 'running',

@@ -12,7 +12,8 @@ const store = new createStore({
     packagesQueue: [],
   }),
   getters: {
-    isInQueue: (state) => (id) => state.packagesQueue.some((pkg) => pkg.id === id),
+    isInQueue: (state) => (id) =>
+      state.packagesQueue.some((pkg) => pkg.id === id),
   },
   mutations: {
     updateState(state, { key, value }) {
@@ -56,7 +57,10 @@ const store = new createStore({
         }
       }
 
-      localStorage.setItem('packages-queue', JSON.stringify(state.packagesQueue));
+      localStorage.setItem(
+        'packages-queue',
+        JSON.stringify(state.packagesQueue)
+      );
     },
     nextPackageQueue({ dispatch, state, commit }) {
       if (state.currentQueue) {
@@ -68,7 +72,8 @@ const store = new createStore({
 
       commit('updateState', {
         key: 'currentQueue',
-        value: state.packagesQueue.length === 0 ? '' : state.packagesQueue[0].id,
+        value:
+          state.packagesQueue.length === 0 ? '' : state.packagesQueue[0].id,
       });
     },
     retrieve() {

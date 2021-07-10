@@ -48,7 +48,10 @@
         </span>
       </p>
     </div>
-    <ui-spinner v-if="$store.getters.isInQueue(generatePkgId())" size="22"></ui-spinner>
+    <ui-spinner
+      v-if="$store.getters.isInQueue(generatePkgId())"
+      size="22"
+    ></ui-spinner>
     <template v-else>
       <ui-button
         v-if="!currentPackage.isLatest"
@@ -184,7 +187,8 @@ export default {
           .catch(() => {
             const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
             const cachePackage = lsCache[props.item.name];
-            const isMoreThanAWeek = Date.now() > cachePackage.lastUpdated + 6.048e8;
+            const isMoreThanAWeek =
+              Date.now() > cachePackage?.lastUpdated + 6.048e8;
 
             if (cachePackage && isMoreThanAWeek) {
               delete lsCache[props.item.name];

@@ -22,5 +22,5 @@ const store = new Store({
   name: 'terminal-log',
   fileExtension: 'log',
 });
-console.log(store.path);
+
 export default store;

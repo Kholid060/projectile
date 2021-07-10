@@ -67,7 +67,7 @@ export class DataBatcher extends EventEmit {
 
   flush () {
     const data = this.data;
-    console.log(data);
+
     this.reset();
     this.emit('flush', data);
   }

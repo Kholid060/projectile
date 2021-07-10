@@ -70,11 +70,11 @@ const createWindow = async () => {
     mainWindow.setMenuBarVisibility(false);
   });
 
-  // mainWindow?.webContents.on('new-window', (event, url) => {
-  //   event.preventDefault();
+  mainWindow?.webContents.on('new-window', (event, url) => {
+    event.preventDefault();
 
-  //   shell.openExternal(url);
-  // });
+    shell.openExternal(url);
+  });
 
   /**
    * URL for main window.

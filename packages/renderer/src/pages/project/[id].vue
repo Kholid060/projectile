@@ -13,8 +13,9 @@
   </div>
 </template>
 <script>
-import { watch, computed, shallowRef } from 'vue';
+import { watch, computed, shallowRef, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
+import emitter from 'tiny-emitter/instance';
 import Project from '@/models/project';
 
 export default {
@@ -37,7 +38,13 @@ export default {
         });
     }
 
+    emitter.on('refresh-package-json', getPackageJSON);
+
     watch(() => route.params.id, getPackageJSON, { immediate: true });
+
+    onUnmounted(() => {
+      emitter.off('refresh-package-json', getPackageJSON);
+    });
 
     return {
       project,

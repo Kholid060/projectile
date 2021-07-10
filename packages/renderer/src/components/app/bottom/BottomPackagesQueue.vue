@@ -40,29 +40,24 @@
 <script>
 import { onUnmounted, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import emitter from 'tiny-emitter/instance';
 
 export default {
   setup() {
     const store = useStore();
 
-    const ptyDataListener = window.ipcRenderer.answerMain(
-      'package-pty-data',
-      (data) => {
-        console.log('pak', data.data);
-      }
-    );
     const ptyExitListener = window.ipcRenderer.answerMain(
       'package-pty-exit',
       ({ name }) => {
-        console.log('exit', name);
         window.ipcRenderer
-        .callMain('remove-terminal', {
-          name,
-          clean: true,
-        })
-        .then(() => {
-          store.dispatch('nextPackageQueue');
-        });
+          .callMain('remove-terminal', {
+            name,
+            clean: true,
+          })
+          .then(() => {
+            emitter.emit('refresh-package-json');
+            store.dispatch('nextPackageQueue');
+          });
       }
     );
 
@@ -82,15 +77,20 @@ export default {
 
           if (!pkg) return;
 
-          const pkgManager = await window.ipcRenderer.callMain('get-package-manager', pkg.path)
+          const pkgManager = await window.ipcRenderer.callMain(
+            'get-package-manager',
+            pkg.path
+          );
           const actions = {
             install: pkgManager === 'npm' ? 'install' : 'add',
             remove: pkgManager === 'npm' ? 'uninstall' : 'remove',
           };
           const param = pkg.location === 'devDeps' ? '-D' : '';
           const pkgVersion = pkg.type === 'install' ? `@${pkg.version}` : '';
-          const command = `${pkgManager} ${actions[pkg.type]} ${pkg.name}${pkgVersion} ${param}`;
-          console.log(command);
+          const command = `${pkgManager} ${actions[pkg.type]} ${
+            pkg.name
+          }${pkgVersion} ${param}`;
+
           await window.ipcRenderer.callMain('run-script', {
             useChildProcess: true,
             type: 'package',
@@ -122,7 +122,9 @@ export default {
 
     onMounted(() => {
       window.ipcRenderer.callMain('log-terminal').then((data) => {
-        const packagesQueue = JSON.parse(localStorage.getItem('packages-queue') || '[]');
+        const packagesQueue = JSON.parse(
+          localStorage.getItem('packages-queue') || '[]'
+        );
 
         store.commit('updateState', {
           key: 'packagesQueue',
@@ -144,7 +146,6 @@ export default {
     onUnmounted(() => {
       unwatch();
       unsubscribe();
-      ptyDataListener();
       ptyExitListener();
     });
 

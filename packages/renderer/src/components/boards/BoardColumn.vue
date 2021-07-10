@@ -107,7 +107,7 @@ export default {
       },
       set(value) {
         const data = value.map((item, index) => ({ ...item, order: index }));
-        console.log(data);
+
         Card.update({
           data,
         });
