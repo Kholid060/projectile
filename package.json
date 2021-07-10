@@ -1,5 +1,5 @@
 {
-  "name": "vite-electron-builder",
+  "name": "projectile",
   "private": true,
   "main": "packages/main/dist/index.cjs",
   "scripts": {
