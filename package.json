@@ -32,7 +32,6 @@
     "highlight.js": "^11.0.1",
     "markdown-it": "^12.0.6",
     "markdown-it-anchor": "^8.0.1",
-    "muuri": "^0.9.4",
     "nanoid": "^3.1.23",
     "node-fetch": "^2.6.1",
     "node-pty": "^0.10.1",
@@ -50,7 +49,6 @@
     "vuex": "^4.0.1",
     "xterm": "^4.13.0",
     "xterm-addon-fit": "^0.5.0",
-    "xterm-addon-search": "^0.8.0",
     "xterm-addon-web-links": "^0.4.0"
   },
   "devDependencies": {
