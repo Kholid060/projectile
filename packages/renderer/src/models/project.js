@@ -20,7 +20,7 @@ class Project extends Model {
   }
 
   static afterDelete({ id }) {
-    window.ipcRenderer.callMain('remove-project-terminals', id);
+    window.electron.ipcRenderer.callMain('remove-project-terminals', id);
   }
 }
 

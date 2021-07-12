@@ -141,6 +141,7 @@ import Project from '@/models/project';
 export default {
   setup() {
     const store = useStore();
+    const { ipcRenderer } = window.electron;
 
     const state = reactive({
       query: '',
@@ -154,7 +155,7 @@ export default {
       if (!state.query || state.loading) return;
 
       state.loading = true;
-      window.ipcRenderer
+      ipcRenderer
         .callMain('fetch-npm-registry', `/-/v1/search?text=${state.query}`)
         .then(({ total, objects }) => {
           state.searchResults = {
@@ -181,7 +182,7 @@ export default {
 
       state.pkgVersion[pkg.name] = { loading: true };
 
-      window.ipcRenderer
+      ipcRenderer
         .callMain('fetch-npm-registry', `/-/package/${pkg.name}/dist-tags`)
         .then((versions) => {
           delete versions.latest;

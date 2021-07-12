@@ -51,7 +51,7 @@ export default {
     });
 
     function selectDirectory() {
-      window.ipcRenderer
+      window.electron.ipcRenderer
         .callMain('select-dir')
         .then(({ canceled, path, config }) => {
           if (canceled) return;
@@ -75,7 +75,7 @@ export default {
         const copy = { ...project, createdAt: Date.now() };
         delete copy.show;
 
-        const repository = await window.ipcRenderer.callMain(
+        const repository = await window.electron.ipcRenderer.callMain(
           'get-repository',
           copy.path
         );

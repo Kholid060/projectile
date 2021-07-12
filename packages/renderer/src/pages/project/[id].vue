@@ -1,10 +1,5 @@
 <template>
   <div class="px-5 pt-5 h-full">
-    <!-- <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component" v-bind="{ project, packageJSON }" />
-      </keep-alive>
-    </router-view> -->
     <router-view
       v-if="project && packageJSON"
       v-bind="{ project, packageJSON }"
@@ -21,6 +16,7 @@ import Project from '@/models/project';
 export default {
   setup() {
     const route = useRoute();
+    const { ipcRenderer } = window.electron;
 
     const packageJSON = shallowRef({});
 
@@ -29,7 +25,7 @@ export default {
     function getPackageJSON() {
       if (!project.value) return;
 
-      window.ipcRenderer
+      ipcRenderer
         .callMain('get-packageJSON', project.value.path)
         .then((config) => {
           if (!config) return;

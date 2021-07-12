@@ -10,6 +10,9 @@ import { loadAndSetEnv } from '../../scripts/loadAndSetEnv.mjs';
 
 
 const PACKAGE_ROOT = __dirname;
+const extModules = [...builtinModules];
+
+extModules.splice(extModules.indexOf('punycode'), 1);
 
 /**
  * Vite looks for `.env.[mode]` files only in `PACKAGE_ROOT` directory.
@@ -31,7 +34,7 @@ export default defineConfig({
   plugins: [
     vue(),
     pages({
-      pagesDir: 'src/pages',
+      pagesDir: './src/pages',
     }),
     {
       ...eslint({
@@ -60,31 +63,10 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        ...builtinModules,
+        ...extModules,
       ],
     },
     emptyOutDir: true,
   },
-  // rollupOptions: {
-  //   external: ['electron', 'electron-store', 'node-pty', 'electron-updater'],
-  //   plugins: [
-  //     {
-  //       name: '@rollup/plugin-cjs2esm',
-  //       transform(code, filename) {
-  //         if (filename.includes('/node_modules/')) {
-  //           return code;
-  //         }
-
-  //         const cjsRegexp = /(const|let|var)[\n\s]+(\w+)[\n\s]*=[\n\s]*require\(["|'](.+)["|']\)/g;
-  //         const res = code.match(cjsRegexp);
-  //         if (res) {
-  //           // const Store = require('electron-store') -> import Store from 'electron-store'
-  //           code = code.replace(cjsRegexp, `import $2 from '$3'`);
-  //         }
-  //         return code;
-  //       },
-  //     },
-  //   ],
-  // },
 });
 

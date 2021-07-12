@@ -1,4 +1,4 @@
-import store from '../../lib/electron-store';
+import { logStore } from '../../lib/electron-store';
 import Terminal from './terminal';
 
 const terminals = {};
@@ -61,9 +61,9 @@ export async function cleanTerminals() {
 }
 
 export function logTerminal(id) {
-  if (!id) return store.get('terminals', {});
+  if (!id) return logStore.get('terminals', {});
 
-  return store.get(`terminals.${id}`, { log: '', status: 'idle' });
+  return logStore.get(`terminals.${id}`, { log: '', status: 'idle' });
 }
 
-store.clear();
+logStore.clear();

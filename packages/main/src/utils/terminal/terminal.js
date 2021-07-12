@@ -6,7 +6,7 @@ import os from 'os';
 import osLocale from 'os-locale';
 import { ipcMain } from 'electron-better-ipc';
 import kill from 'tree-kill';
-import store from '../../lib/electron-store';
+import { logStore } from '../../lib/electron-store';
 import { DataBatcher} from './dataBatcher';
 
 const pathDelimiter = os.platform() === 'win32' ? ';' : ':';
@@ -32,9 +32,9 @@ export default class Terminal {
     this.isRunning = false;
 
     this.batcher.on('flush', (data) => {
-      const log = store.get(`terminals.${this.name}.log`, '');
+      const log = logStore.get(`terminals.${this.name}.log`, '');
 
-      store.set(`terminals.${this.name}`, {
+      logStore.set(`terminals.${this.name}`, {
         log: log + data,
         status: 'running',
       });
@@ -79,7 +79,7 @@ export default class Terminal {
   }
   onExit() {
     ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-exit', this.type), { name: this.name });
-    store.set(`terminals.${this.name}.status`, 'idle');
+    logStore.set(`terminals.${this.name}.status`, 'idle');
 
     this.isRunning = false;
   }
@@ -116,12 +116,12 @@ export default class Terminal {
   }
 
   clean() {
-    const logs = store.get('terminals', {});
+    const logs = logStore.get('terminals', {});
 
     if (logs[this.name]) {
       delete logs[this.name];
 
-      store.set('terminals', logs);
+      logStore.set('terminals', logs);
     }
   }
 

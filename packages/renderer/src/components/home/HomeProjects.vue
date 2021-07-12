@@ -36,7 +36,7 @@
       </ui-button>
     </ui-list-item>
   </ui-list>
-  <div v-else class="grid grid-cols-4 gap-5">
+  <div v-else class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
     <transition-group-list>
       <ui-card
         v-for="project in projects"

@@ -20,11 +20,12 @@ export default {
   setup(props, { emit }) {
     let observer = null;
     let terminal = null;
+    const { ipcRenderer } = window.electron;
 
     const container = ref(null);
     const isDone = ref(false);
 
-    const ptyDataListener = window.ipcRenderer.answerMain(
+    const ptyDataListener = ipcRenderer.answerMain(
       'terminal-pty-data',
       ({ data, name }) => {
         if (!terminal || !name.startsWith('terminal') || !isDone.value) return;
@@ -38,7 +39,7 @@ export default {
 
       localStorage.setItem('active-terminal', props.activeTerminal);
 
-      window.ipcRenderer
+      ipcRenderer
         .callMain('log-terminal', props.activeTerminal)
         .then((data) => {
           terminal.reset();
@@ -57,7 +58,7 @@ export default {
       insertCacheLogs();
 
       terminal.onKey(({ key }) => {
-        window.ipcRenderer.callMain('write-terminal', {
+        ipcRenderer.callMain('write-terminal', {
           name: props.activeTerminal,
           command: key,
         });

@@ -76,6 +76,7 @@ export default {
   emits: ['close'],
   setup() {
     let terminalId = 0;
+    const { ipcRenderer } = window.electron;
 
     const container = ref(null);
     const state = reactive({
@@ -109,11 +110,11 @@ export default {
 
       const id = `terminal_${nanoid()}`;
 
-      window.ipcRenderer
+      ipcRenderer
         .callMain('create-terminal', {
           name: id,
           type: 'terminal',
-          cwd: window.homedir,
+          cwd: window.electron.homedir,
         })
         .then(() => {
           state.terminals[id] = {
@@ -124,7 +125,7 @@ export default {
         });
     }
     function removeTerminal(id) {
-      window.ipcRenderer
+      ipcRenderer
         .callMain('remove-terminal', {
           name: id,
           clean: true,
@@ -152,7 +153,7 @@ export default {
         container.value.style.height = cacheHeight + 'px';
       }
 
-      window.ipcRenderer.callMain('log-terminal').then((logs) => {
+      ipcRenderer.callMain('log-terminal').then((logs) => {
         Object.entries(logs).forEach(([key, value]) => {
           if (key.startsWith('terminal') && value.log) {
             terminalId += 1;

@@ -1,17 +1,19 @@
 {
-  "name": "projectile",
+  "name": "Projectile",
   "private": true,
   "main": "packages/main/dist/index.cjs",
+  "version": "0.0.1",
   "scripts": {
     "buildEnvTypes": "node scripts/buildEnvTypes.js",
     "build": "node scripts/build.js",
     "precompile": "cross-env MODE=production npm run build",
-    "compile": "electron-builder build --config electron-builder.config.js --dir --config.asar=false",
+    "compile": "electron-builder build --config electron-builder.config.js",
     "pretest": "cross-env MODE=test npm run build",
     "test": "node tests/app.spec.js",
     "watch": "node scripts/watch.js",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "rebuild": "./node_modules/.bin/electron-rebuild.cmd"
+    "rebuild": "./node_modules/.bin/electron-rebuild.cmd",
+    "pack": "electron-builder --config electron-builder.config.js --prepackaged ./dist/win-unpacked --win"
   },
   "browserslist": [
     "Chrome 91"

@@ -2,8 +2,9 @@ import { createStore } from 'vuex';
 import merge from 'deepmerge';
 import VuexORM from '@/lib/vuex-orm';
 import * as models from '@/models';
+import { useStorage } from '@/composable/storage';
 
-const { storage } = window;
+const storage = useStorage();
 
 const store = new createStore({
   plugins: [VuexORM(models)],
@@ -79,10 +80,18 @@ const store = new createStore({
     retrieve() {
       const keys = ['projects', 'boards', 'cards'];
 
-      keys.forEach((key) => {
-        const data = storage.get(key, []);
+      const promises = Promise.allSettled(keys.map(async (key) => {
+        const data = await storage.get(key, []);
 
-        models[key.slice(0, -1)].create({ data });
+        return { key, data };
+      }));
+
+      promises.then((result) => {
+        result.forEach(({ status, value }) => {
+          if (status === 'fulfilled') {
+            models[value.key.slice(0, -1)].create({ data: value.data });
+          }
+        });
       });
     },
     saveToStorage({ getters }, key) {
@@ -93,9 +102,9 @@ const store = new createStore({
         }
         const data = getters[`entities/${key}/all`]();
 
-        storage.set(key, JSON.parse(JSON.stringify(data)));
-
-        resolve();
+        storage.set(key, JSON.parse(JSON.stringify(data))).then(() => {
+          resolve();
+        });
       });
     },
   },

@@ -122,6 +122,8 @@ export default {
     },
   },
   setup(props) {
+    const { ipcRenderer } = window.electron;
+
     const container = ref(null);
     const state = reactive({
       logs: '',
@@ -134,7 +136,7 @@ export default {
       () => `script__${props.project.id}__${state.activeScript}`
     );
 
-    const ptyDataListener = window.ipcRenderer.answerMain(
+    const ptyDataListener = ipcRenderer.answerMain(
       'script-pty-data',
       ({ data, status, name }) => {
         if (name === terminalId.value) {
@@ -150,7 +152,7 @@ export default {
         state.status[name] = status;
       }
     );
-    const ptyExitListener = window.ipcRenderer.answerMain(
+    const ptyExitListener = ipcRenderer.answerMain(
       'script-pty-exit',
       ({ name }) => {
         state.status[name] = 'idle';
@@ -159,11 +161,11 @@ export default {
 
     function toggleScript() {
       if (state.status[terminalId.value] === 'running') {
-        window.ipcRenderer.callMain('kill-terminal', terminalId.value);
+        ipcRenderer.callMain('kill-terminal', terminalId.value);
       } else {
         const command = props.packageJSON.scripts[state.activeScript];
 
-        window.ipcRenderer.callMain('run-script', {
+        ipcRenderer.callMain('run-script', {
           useChildProcess: true,
           type: 'script',
           name: terminalId.value,
@@ -178,7 +180,7 @@ export default {
     }
 
     watch(terminalId, (value) => {
-      window.ipcRenderer
+      ipcRenderer
         .callMain('log-terminal', value)
         .then(({ log, status }) => {
           state.logs = '';

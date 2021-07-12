@@ -44,12 +44,13 @@ import emitter from 'tiny-emitter/instance';
 
 export default {
   setup() {
+    const { ipcRenderer } = window.electron;
     const store = useStore();
 
-    const ptyExitListener = window.ipcRenderer.answerMain(
+    const ptyExitListener = ipcRenderer.answerMain(
       'package-pty-exit',
       ({ name }) => {
-        window.ipcRenderer
+        ipcRenderer
           .callMain('remove-terminal', {
             name,
             clean: true,
@@ -77,7 +78,7 @@ export default {
 
           if (!pkg) return;
 
-          const pkgManager = await window.ipcRenderer.callMain(
+          const pkgManager = await ipcRenderer.callMain(
             'get-package-manager',
             pkg.path
           );
@@ -91,7 +92,7 @@ export default {
             pkg.name
           }${pkgVersion} ${param}`;
 
-          await window.ipcRenderer.callMain('run-script', {
+          await ipcRenderer.callMain('run-script', {
             useChildProcess: true,
             type: 'package',
             name: pkg.id,
@@ -112,7 +113,7 @@ export default {
       return text + ` at ${data.path}`;
     }
     function abortAction(id) {
-      window.ipcRenderer.callMain('kill-terminal', id).then(() => {
+      ipcRenderer.callMain('kill-terminal', id).then(() => {
         store.dispatch('packagesQueue', {
           id,
           type: 'delete',
@@ -121,7 +122,7 @@ export default {
     }
 
     onMounted(() => {
-      window.ipcRenderer.callMain('log-terminal').then((data) => {
+      ipcRenderer.callMain('log-terminal').then((data) => {
         const packagesQueue = JSON.parse(
           localStorage.getItem('packages-queue') || '[]'
         );

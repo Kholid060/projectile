@@ -130,7 +130,7 @@ export default {
 
       const encodedName = encodeURIComponent(name);
       const promises = [
-        window.ipcRenderer.callMain('fetch-npm-registry', `/${encodedName}`),
+        window.electron.ipcRenderer.callMain('fetch-npm-registry', `/${encodedName}`),
         fetch(
           `https://api.npmjs.org/downloads/range/last-month/${encodedName}`
         ),

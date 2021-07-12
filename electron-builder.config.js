@@ -1,5 +1,4 @@
-const now = new Date;
-const buildVersion = `${now.getFullYear() - 2000}.${now.getMonth() + 1}.${now.getDate()}`;
+const packageJSON = require('./package.json');
 
 /**
  * @type {import('electron-builder').Configuration}
@@ -14,7 +13,16 @@ const config = {
     'packages/**/dist/**',
   ],
   extraMetadata: {
-    version: buildVersion,
+    version: packageJSON.version,
+  },
+  win: {
+    target: 'nsis',
+    artifactName: '${productName}Setup-${arch}-${version}.${ext}',
+  },
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
   },
 };
 

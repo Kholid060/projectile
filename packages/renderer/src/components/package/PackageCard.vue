@@ -161,7 +161,7 @@ export default {
           return;
         }
 
-        window.ipcRenderer
+        window.electron.ipcRenderer
           .callMain(
             'fetch-npm-registry',
             `/-/package/${props.item.name}/dist-tags`

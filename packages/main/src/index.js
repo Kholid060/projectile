@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 import { ipcMain } from 'electron-better-ipc';
 import gitconfig from 'gitconfiglocal';
 import fetch from 'node-fetch';
-import Store from 'electron-store';
+import { userStore } from './lib/electron-store';
 import * as terminalHandler from './utils/terminal/terminalHandler';
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -16,7 +16,6 @@ if (!isSingleInstance) {
   process.exit(0);
 }
 
-Store.initRenderer();
 app.disableHardwareAcceleration();
 app.allowRendererProcessReuse = false;
 
@@ -45,8 +44,6 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false, // Use 'ready-to-show' event to show window
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       enableRemoteModule: env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
     },
@@ -165,6 +162,7 @@ ipcMain.answerRenderer('get-package-manager', async (path) => {
 });
 ipcMain.answerRenderer('run-script', (options) => terminalHandler.runScript(options, mainWindow));
 ipcMain.answerRenderer('create-terminal', (options) => terminalHandler.createTerminal(options, mainWindow));
+
 ipcMain.answerRenderer('clean-terminals', terminalHandler.cleanTerminals);
 ipcMain.answerRenderer('write-terminal', terminalHandler.writeTerminal);
 ipcMain.answerRenderer('remove-terminal', terminalHandler.removeTerminal);
@@ -172,6 +170,11 @@ ipcMain.answerRenderer('log-terminal', terminalHandler.logTerminal);
 ipcMain.answerRenderer('kill-terminal', terminalHandler.killTerminal);
 ipcMain.answerRenderer('remove-project-terminals', terminalHandler.removeProjectTerminals);
 
+ipcMain.answerRenderer('storage-get', ({ key, def }) => userStore.get(key, def));
+ipcMain.answerRenderer('storage-set', ({ key, value }) => userStore.set(key, value));
+ipcMain.answerRenderer('storage-delete', (key) => userStore.delete(key));
+ipcMain.answerRenderer('storage-has', (key) => userStore.has(key));
+ipcMain.answerRenderer('storage-clear', () => userStore.clear());
 
 app.whenReady()
   .then(createWindow)
