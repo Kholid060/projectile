@@ -4,13 +4,10 @@
       v-model:viewType="state.viewType"
       v-model:search="state.search"
     ></home-nav>
-    <p
-      v-if="allProjects.length === 0"
-      class="my-12 text-gray-200 text-center"
-    >
+    <p v-if="allProjects.length === 0" class="my-12 text-gray-200 text-center">
       You have no project
     </p>
-    <div class="flex-1 overflow-auto scroll pb-5 px-5" v-else>
+    <div v-else class="flex-1 overflow-auto scroll pb-5 px-5">
       <div v-if="projects.starred.length !== 0" class="mb-12">
         <p class="text-gray-300 mb-3">Starred</p>
         <home-projects

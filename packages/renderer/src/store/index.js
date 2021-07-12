@@ -80,11 +80,13 @@ const store = new createStore({
     retrieve() {
       const keys = ['projects', 'boards', 'cards'];
 
-      const promises = Promise.allSettled(keys.map(async (key) => {
-        const data = await storage.get(key, []);
+      const promises = Promise.allSettled(
+        keys.map(async (key) => {
+          const data = await storage.get(key, []);
 
-        return { key, data };
-      }));
+          return { key, data };
+        })
+      );
 
       promises.then((result) => {
         result.forEach(({ status, value }) => {

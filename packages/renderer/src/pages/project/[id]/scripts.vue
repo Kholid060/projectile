@@ -44,7 +44,7 @@
           >
             <span
               :class="[
-                state.status[`script__${project.id}__${name}`] === 'running'
+                state.status[generateTerminalId(name)] === 'running'
                   ? 'bg-green-500'
                   : 'bg-gray-500',
               ]"
@@ -130,13 +130,11 @@ export default {
       activeScript: '',
     });
 
-    const terminalId = computed(
-      () => `script__${props.project.id}__${state.activeScript}`
-    );
+    const terminalId = computed(() => generateTerminalId(state.activeScript));
 
     const ptyDataListener = ipcRenderer.answerMain(
       'script-pty-data',
-      ({ data, status, name }) => {
+      ({ data, name }) => {
         if (name === terminalId.value) {
           state.logs += data;
 
@@ -146,8 +144,6 @@ export default {
             }
           }, 100);
         }
-
-        state.status[name] = status;
       }
     );
     const ptyExitListener = ipcRenderer.answerMain(
@@ -157,6 +153,9 @@ export default {
       }
     );
 
+    function generateTerminalId(name) {
+      return `script__${props.project.id}__${name}`;
+    }
     function toggleScript() {
       if (state.status[terminalId.value] === 'running') {
         ipcRenderer.callMain('kill-terminal', terminalId.value);
@@ -178,21 +177,36 @@ export default {
     }
 
     watch(terminalId, (value) => {
-      ipcRenderer
-        .callMain('log-terminal', value)
-        .then(({ log, status }) => {
-          state.logs = '';
+      ipcRenderer.callMain('log-terminal', value).then(({ log, status }) => {
+        state.logs = '';
 
-          state.logs += log;
-          state.status[value] = status;
-        });
+        state.logs += log;
+        state.status[value] = status;
+      });
     });
     watch(
       () => props.packageJSON,
       ({ scripts }) => {
         if (!scripts) return;
 
-        state.activeScript = Object.keys(scripts)[0];
+        const keys = Object.keys(scripts);
+        const promises = Promise.all(
+          keys.map((key) => {
+            const id = generateTerminalId(key);
+
+            return ipcRenderer
+              .callMain('log-terminal', id)
+              .then((data) => ({ ...data, id }));
+          })
+        );
+
+        promises.then((data) => {
+          data.forEach(({ status, id }) => {
+            state.status[id] = status;
+          });
+        });
+
+        state.activeScript = keys[0];
       },
       { immediate: true }
     );
@@ -207,6 +221,7 @@ export default {
       container,
       terminalId,
       toggleScript,
+      generateTerminalId,
     };
   },
 };

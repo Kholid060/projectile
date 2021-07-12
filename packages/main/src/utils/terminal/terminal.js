@@ -30,18 +30,15 @@ export default class Terminal {
     this.pty = null;
 
     this.isRunning = false;
+    this.isKilled = false;
 
     this.batcher.on('flush', (data) => {
       const log = logStore.get(`terminals.${this.name}.log`, '');
 
-      logStore.set(`terminals.${this.name}`, {
-        log: log + data,
-        status: 'running',
-      });
+      logStore.set(`terminals.${this.name}.log`, log + data);
 
       ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-data', this.type), {
         data,
-        status: 'running',
         name: this.name,
       });
     });
@@ -53,6 +50,7 @@ export default class Terminal {
     if (this.isRunning) return;
 
     this.isRunning = true;
+    logStore.set(`terminals.${this.name}.status`, 'running');
 
     const env = getPtyEnv(this.details);
 
@@ -111,6 +109,8 @@ export default class Terminal {
 
   kill() {
     if (!this.isRunning) return;
+
+    this.isKilled = true;
 
     this.useChildProcess ? kill(this.pty.pid) : this.pty.kill();
   }
