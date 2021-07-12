@@ -43,6 +43,8 @@ let mainWindow = null;
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false, // Use 'ready-to-show' event to show window
+    width: 1080,
+    height: 600,
     webPreferences: {
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       enableRemoteModule: env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
@@ -67,11 +69,13 @@ const createWindow = async () => {
     mainWindow.setMenuBarVisibility(false);
   });
 
-  mainWindow?.webContents.on('new-window', (event, url) => {
-    event.preventDefault();
+  if (env.MODE === 'production') {
+    mainWindow?.webContents.on('new-window', (event, url) => {
+      event.preventDefault();
 
-    shell.openExternal(url);
-  });
+      shell.openExternal(url);
+    });
+  }
 
   /**
    * URL for main window.

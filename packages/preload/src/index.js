@@ -1,14 +1,12 @@
 import { contextBridge } from 'electron';
 import { ipcRenderer } from 'electron-better-ipc';
 import { homedir } from 'os';
-import storage from './lib/electron-store';
 
 const apiKey = 'electron';
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
  */
 const api = {
-  storage,
   ipcRenderer,
   homedir: homedir(),
   versions: process.versions,

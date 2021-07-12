@@ -70,10 +70,8 @@
             "
             class="mr-1 -ml-1"
           ></v-mdi>
-          <span
-            >{{
-              state.status[terminalId] === 'running' ? 'Stop' : 'Run'
-            }}
+          <span>
+            {{ state.status[terminalId] === 'running' ? 'Stop' : 'Run' }}
             script</span
           >
         </ui-button>
