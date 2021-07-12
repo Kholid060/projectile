@@ -1,8 +1,10 @@
 {
   "name": "Projectile",
   "private": true,
+  "description": "An app to manage your js app",
   "main": "packages/main/dist/index.cjs",
   "version": "0.0.1",
+  "author": "Ahmad Kholid <kholid060@gmail.com>",
   "scripts": {
     "buildEnvTypes": "node scripts/buildEnvTypes.js",
     "build": "node scripts/build.js",
