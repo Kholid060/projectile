@@ -1,7 +1,7 @@
 {
   "name": "Projectile",
   "private": true,
-  "description": "An app to manage your js app",
+  "description": "An app to manage your JS projects",
   "main": "packages/main/dist/index.cjs",
   "version": "0.0.1",
   "author": "Ahmad Kholid <kholid060@gmail.com>",
@@ -24,7 +24,9 @@
     "*.{js,ts,vue}": "eslint --cache --fix"
   },
   "dependencies": {
+    "@lerna/project": "^4.0.0",
     "@mdi/js": "^5.9.55",
+    "@viselect/vue": "^3.0.0-beta.7",
     "@vuex-orm/core": "^0.36.4",
     "dayjs": "1.10.6",
     "deepmerge": "^4.2.2",
@@ -34,9 +36,11 @@
     "electron-updater": "^4.3.9",
     "fast-glob": "^3.2.7",
     "gitconfiglocal": "^2.1.0",
+    "globby": "^11.0.4",
     "highlight.js": "11.1.0",
     "markdown-it": "12.1.0",
     "markdown-it-anchor": "8.1.0",
+    "mousetrap": "^1.6.5",
     "nanoid": "^3.1.23",
     "node-fetch": "^2.6.1",
     "node-pty": "^0.10.1",

@@ -60,6 +60,7 @@
           :variant="
             state.status[terminalId] === 'running' ? 'danger' : 'primary'
           "
+          :disabled="state.activeScript === ''"
           @click="toggleScript"
         >
           <v-mdi
@@ -72,8 +73,8 @@
           ></v-mdi>
           <span>
             {{ state.status[terminalId] === 'running' ? 'Stop' : 'Run' }}
-            script</span
-          >
+            script
+          </span>
         </ui-button>
         <ui-button>
           <v-mdi name="mdi-cog-outline" class="mr-2 -ml-1"></v-mdi>
@@ -206,7 +207,7 @@ export default {
           });
         });
 
-        state.activeScript = keys[0];
+        state.activeScript = keys[0] || '';
       },
       { immediate: true }
     );

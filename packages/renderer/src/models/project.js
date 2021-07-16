@@ -12,15 +12,23 @@ class Project extends Model {
       id: this.uid(() => nanoid()),
       name: this.string(''),
       path: this.string(''),
+      rootId: this.attr(null),
       repository: this.string(''),
-      createdAt: this.number(Date.now()),
       starred: this.boolean(false),
+      isMonorepo: this.boolean(false),
+      createdAt: this.number(Date.now()),
       boards: this.hasMany(Board, 'projectId'),
     };
   }
 
-  static afterDelete({ id }) {
+  static afterDelete({ id, isMonorepo, workspaces }) {
     window.electron.ipcRenderer.callMain('remove-project-terminals', id);
+
+    Board.delete(({ projectId }) => projectId === id);
+
+    if (!isMonorepo) {
+      this.delete((item) => item.isMonorepo && item.rootId === id);
+    }
   }
 }
 

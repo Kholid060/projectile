@@ -1,6 +1,6 @@
 import VuexORM, { Query } from '@vuex-orm/core';
 
-function callback(mdoel, param, entity) {
+function callback(model, param, entity) {
   this.store.dispatch('saveToStorage', entity);
 }
 

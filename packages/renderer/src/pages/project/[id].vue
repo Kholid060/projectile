@@ -20,18 +20,18 @@ export default {
 
     const packageJSON = shallowRef({});
 
-    const project = computed(() => Project.find(route.params.id));
+    const project = computed(() =>
+      Project.find(route.params.id)
+    );
 
     function getPackageJSON() {
       if (!project.value) return;
 
-      ipcRenderer
-        .callMain('get-packageJSON', project.value.path)
-        .then((config) => {
-          if (!config) return;
+      ipcRenderer.callMain('read-json', project.value.path).then((config) => {
+        if (!config) return;
 
-          packageJSON.value = config;
-        });
+        packageJSON.value = config;
+      });
     }
 
     emitter.on('refresh-package-json', getPackageJSON);

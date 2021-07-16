@@ -59,7 +59,8 @@ export default {
   top: 50%;
   transform: translateY(-50%) rotate(90deg);
 }
-.ui-select option {
+.ui-select option,
+.ui-select optgroup {
   background-color: theme('colors.gray.700');
 }
 </style>

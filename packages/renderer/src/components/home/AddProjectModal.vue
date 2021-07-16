@@ -34,7 +34,8 @@
   </ui-modal>
 </template>
 <script>
-import { shallowReactive } from 'vue';
+import { ref } from 'vue';
+import { nanoid } from 'nanoid';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import Project from '@/models/project';
@@ -45,23 +46,22 @@ export default {
     const toast = useToast();
     const store = useStore();
 
-    const project = shallowReactive({
-      path: '',
-      name: '',
-    });
+    const { ipcRenderer } = window.electron;
+
+    const projectInitVal = { path: '', name: '', repository: '' };
+    const project = ref(projectInitVal);
 
     function selectDirectory() {
-      window.electron.ipcRenderer
-        .callMain('select-dir')
-        .then(({ canceled, path, config }) => {
+      ipcRenderer
+        .callMain('select-project-directory')
+        .then(({ canceled, path, name }) => {
           if (canceled) return;
 
           const isDirExists = Project.query().where('path', path).exists();
 
           if (isDirExists) return toast.error('You already add this directory');
 
-          project.path = path;
-          project.name = config.name || path.split('\\').pop();
+          project.value = { name, path };
         })
         .catch((error) => {
           console.error(error);
@@ -69,25 +69,32 @@ export default {
         });
     }
     async function importProject() {
-      if (!project.name || !project.path) return;
+      if (!project.value.name || !project.value.path) return;
 
       try {
-        const copy = { ...project, createdAt: Date.now() };
-        delete copy.show;
+        const id = nanoid();
+        const projects = [{ ...project.value, id, createdAt: Date.now() }];
 
-        const repository = await window.electron.ipcRenderer.callMain(
-          'get-repository',
-          copy.path
+        const workspaces = await ipcRenderer.callMain(
+          'get-workspaces',
+          project.value.path,
         );
-        copy.repository = repository;
 
-        const result = await Project.insert({ data: copy });
+        workspaces.forEach((workspace) => {
+          projects.push({
+            ...workspace,
+            rootId: id,
+            isMonorepo: true,
+            repository: projects[0]?.repository ?? '',
+          });
+        });
+
+        await Project.insert({ data: projects });
         await store.dispatch('saveToStorage', 'projects');
 
-        emit('added', result);
+        emit('added');
 
-        project.show = false;
-        project.name = project.path = '';
+        project.value = projectInitVal;
       } catch (error) {
         console.error(error);
         toast.error(error.message || error);

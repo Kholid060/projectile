@@ -1,6 +1,7 @@
 <template>
   <aside class="w-64 bg-gray-1000 p-5">
     <component :is="activeSidebar"></component>
+    <a href="https://google.com" target="_blank">google</a>
   </aside>
 </template>
 <script>

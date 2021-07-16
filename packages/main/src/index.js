@@ -1,13 +1,11 @@
-import { app, BrowserWindow, dialog, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { join } from 'path';
 import { URL } from 'url';
-import { readFile } from 'fs/promises';
-import { existsSync } from 'fs';
 import { ipcMain } from 'electron-better-ipc';
-import gitconfig from 'gitconfiglocal';
-import fetch from 'node-fetch';
 import { userStore } from './lib/electron-store';
+import * as helper from './utils/helper';
 import * as terminalHandler from './utils/terminal/terminalHandler';
+import getWorkspaces from './utils/getWorkspaces';
 
 const isSingleInstance = app.requestSingleInstanceLock();
 
@@ -99,74 +97,22 @@ app.on('second-instance', () => {
   }
 });
 
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-async function getPackageJSON(path) {
-  const packageJSONPath = join(path, 'package.json');
-  const packageJSON = JSON.parse(await readFile(packageJSONPath));
+ipcMain.answerRenderer('get-workspaces', getWorkspaces);
 
-  return packageJSON;
-}
+ipcMain.answerRenderer('select-project-directory', helper.selectProjectDirectory);
+ipcMain.answerRenderer('fetch-npm-registry', helper.fetchNPMRegistry);
+ipcMain.answerRenderer('read-json', helper.readJson);
+ipcMain.answerRenderer('get-repository', helper.getRepository);
+ipcMain.answerRenderer('get-package-manager', helper.getPackageManager);
 
-ipcMain.answerRenderer('select-dir', async () => {
-  try {
-    const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
-
-    if (canceled) return { canceled };
-
-    const packageJSON = await getPackageJSON(filePaths[0]);
-
-    return { path: filePaths[0], config: packageJSON };
-  } catch (error) {
-    throw new Error('Can\'t find package.json file');
-  }
-});
-ipcMain.answerRenderer('fetch-npm-registry', async (path) => {
-  try {
-    const response = await fetch(`https://registry.npmjs.org${path}`);
-    const result = await response.json();
-
-    return result;
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-ipcMain.answerRenderer('get-packageJSON', (path) => getPackageJSON(path));
-ipcMain.answerRenderer('get-repository', (path) => {
-  return new Promise((resolve) => {
-    gitconfig(path, (err, config) => {
-      if (err) return resolve('');
-
-      const repository = config.remote?.origin?.url ?? '';
-
-      resolve(repository.replace(/\.git$/, ''));
-    });
-  });
-});
-ipcMain.answerRenderer('get-package-manager', async (path) => {
-  const pkgManagers = [
-    { name: 'yarn', file: 'yarn.lock' },
-    { name: 'npm', file: 'package-lock.json' },
-    { name: 'pnpm', file: 'pnpm-lock.yaml' },
-  ];
-
-  for (let index = 0; index < pkgManagers.length; index++) {
-    const { file, name } = pkgManagers[index];
-    const filePath = join(path, file);
-
-    if (existsSync(filePath)) return name;
-  }
-
-  return 'npm';
-});
 ipcMain.answerRenderer('run-script', (options) => terminalHandler.runScript(options, mainWindow));
 ipcMain.answerRenderer('create-terminal', (options) => terminalHandler.createTerminal(options, mainWindow));
-
 ipcMain.answerRenderer('clean-terminals', terminalHandler.cleanTerminals);
 ipcMain.answerRenderer('write-terminal', terminalHandler.writeTerminal);
 ipcMain.answerRenderer('remove-terminal', terminalHandler.removeTerminal);

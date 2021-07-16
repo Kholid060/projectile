@@ -1,12 +1,24 @@
 <template>
   <ui-select
-    :model-value="$route.params.id"
+    :model-value="rootId || $route.params.id"
     placeholder="Recent projects"
     class="w-full mb-4"
-    @change="changeRoute($event)"
+    @change="updateIdParams"
   >
     <option v-for="project in projects" :key="project.id" :value="project.id">
       {{ project.name }}
+    </option>
+  </ui-select>
+  <ui-select
+    v-if="workspaces.length !== 0 || $route.query.isWorkspace"
+    :model-value="$route.params.id"
+    placeholder="Workspaces"
+    class="w-full mb-4"
+    @change="updateIdParams($event, true)"
+  >
+    <option :value="rootId || $route.params.id">Workspace root</option>
+    <option v-for="workspace in workspaces" :key="workspace.id" :value="workspace.id">
+      {{ workspace.name }}
     </option>
   </ui-select>
   <ui-list class="space-y-1 text-gray-200">
@@ -27,8 +39,8 @@
   </ui-list>
 </template>
 <script>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, watch, ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import Project from '@/models/project';
 
 export default {
@@ -53,20 +65,41 @@ export default {
         path: 'boards',
       },
     ];
+
+    const route = useRoute();
     const router = useRouter();
 
+    const rootId = ref('');
+
     const projects = computed(() =>
-      Project.query().orderBy('createdAt', 'desc').get()
+      Project.query().where('isMonorepo', false).orderBy('createdAt', 'desc').get()
+    );
+    const workspaces = computed(() =>
+      Project
+        .query()
+        .where((item) => item.isMonorepo && item.rootId === rootId.value)
+        .orderBy('createdAt', 'desc')
+        .get()
     );
 
-    function changeRoute(id) {
+    function updateIdParams(id, isWorkspace) {
+      if (!isWorkspace) rootId.value = id;
+
       router.push({ params: { id } });
     }
 
+    onMounted(() => {
+      const project = Project.find(route.params.id);
+
+      rootId.value = project.isMonorepo ? project.rootId : route.params.id;
+    });
+
     return {
       items,
+      rootId,
       projects,
-      changeRoute,
+      workspaces,
+      updateIdParams,
     };
   },
 };

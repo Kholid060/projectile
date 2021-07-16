@@ -103,8 +103,9 @@ export default {
               order: maxOrder + 1,
               projectId: route.params.id,
             },
+          }).then(() => {
+            store.dispatch('saveToStorage', 'boards');
           });
-          store.dispatch('saveToStorage', 'boards');
         },
       });
     }

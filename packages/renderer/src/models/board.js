@@ -17,6 +17,10 @@ class Board extends Model {
       createdAt: this.number(Date.now()),
     };
   }
+
+  static afterDelete({ id }) {
+    Card.delete(({ boardId }) => boardId === id);
+  }
 }
 
 export default Board;

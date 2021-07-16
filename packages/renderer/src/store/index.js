@@ -11,6 +11,7 @@ const store = new createStore({
   state: () => ({
     currentQueue: '',
     packagesQueue: [],
+    activeWorkspace: '',
   }),
   getters: {
     isInQueue: (state) => (id) =>
@@ -78,7 +79,7 @@ const store = new createStore({
       });
     },
     retrieve() {
-      const keys = ['projects', 'boards', 'cards'];
+      const keys = ['projects', 'boards', 'cards', 'workspaces'];
 
       const promises = Promise.allSettled(
         keys.map(async (key) => {
@@ -99,7 +100,7 @@ const store = new createStore({
     saveToStorage({ getters }, key) {
       return new Promise((resolve, reject) => {
         if (!key) {
-          reject('You need to pass a entites name');
+          reject('You need to pass an entity name');
           return;
         }
         const data = getters[`entities/${key}/all`]();

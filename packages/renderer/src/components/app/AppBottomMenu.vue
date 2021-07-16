@@ -24,7 +24,11 @@
     ></v-mdi>
     <bottom-packages-queue></bottom-packages-queue>
     <div class="flex-grow"></div>
-    <a href="https://github.com/Kholid060/projectile" target="_blank" title="Projectile repository">
+    <a
+      href="https://github.com/Kholid060/projectile"
+      target="_blank"
+      title="Projectile repository"
+    >
       <v-mdi name="mdi-github" size="20"></v-mdi>
     </a>
   </div>
