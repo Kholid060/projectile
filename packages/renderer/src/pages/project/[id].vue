@@ -20,9 +20,7 @@ export default {
 
     const packageJSON = shallowRef({});
 
-    const project = computed(() =>
-      Project.find(route.params.id)
-    );
+    const project = computed(() => Project.find(route.params.id));
 
     function getPackageJSON() {
       if (!project.value) return;

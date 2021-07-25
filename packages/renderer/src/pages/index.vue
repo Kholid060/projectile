@@ -47,8 +47,10 @@ export default {
     const allProjects = computed(() => Project.all());
     const projects = computed(() => {
       const projects = Project.query()
-        .where(({ name, isMonorepo }) =>
-          !isMonorepo && name.toLocaleLowerCase().includes(state.search.toLocaleLowerCase())
+        .where(
+          ({ name, isMonorepo }) =>
+            !isMonorepo &&
+            name.toLocaleLowerCase().includes(state.search.toLocaleLowerCase())
         )
         .orderBy('createdAt', 'desc')
         .get();

@@ -17,7 +17,11 @@
     @change="updateIdParams($event, true)"
   >
     <option :value="rootId || $route.params.id">Workspace root</option>
-    <option v-for="workspace in workspaces" :key="workspace.id" :value="workspace.id">
+    <option
+      v-for="workspace in workspaces"
+      :key="workspace.id"
+      :value="workspace.id"
+    >
       {{ workspace.name }}
     </option>
   </ui-select>
@@ -72,11 +76,13 @@ export default {
     const rootId = ref('');
 
     const projects = computed(() =>
-      Project.query().where('isMonorepo', false).orderBy('createdAt', 'desc').get()
+      Project.query()
+        .where('isMonorepo', false)
+        .orderBy('createdAt', 'desc')
+        .get()
     );
     const workspaces = computed(() =>
-      Project
-        .query()
+      Project.query()
         .where((item) => item.isMonorepo && item.rootId === rootId.value)
         .orderBy('createdAt', 'desc')
         .get()

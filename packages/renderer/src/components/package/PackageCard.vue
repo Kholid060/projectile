@@ -10,6 +10,7 @@
       flex
       items-center
     "
+    :class="{ selectable: !isInQueue }"
   >
     <div class="p-3 mr-4 rounded-full bg-gray-100 bg-opacity-5">
       <ui-img
@@ -48,10 +49,7 @@
         </span>
       </p>
     </div>
-    <ui-spinner
-      v-if="$store.getters.isInQueue(generatePkgId())"
-      size="22"
-    ></ui-spinner>
+    <ui-spinner v-if="isInQueue" size="22"></ui-spinner>
     <template v-else>
       <ui-button
         v-if="!currentPackage.isLatest"
@@ -74,13 +72,12 @@
   </div>
 </template>
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
-import maxSatisfying from 'semver/ranges/max-satisfying';
-import semverLt from 'semver/functions/lt';
-import semverValid from 'semver/functions/valid';
 import emitter from 'tiny-emitter/instance';
+import semverValid from 'semver/functions/valid';
 import { useIntersect } from '@/composable/intersect';
+import getPkgLatestVersion, { getLatestVersion } from '@/utils/getPkgLatestVersion';
 
 export default {
   props: {
@@ -108,41 +105,23 @@ export default {
       latestVersion: '-',
     });
 
-    function getLatestVersion(currentVersion, versions) {
-      const validVersion = semverValid(currentVersion);
+    const isInQueue = computed(() => store.getters.isInQueue(generatePkgId()));
 
-      if (versions[currentVersion] || !validVersion) {
-        return {
-          isLatest: true,
-          latestVersion: !validVersion ? '-' : versions[currentVersion],
-        };
-      }
-
-      const latestVersion =
-        maxSatisfying(Object.values(versions), `>=${currentVersion}`) ||
-        currentVersion;
-      const isLessThanLatest = semverLt(currentVersion, latestVersion);
-
-      return {
-        latestVersion: latestVersion || '-',
-        isLatest: currentVersion === latestVersion || !isLessThanLatest,
-      };
-    }
     function showDetails() {
       emitter.emit('package-details', props.item.name);
     }
     function generatePkgId() {
       return `package__${props.project.id}__${props.item.name}`;
     }
-    function updatePackage(type) {
+    function updatePackage(action) {
       const validVersion = semverValid(currentPackage.value.latestVersion);
 
-      if (!validVersion && type === 'install') return;
+      if (!validVersion && action === 'install') return;
 
       store.dispatch('packagesQueue', {
         type: 'add',
         data: {
-          type,
+          action,
           id: generatePkgId(),
           name: props.item.name,
           version: validVersion,
@@ -161,24 +140,17 @@ export default {
           return;
         }
 
-        window.electron.ipcRenderer
-          .callMain(
-            'fetch-npm-registry',
-            `/-/package/${props.item.name}/dist-tags`
-          )
-          .then((versions) => {
-            if (versions.empty) return;
-
-            const currentVersion = props.item.version;
-
-            currentPackage.value = getLatestVersion(currentVersion, versions);
+        getPkgLatestVersion(props.item.name, props.item.version)
+          .then(({ latestVersion, distTags }) => {
+            currentPackage.value = latestVersion;
 
             const lsCache = JSON.parse(localStorage.getItem('packages')) || {};
+
             localStorage.setItem(
               'packages',
               JSON.stringify({
                 ...lsCache,
-                [props.item.name]: { ...versions, lastUpdated: Date.now() },
+                [props.item.name]: { ...distTags, lastUpdated: Date.now() },
               })
             );
 
@@ -190,25 +162,27 @@ export default {
             const isMoreThanAWeek =
               Date.now() > cachePackage?.lastUpdated + 6.048e8;
 
-            if (cachePackage && isMoreThanAWeek) {
-              delete lsCache[props.item.name];
-              localStorage.setItem('packages', lsCache);
-              return;
-            }
-
             if (cachePackage) {
-              delete cachePackage.lastUpdated;
+              if (isMoreThanAWeek) {
+                delete lsCache[props.item.name];
+                localStorage.setItem('packages', lsCache);
+              } else {
+                delete cachePackage.lastUpdated;
 
-              currentPackage.value = getLatestVersion(
-                props.item.version,
-                cachePackage
-              );
+                currentPackage.value = getLatestVersion(
+                  props.item.version,
+                  cachePackage
+                );
+              }
             }
+
+            emit('retrieved', cachePackage ? cachePackage : { isLatest: true });
           });
       });
     });
 
     return {
+      isInQueue,
       container,
       showDetails,
       updatePackage,

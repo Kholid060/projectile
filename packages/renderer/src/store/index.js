@@ -14,8 +14,15 @@ const store = new createStore({
     activeWorkspace: '',
   }),
   getters: {
-    isInQueue: (state) => (id) =>
-      state.packagesQueue.some((pkg) => pkg.id === id),
+    isInQueue: (state) => (id) => {
+      const isInQueue = state.packagesQueue.some((pkg) => {
+        if (pkg.isBatch) return pkg.ids.some((pkgId) => pkgId === id);
+
+        return pkg.id === id;
+      });
+
+      return isInQueue;
+    },
   },
   mutations: {
     updateState(state, { key, value }) {

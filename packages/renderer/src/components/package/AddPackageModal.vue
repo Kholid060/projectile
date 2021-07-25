@@ -215,7 +215,7 @@ export default {
       store.dispatch('packagesQueue', {
         type: 'add',
         data: {
-          type: 'install',
+          action: 'install',
           id: generatePkgId(projectId, name),
           name: name,
           version: version,

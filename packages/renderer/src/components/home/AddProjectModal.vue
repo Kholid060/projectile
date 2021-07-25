@@ -77,7 +77,7 @@ export default {
 
         const workspaces = await ipcRenderer.callMain(
           'get-workspaces',
-          project.value.path,
+          project.value.path
         );
 
         workspaces.forEach((workspace) => {

@@ -36,6 +36,7 @@ export default class Terminal {
       const log = logStore.get(`terminals.${this.name}.log`, '');
 
       logStore.set(`terminals.${this.name}.log`, log + data);
+      console.log(data);
 
       ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-data', this.type), {
         data,
@@ -64,41 +65,41 @@ export default class Terminal {
     };
 
     this.useChildProcess
-      ? this.childProcess(ptyArgs, ptyOptions)
-      : this.nodePty(ptyArgs, ptyOptions);
+      ? this._childProcess(ptyArgs, ptyOptions)
+      : this._nodePty(ptyArgs, ptyOptions);
   }
 
-  onData(data) {
+  _onData(data) {
     if (!this.isRunning) {
       return;
     }
 
     this.batcher.write(data);
   }
-  onExit() {
+  _onExit() {
     ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-exit', this.type), { name: this.name });
     logStore.set(`terminals.${this.name}.status`, 'idle');
 
     this.isRunning = false;
   }
 
-  childProcess(args, { cwd, env }) {
+  _childProcess(args, { cwd, env }) {
     const [command, ...cpArgs] = this.command.split(' ');
 
     cpArgs.push(...args);
 
     this.pty = cpSpawn(command, cpArgs, { cwd, env, shell: true });
 
-    this.pty.stdout.on('data', this.onData.bind(this));
-    this.pty.stderr.on('data', this.onData.bind(this));
-    this.pty.on('close', this.onExit.bind(this));
+    this.pty.stdout.on('data', this._onData.bind(this));
+    this.pty.stderr.on('data', this._onData.bind(this));
+    this.pty.on('close', this._onExit.bind(this));
   }
 
-  nodePty(args, options) {
+  _nodePty(args, options) {
     this.pty = ptySpawn(defaultShell, args, options);
 
-    this.pty.on('data', this.onData.bind(this));
-    this.pty.on('exit', this.onExit.bind(this));
+    this.pty.on('data', this._onData.bind(this));
+    this.pty.on('exit', this._onExit.bind(this));
   }
 
   write(data) {

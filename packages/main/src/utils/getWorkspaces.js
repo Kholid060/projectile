@@ -18,9 +18,9 @@ export default async function(cwd) {
     let workspaces = [];
 
     if (Array.isArray(pkg.workspaces)) {
-      workspaces = pkg.workspaces
+      workspaces = pkg.workspaces;
     } else if (pkg.workspaces.packages) {
-      workspaces = pkg.workspaces.packages
+      workspaces = pkg.workspaces.packages;
     }
 
     const folders = await globby(workspaces, {
@@ -28,13 +28,13 @@ export default async function(cwd) {
       onlyDirectories: true,
       absolute: true,
       expandDirectories: false,
-    })
+    });
 
     const results = Promise.all(
       folders
         .sort()
         .filter((path) => existsSync(join(path, 'package.json')))
-        .map(formatWorkspace)
+        .map(formatWorkspace),
     );
 
     return results;
@@ -44,7 +44,7 @@ export default async function(cwd) {
 
   if (isLernaWorkspace) {
     const lernaJson = await readJson({ cwd, file: 'lerna.json' });
-    const lernaFolders = (await getPackages(cwd)).map((pkg) => pkg.location)
+    const lernaFolders = (await getPackages(cwd)).map((pkg) => pkg.location);
 
     return Promise.all(lernaFolders.map(formatWorkspace));
   }

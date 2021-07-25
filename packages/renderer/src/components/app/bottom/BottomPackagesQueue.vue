@@ -75,40 +75,59 @@ export default {
       async (value) => {
         try {
           const pkg = store.state.packagesQueue.find(({ id }) => id === value);
-
+          console.log(pkg);
           if (!pkg) return;
 
-          const pkgManager = await ipcRenderer.callMain(
-            'get-package-manager',
-            pkg.path
-          );
-          const actions = {
-            install: pkgManager === 'npm' ? 'install' : 'add',
-            remove: pkgManager === 'npm' ? 'uninstall' : 'remove',
-          };
-          const param = pkg.location === 'devDeps' ? '-D' : '';
-          const pkgVersion = pkg.type === 'install' ? `@${pkg.version}` : '';
-          const command = `${pkgManager} ${actions[pkg.type]} ${
-            pkg.name
-          }${pkgVersion} ${param}`;
-
-          await ipcRenderer.callMain('run-script', {
-            useChildProcess: true,
-            type: 'package',
-            name: pkg.id,
-            cwd: pkg.path,
-            command,
-          });
+          const command = await commandBuilder(pkg);
+          console.log(command);
+          // await ipcRenderer.callMain('run-script', {
+          //   useChildProcess: true,
+          //   type: 'package',
+          //   name: pkg.id,
+          //   cwd: pkg.path,
+          //   command,
+          // });
         } catch (error) {
           console.error(error);
         }
       }
     );
 
-    function getText(data) {
-      let text = `${data.type} ${data.name}`;
+    async function commandBuilder(pkg) {
+      const pkgManager = await ipcRenderer.callMain(
+        'get-package-manager',
+        pkg.path
+      );
+      const actions = {
+        install: pkgManager === 'npm' ? 'install' : 'add',
+        remove: pkgManager === 'npm' ? 'uninstall' : 'remove',
+      };
+      const commandPrefix = `${pkgManager} ${actions[pkg.action]}`;
+      let command = '';
 
-      if (data.type === 'install') text += `@${data.version}`;
+      if (pkg.isBatch) {
+        if (pkg.deps) {
+          command += `${commandPrefix} ${pkg.deps}`;
+        }
+
+        if (pkg.devDeps) {
+          command += `${pkg.deps ? ' && ' : ''}${commandPrefix} ${pkg.devDeps} -D`;
+        }
+      } else {
+        const param = pkg.location === 'devDeps' ? '-D' : '';
+        const pkgVersion = pkg.action === 'install' ? `@${pkg.version}` : '';
+
+        command += `${commandPrefix} ${pkg.name}${pkgVersion} ${param}`;
+      }
+
+      return command;
+    }
+    function getText(data) {
+      let text;
+
+      if (data.action === 'install' && !data.isBatch)
+        text = `${data.action} ${data.name}@${data.version}`;
+      else if (data.isBatch) text = `${data.type.split('_').join(' ')} packages`;
 
       return text + ` at ${data.path}`;
     }
