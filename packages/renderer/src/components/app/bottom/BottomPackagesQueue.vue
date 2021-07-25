@@ -111,7 +111,9 @@ export default {
         }
 
         if (pkg.devDeps) {
-          command += `${pkg.deps ? ' && ' : ''}${commandPrefix} ${pkg.devDeps} -D`;
+          command += `${pkg.deps ? ' && ' : ''}${commandPrefix} ${
+            pkg.devDeps
+          } -D`;
         }
       } else {
         const param = pkg.location === 'devDeps' ? '-D' : '';
@@ -127,7 +129,8 @@ export default {
 
       if (data.action === 'install' && !data.isBatch)
         text = `${data.action} ${data.name}@${data.version}`;
-      else if (data.isBatch) text = `${data.type.split('_').join(' ')} packages`;
+      else if (data.isBatch)
+        text = `${data.type.split('_').join(' ')} packages`;
 
       return text + ` at ${data.path}`;
     }

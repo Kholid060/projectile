@@ -7,7 +7,7 @@ import osLocale from 'os-locale';
 import { ipcMain } from 'electron-better-ipc';
 import kill from 'tree-kill';
 import { logStore } from '../../lib/electron-store';
-import { DataBatcher} from './dataBatcher';
+import { DataBatcher } from './dataBatcher';
 
 const pathDelimiter = os.platform() === 'win32' ? ';' : ':';
 const eventPrefix = (event, prefix) => prefix ? `${prefix}-${event}` : event;
@@ -36,7 +36,6 @@ export default class Terminal {
       const log = logStore.get(`terminals.${this.name}.log`, '');
 
       logStore.set(`terminals.${this.name}.log`, log + data);
-      console.log(data);
 
       ipcMain.callRenderer(this.mainWindow, eventPrefix('pty-data', this.type), {
         data,

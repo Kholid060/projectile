@@ -73,7 +73,6 @@
 <script>
 import { computed, watch, shallowReactive, ref, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
-import emitter from 'tiny-emitter';
 import SelectionArea from '@viselect/vue';
 import PackageCard from '@/components/package/PackageCard.vue';
 import AddPackageModal from '@/components/package/AddPackageModal.vue';
@@ -187,18 +186,20 @@ export default {
       const isPkgOutdated = (pkg, version) => {
         if (!version.isLatest) {
           payload.ids.push(generateQueueId(pkg.name));
-          payload[pkg.type] = (payload[pkg.type] || '') + `${pkg.name}@${version.latestVersion} `;
+          payload[pkg.type] =
+            (payload[pkg.type] || '') + `${pkg.name}@${version.latestVersion} `;
 
           isEmpty = false;
         }
-      }
+      };
 
       for (const pkg of data) {
         try {
           const cache = state.packageCache[pkg.name];
-          const isPkgInQueue = store.getters.isInQueue(generateQueueId(pkg.name));
-          const pkgId = '';
-          console.log(isPkgInQueue, pkg.name);
+          const isPkgInQueue = store.getters.isInQueue(
+            generateQueueId(pkg.name)
+          );
+
           if (isPkgInQueue) continue;
 
           if (cache) {
@@ -207,7 +208,10 @@ export default {
             continue;
           }
 
-          const { latestVersion } = await getPkgLatestVersion(pkg.name, pkg.version);
+          const { latestVersion } = await getPkgLatestVersion(
+            pkg.name,
+            pkg.version
+          );
           isPkgOutdated(pkg, latestVersion);
 
           state.packageCache[pkg.name] = latestVersion;
@@ -245,7 +249,10 @@ export default {
     async function updateSelectedPackages() {
       btnState.updateSelected = 'loading';
 
-      const data = [...selectedPackages.value.entries()].map(([id, value]) => ({ id, ...value }));
+      const data = [...selectedPackages.value.entries()].map(([id, value]) => ({
+        id,
+        ...value,
+      }));
 
       await updatePackages({ data, type: 'update_selected' });
 

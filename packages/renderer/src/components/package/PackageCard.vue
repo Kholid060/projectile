@@ -77,7 +77,9 @@ import { useStore } from 'vuex';
 import emitter from 'tiny-emitter/instance';
 import semverValid from 'semver/functions/valid';
 import { useIntersect } from '@/composable/intersect';
-import getPkgLatestVersion, { getLatestVersion } from '@/utils/getPkgLatestVersion';
+import getPkgLatestVersion, {
+  getLatestVersion,
+} from '@/utils/getPkgLatestVersion';
 
 export default {
   props: {
