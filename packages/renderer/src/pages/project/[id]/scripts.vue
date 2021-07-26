@@ -93,7 +93,6 @@
             mt-4
             p-5
             rounded-lg
-            relative
             overflow-auto
             scroll
             relative
@@ -159,11 +158,11 @@ export default {
     }
     function toggleScript() {
       if (state.status[terminalId.value] === 'running') {
-        ipcRenderer.callMain('kill-terminal', terminalId.value);
+        ipcRenderer.callMain('terminal:kill', terminalId.value);
       } else {
         const command = props.packageJSON.scripts[state.activeScript];
 
-        ipcRenderer.callMain('run-script', {
+        ipcRenderer.callMain('terminal:run-script', {
           useChildProcess: true,
           type: 'script',
           name: terminalId.value,
@@ -178,7 +177,7 @@ export default {
     }
 
     watch(terminalId, (value) => {
-      ipcRenderer.callMain('log-terminal', value).then(({ log, status }) => {
+      ipcRenderer.callMain('terminal:log', value).then(({ log, status }) => {
         state.logs = '';
 
         state.logs += log;
@@ -196,7 +195,7 @@ export default {
             const id = generateTerminalId(key);
 
             return ipcRenderer
-              .callMain('log-terminal', id)
+              .callMain('terminal:log', id)
               .then((data) => ({ ...data, id }));
           })
         );

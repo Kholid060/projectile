@@ -131,7 +131,7 @@ export default {
       const encodedName = encodeURIComponent(name);
       const promises = [
         window.electron.ipcRenderer.callMain(
-          'fetch-npm-registry',
+          'helper:fetch-npm-registry',
           `/${encodedName}`
         ),
         fetch(

@@ -156,7 +156,10 @@ export default {
 
       state.loading = true;
       ipcRenderer
-        .callMain('fetch-npm-registry', `/-/v1/search?text=${state.query}`)
+        .callMain(
+          'helper:fetch-npm-registry',
+          `/-/v1/search?text=${state.query}`
+        )
         .then(({ total, objects }) => {
           state.searchResults = {
             results: objects,
@@ -183,7 +186,10 @@ export default {
       state.pkgVersion[pkg.name] = { loading: true };
 
       ipcRenderer
-        .callMain('fetch-npm-registry', `/-/package/${pkg.name}/dist-tags`)
+        .callMain(
+          'helper:fetch-npm-registry',
+          `/-/package/${pkg.name}/dist-tags`
+        )
         .then((versions) => {
           delete versions.latest;
 

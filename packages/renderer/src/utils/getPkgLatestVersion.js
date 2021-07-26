@@ -26,7 +26,7 @@ export function getLatestVersion(currentVersion, versions) {
 export default function (name, version = 'latest') {
   return new Promise((resolve, reject) => {
     window.electron.ipcRenderer
-      .callMain('fetch-npm-registry', `/-/package/${name}/dist-tags`)
+      .callMain('helper:fetch-npm-registry', `/-/package/${name}/dist-tags`)
       .then((versions) => {
         if (typeof versions === 'string') return reject(versions);
 

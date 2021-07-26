@@ -51,7 +51,7 @@ export default {
       'package-pty-exit',
       ({ name }) => {
         ipcRenderer
-          .callMain('remove-terminal', {
+          .callMain('terminal:remove', {
             name,
             clean: true,
           })
@@ -79,14 +79,14 @@ export default {
           if (!pkg) return;
 
           const command = await commandBuilder(pkg);
-          console.log(command);
-          // await ipcRenderer.callMain('run-script', {
-          //   useChildProcess: true,
-          //   type: 'package',
-          //   name: pkg.id,
-          //   cwd: pkg.path,
-          //   command,
-          // });
+
+          await ipcRenderer.callMain('terminal:run-script', {
+            useChildProcess: true,
+            type: 'package',
+            name: pkg.id,
+            cwd: pkg.path,
+            command,
+          });
         } catch (error) {
           console.error(error);
         }
@@ -95,7 +95,7 @@ export default {
 
     async function commandBuilder(pkg) {
       const pkgManager = await ipcRenderer.callMain(
-        'get-package-manager',
+        'get:package-manager',
         pkg.path
       );
       const actions = {
@@ -135,7 +135,7 @@ export default {
       return text + ` at ${data.path}`;
     }
     function abortAction(id) {
-      ipcRenderer.callMain('kill-terminal', id).then(() => {
+      ipcRenderer.callMain('terminal:kill', id).then(() => {
         store.dispatch('packagesQueue', {
           id,
           type: 'delete',
@@ -144,7 +144,7 @@ export default {
     }
 
     onMounted(() => {
-      ipcRenderer.callMain('log-terminal').then((data) => {
+      ipcRenderer.callMain('terminal:log').then((data) => {
         const packagesQueue = JSON.parse(
           localStorage.getItem('packages-queue') || '[]'
         );

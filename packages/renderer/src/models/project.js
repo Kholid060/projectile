@@ -22,7 +22,7 @@ class Project extends Model {
   }
 
   static afterDelete({ id, isMonorepo, workspaces }) {
-    window.electron.ipcRenderer.callMain('remove-project-terminals', id);
+    window.electron.ipcRenderer.callMain('terminal:remove-project', id);
 
     Board.delete(({ projectId }) => projectId === id);
 

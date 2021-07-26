@@ -177,7 +177,7 @@ export default {
       return `package__${props.project.id}__${type}`;
     }
 
-    async function updatePackages({ data, type, action = 'install' }) {
+    async function updatePackages({ data, type }) {
       const payload = {
         ids: [],
       };

@@ -111,7 +111,7 @@ export default {
       const id = `terminal_${nanoid()}`;
 
       ipcRenderer
-        .callMain('create-terminal', {
+        .callMain('terminal:create', {
           name: id,
           type: 'terminal',
           cwd: window.electron.homedir,
@@ -126,7 +126,7 @@ export default {
     }
     function removeTerminal(id) {
       ipcRenderer
-        .callMain('remove-terminal', {
+        .callMain('terminal:remove', {
           name: id,
           clean: true,
         })
@@ -153,7 +153,7 @@ export default {
         container.value.style.height = cacheHeight + 'px';
       }
 
-      ipcRenderer.callMain('log-terminal').then((logs) => {
+      ipcRenderer.callMain('terminal:log').then((logs) => {
         Object.entries(logs).forEach(([key, value]) => {
           if (key.startsWith('terminal') && value.log) {
             terminalId += 1;

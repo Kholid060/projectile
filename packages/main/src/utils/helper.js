@@ -35,7 +35,7 @@ export async function selectProjectDirectory() {
     const [path] = filePaths;
     const config = await readJson(path);
     const repository = await getRepository(path);
-
+    
     return {
       path,
       repository,

@@ -1,7 +1,7 @@
 function invokeEvent(name, param) {
   const { ipcRenderer } = window.electron;
 
-  return ipcRenderer.callMain(`storage-${name}`, param);
+  return ipcRenderer.callMain(`storage:${name}`, param);
 }
 
 export function useStorage() {

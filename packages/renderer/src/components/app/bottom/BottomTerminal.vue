@@ -40,7 +40,7 @@ export default {
       localStorage.setItem('active-terminal', props.activeTerminal);
 
       ipcRenderer
-        .callMain('log-terminal', props.activeTerminal)
+        .callMain('terminal:log', props.activeTerminal)
         .then((data) => {
           terminal.reset();
           terminal.write(data.log);
@@ -58,7 +58,7 @@ export default {
       insertCacheLogs();
 
       terminal.onKey(({ key }) => {
-        ipcRenderer.callMain('write-terminal', {
+        ipcRenderer.callMain('terminal:write', {
           name: props.activeTerminal,
           command: key,
         });

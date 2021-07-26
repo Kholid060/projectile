@@ -53,15 +53,17 @@ export default {
 
     function selectDirectory() {
       ipcRenderer
-        .callMain('select-project-directory')
-        .then(({ canceled, path, name }) => {
-          if (canceled) return;
+        .callMain('helper:select-project-directory')
+        .then((newProject) => {
+          if (newProject.canceled) return;
 
-          const isDirExists = Project.query().where('path', path).exists();
+          const isDirExists = Project.query()
+            .where('path', newProject.path)
+            .exists();
 
           if (isDirExists) return toast.error('You already add this directory');
 
-          project.value = { name, path };
+          project.value = newProject;
         })
         .catch((error) => {
           console.error(error);
@@ -76,7 +78,7 @@ export default {
         const projects = [{ ...project.value, id, createdAt: Date.now() }];
 
         const workspaces = await ipcRenderer.callMain(
-          'get-workspaces',
+          'get:workspaces',
           project.value.path
         );
 

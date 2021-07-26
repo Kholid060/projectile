@@ -25,11 +25,13 @@ export default {
     function getPackageJSON() {
       if (!project.value) return;
 
-      ipcRenderer.callMain('read-json', project.value.path).then((config) => {
-        if (!config) return;
+      ipcRenderer
+        .callMain('helper:read-json', project.value.path)
+        .then((config) => {
+          if (!config) return;
 
-        packageJSON.value = config;
-      });
+          packageJSON.value = config;
+        });
     }
 
     emitter.on('refresh-package-json', getPackageJSON);

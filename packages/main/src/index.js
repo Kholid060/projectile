@@ -103,28 +103,28 @@ app.on('window-all-closed', () => {
   }
 });
 
-ipcMain.answerRenderer('get-workspaces', getWorkspaces);
+ipcMain.answerRenderer('get:workspaces', getWorkspaces);
+ipcMain.answerRenderer('get:repository', helper.getRepository);
+ipcMain.answerRenderer('get:package-manager', helper.getPackageManager);
 
-ipcMain.answerRenderer('select-project-directory', helper.selectProjectDirectory);
-ipcMain.answerRenderer('fetch-npm-registry', helper.fetchNPMRegistry);
-ipcMain.answerRenderer('read-json', helper.readJson);
-ipcMain.answerRenderer('get-repository', helper.getRepository);
-ipcMain.answerRenderer('get-package-manager', helper.getPackageManager);
+ipcMain.answerRenderer('helper:select-project-directory', helper.selectProjectDirectory);
+ipcMain.answerRenderer('helper:fetch-npm-registry', helper.fetchNPMRegistry);
+ipcMain.answerRenderer('helper:read-json', helper.readJson);
 
-ipcMain.answerRenderer('run-script', (options) => terminalHandler.runScript(options, mainWindow));
-ipcMain.answerRenderer('create-terminal', (options) => terminalHandler.createTerminal(options, mainWindow));
-ipcMain.answerRenderer('clean-terminals', terminalHandler.cleanTerminals);
-ipcMain.answerRenderer('write-terminal', terminalHandler.writeTerminal);
-ipcMain.answerRenderer('remove-terminal', terminalHandler.removeTerminal);
-ipcMain.answerRenderer('log-terminal', terminalHandler.logTerminal);
-ipcMain.answerRenderer('kill-terminal', terminalHandler.killTerminal);
-ipcMain.answerRenderer('remove-project-terminals', terminalHandler.removeProjectTerminals);
+ipcMain.answerRenderer('terminal:run-script', (options) => terminalHandler.runScript(options, mainWindow));
+ipcMain.answerRenderer('terminal:create', (options) => terminalHandler.createTerminal(options, mainWindow));
+ipcMain.answerRenderer('terminal:cleans', terminalHandler.cleanTerminals);
+ipcMain.answerRenderer('terminal:write', terminalHandler.writeTerminal);
+ipcMain.answerRenderer('terminal:remove', terminalHandler.removeTerminal);
+ipcMain.answerRenderer('terminal:log', terminalHandler.logTerminal);
+ipcMain.answerRenderer('terminal:kill', terminalHandler.killTerminal);
+ipcMain.answerRenderer('terminal:remove-project', terminalHandler.removeProjectTerminals);
 
-ipcMain.answerRenderer('storage-get', ({ key, def }) => userStore.get(key, def));
-ipcMain.answerRenderer('storage-set', ({ key, value }) => userStore.set(key, value));
-ipcMain.answerRenderer('storage-delete', (key) => userStore.delete(key));
-ipcMain.answerRenderer('storage-has', (key) => userStore.has(key));
-ipcMain.answerRenderer('storage-clear', () => userStore.clear());
+ipcMain.answerRenderer('storage:get', ({ key, def }) => userStore.get(key, def));
+ipcMain.answerRenderer('storage:set', ({ key, value }) => userStore.set(key, value));
+ipcMain.answerRenderer('storage:delete', (key) => userStore.delete(key));
+ipcMain.answerRenderer('storage:has', (key) => userStore.has(key));
+ipcMain.answerRenderer('storage:clear', () => userStore.clear());
 
 app.whenReady()
   .then(createWindow)
