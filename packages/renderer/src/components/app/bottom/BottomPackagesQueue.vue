@@ -75,7 +75,7 @@ export default {
       async (value) => {
         try {
           const pkg = store.state.packagesQueue.find(({ id }) => id === value);
-          console.log(pkg);
+
           if (!pkg) return;
 
           const command = await commandBuilder(pkg);

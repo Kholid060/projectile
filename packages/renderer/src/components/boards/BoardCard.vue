@@ -61,7 +61,11 @@
       </template>
       <p class="mb-2">Tasks</p>
       <ui-list class="w-44 max-h-52 scroll overflow-auto">
-        <ui-list-item v-for="task in card.data.tasks" :key="task.id">
+        <ui-list-item
+          v-for="task in card.data.tasks"
+          :key="task.id"
+          :title="task.name"
+        >
           <ui-checkbox
             :model-value="task.done"
             @change="updateTask(task.id, $event)"

@@ -16,7 +16,7 @@
         placeholder="Search..."
       ></ui-input>
     </div>
-    <div v-if="state.loading" class="text-center my-4">
+    <div v-if="state.status === 'loading'" class="text-center my-4">
       <ui-spinner size="36"></ui-spinner>
     </div>
     <div
@@ -100,6 +100,7 @@ export default {
     const state = reactive({
       issues: [],
       search: '',
+      status: 'idle',
       selectedIssues: [],
       activeFilter: 'all',
     });
@@ -141,6 +142,8 @@ export default {
     }
     async function fetchIssues() {
       try {
+        state.status = 'loading';
+
         const apiURL = props.repository.replace(
           'github.com/',
           'api.github.com/repos/'
@@ -153,9 +156,12 @@ export default {
 
         const data = await response.json();
 
+        state.status = 'idle';
+
         return data;
       } catch (error) {
         console.error(error);
+        state.status = 'error';
         return [];
       }
     }

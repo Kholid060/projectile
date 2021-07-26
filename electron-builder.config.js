@@ -5,9 +5,15 @@ const packageJSON = require('./package.json');
  * @see https://www.electron.build/configuration/configuration
  */
 const config = {
+  appId: 'com.kholid060.projectile',
   directories: {
     output: 'dist',
     buildResources: 'buildResources',
+  },
+  publish: {
+    provider: 'github',
+    owner: 'kholid060',
+    token: process.env.GITHUB_TOKEN,
   },
   files: [
     'packages/**/dist/**',
