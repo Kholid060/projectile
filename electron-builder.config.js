@@ -25,11 +25,6 @@ const config = {
     target: 'nsis',
     artifactName: '${productName}Setup-${arch}-${version}.${ext}',
   },
-  nsis: {
-    oneClick: false,
-    perMachine: false,
-    allowToChangeInstallationDirectory: true,
-  },
 };
 
 module.exports = config;
