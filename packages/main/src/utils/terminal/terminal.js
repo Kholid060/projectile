@@ -97,8 +97,8 @@ export default class Terminal {
   _nodePty(args, options) {
     this.pty = ptySpawn(defaultShell, args, options);
 
-    this.pty.on('data', this._onData.bind(this));
-    this.pty.on('exit', this._onExit.bind(this));
+    this.pty.onData(this._onData.bind(this));
+    this.pty.onExit(this._onExit.bind(this));
   }
 
   write(data) {
@@ -125,14 +125,13 @@ export default class Terminal {
     }
   }
 
-  async destroy() {
-    await this.kill();
+  destroy() {
+    this.kill();
     this.clean();
   }
 }
 
-function getPtyEnv({ name, version, path }) {
-  const currentPath = path;
+function getPtyEnv({ name, version, path, rootPath }) {
   const env = Object.assign(
     {},
     process.env,
@@ -145,13 +144,16 @@ function getPtyEnv({ name, version, path }) {
       TERM_PROGRAM_VERSION: version,
     },
   );
+  const nodeModulePath = `${pathDelimiter}#path\\node_modules\\.bin`;
 
-  if (currentPath) {
-    const envPath = env.Path + `${pathDelimiter}${currentPath}\\node_modules\\.bin`;
-
-    env.PATH = envPath;
-    env.Path = envPath;
+  if (path) {
+    env.Path += nodeModulePath.replace(/#path/, path);  
   }
-
+  if (rootPath) {
+    env.Path += nodeModulePath.replace(/#path/, rootPath);
+  }
+  
+  env.PATH = env.Path;
+  
   return env;
 }

@@ -1,5 +1,5 @@
 .tippy-box[data-theme~='my-theme'] {
-  @apply bg-gray-700 px-2 py-1 text-sm shadow-xl rounded-lg text-gray-200;
+  @apply bg-gray-700 px-2 py-1 text-sm shadow-xl rounded-md text-gray-200;
 }
 
 .tippy-box[data-theme~='my-theme'] > .tippy-svg-arrow {

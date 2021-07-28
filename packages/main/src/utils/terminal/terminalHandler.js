@@ -34,12 +34,12 @@ export function killTerminal(name) {
   }
 }
 
-export async function removeTerminal({ name, clean }) {
+export function removeTerminal({ name, clean }) {
   const terminal = terminals[name];
 
   if (!terminal) return null;
 
-  await terminal.destroy();
+  terminal.destroy();
 
   if (clean) terminal.clean();
 
@@ -54,9 +54,9 @@ export function removeProjectTerminals(id) {
   });
 }
 
-export async function cleanTerminals() {
+export function cleanTerminals() {
   for (const key in terminals) {
-    await removeTerminal({ name: key, clean: true });
+    removeTerminal({ name: key, clean: true });
   }
 }
 

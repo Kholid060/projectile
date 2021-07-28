@@ -50,7 +50,7 @@
               ]"
               class="h-3 w-3 rounded-full mr-2"
             ></span>
-            <span>{{ name }}</span>
+            <span :title="name" class="flex-1 text-overflow">{{ name }}</span>
           </ui-list-item>
         </ui-list>
       </div>
@@ -107,6 +107,7 @@
 </template>
 <script>
 import { watch, reactive, computed, onUnmounted, ref } from 'vue';
+import Project from '@/models/project';
 
 export default {
   props: {
@@ -161,14 +162,21 @@ export default {
         ipcRenderer.callMain('terminal:kill', terminalId.value);
       } else {
         const command = props.packageJSON.scripts[state.activeScript];
-
-        ipcRenderer.callMain('terminal:run-script', {
+        const payload = {
           useChildProcess: true,
           type: 'script',
           name: terminalId.value,
           cwd: props.project.path,
+          details: props.project,
           command,
-        });
+        };
+
+        if (props.project.rootId) {
+          const rootProject = Project.find(props.project.rootId);
+          payload.details.rootPath = rootProject.path;
+        }
+
+        ipcRenderer.callMain('terminal:run-script', payload);
 
         state.status[terminalId.value] = 'running';
 

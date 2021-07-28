@@ -55,7 +55,7 @@
         class="h-10 focus:ring-0 focus:outline-none flex-shrink-0 mx-2"
         @click="$emit('close')"
       >
-        <v-mdi name="mdi-close"></v-mdi>
+        <v-mdi name="mdi-close" size="20"></v-mdi>
       </button>
     </div>
     <bottom-terminal
