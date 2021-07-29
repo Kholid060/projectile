@@ -5,6 +5,7 @@
     @edit="editProjectName"
     @update="updateProject($event.id, $event.data)"
     @delete="deleteProject"
+    @selectDir="selectProjectDir"
   ></view-list>
   <view-grid
     v-else
@@ -12,9 +13,11 @@
     @edit="editProjectName"
     @update="updateProject($event.id, $event.data)"
     @delete="deleteProject"
+    @selectDir="selectProjectDir"
   ></view-grid>
 </template>
 <script>
+import { useToast } from 'vue-toastification';
 import { useDialog } from '@/composable/dialog';
 import ViewGrid from './view/ViewGrid.vue';
 import ViewList from './view/ViewList.vue';
@@ -30,6 +33,7 @@ export default {
     listView: Boolean,
   },
   setup() {
+    const toast = useToast();
     const dialog = useDialog();
 
     function updateProject(id, data) {
@@ -53,11 +57,32 @@ export default {
 
       if (confirm) Project.delete(id);
     }
+    function selectProjectDir(project) {
+      window.electron.ipcRenderer
+        .callMain('helper:select-project-directory')
+        .then(({ path: newPath, canceled }) => {
+          if (canceled) return;
+
+          const isDirExists = Project.query()
+            .where(({ id, path }) => id !== project.id && path === newPath)
+            .exists();
+
+          if (isDirExists) return toast.error('You already add this directory');
+
+          Project.update({
+            where: project.id,
+            data: {
+              path: newPath,
+            },
+          });
+        });
+    }
 
     return {
       updateProject,
       deleteProject,
       editProjectName,
+      selectProjectDir,
     };
   },
 };

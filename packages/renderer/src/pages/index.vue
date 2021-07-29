@@ -53,7 +53,11 @@ export default {
             name.toLocaleLowerCase().includes(state.search.toLocaleLowerCase())
         )
         .orderBy('createdAt', 'desc')
-        .get();
+        .get()
+        .map((project) => ({
+          ...project,
+          isPathExist: window.electron.existsSync(project.path),
+        }));
       const filteredProjects = filterProjects(projects);
 
       return filteredProjects;

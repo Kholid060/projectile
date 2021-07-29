@@ -57,12 +57,6 @@ export default {
         .then((newProject) => {
           if (newProject.canceled) return;
 
-          const isDirExists = Project.query()
-            .where('path', newProject.path)
-            .exists();
-
-          if (isDirExists) return toast.error('You already add this directory');
-
           project.value = newProject;
         })
         .catch((error) => {
@@ -72,6 +66,12 @@ export default {
     }
     async function importProject() {
       if (!project.value.name || !project.value.path) return;
+
+      const isDirExists = Project.query()
+        .where('path', project.value.path)
+        .exists();
+
+      if (isDirExists) return toast.error('You already add this directory');
 
       try {
         const id = nanoid();

@@ -1,12 +1,15 @@
+/* eslint-disable no-undef */
 import { contextBridge } from 'electron';
 import { ipcRenderer } from 'electron-better-ipc';
 import { homedir } from 'os';
+import { existsSync } from 'fs';
 
 const apiKey = 'electron';
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
  */
 const api = {
+  existsSync,
   ipcRenderer,
   homedir: homedir(),
   versions: process.versions,

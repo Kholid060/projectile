@@ -29,6 +29,13 @@
       >
         {{ project.path }}
       </router-link>
+      <v-mdi
+        v-if="!project.isPathExist"
+        v-tooltip="'Project directory is not found'"
+        name="mdi-alert-outline"
+        class="mr-4 text-yellow-500 cursor-pointer"
+        @click="$emit('selectDir', project)"
+      ></v-mdi>
       <ui-button
         icon
         class="mr-4 hidden group-hover:block"
@@ -50,6 +57,6 @@ export default {
       default: () => [],
     },
   },
-  emits: ['edit', 'update', 'delete'],
+  emits: ['edit', 'update', 'delete', 'selectDir'],
 };
 </script>

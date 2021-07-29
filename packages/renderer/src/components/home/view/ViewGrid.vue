@@ -7,12 +7,13 @@
         hover
         class="list-transition"
       >
-        <router-link :to="`/project/${project.id}`">
+        <router-link :to="`/project/${project.id}`" class="block text-overflow">
           {{ project.name }}
         </router-link>
         <router-link
           :to="`/project/${project.id}`"
-          class="mb-4 line-clamp text-gray-300"
+          :title="project.path"
+          class="mb-4 text-overflow block text-gray-300"
         >
           {{ project.path }}
         </router-link>
@@ -31,6 +32,13 @@
               :class="{ 'text-yellow-500': project.starred }"
             ></v-mdi>
           </ui-button>
+          <v-mdi
+            v-if="!project.isPathExist"
+            v-tooltip="'Project directory is not found'"
+            name="mdi-alert-outline"
+            class="ml-2 focus:outline-none text-yellow-500 cursor-pointer"
+            @click="$emit('selectDir', project)"
+          ></v-mdi>
           <div class="flex-grow"></div>
           <ui-button icon class="mr-2" @click="$emit('edit', project)">
             <v-mdi name="mdi-pencil-outline"></v-mdi>
@@ -55,6 +63,6 @@ export default {
       default: () => [],
     },
   },
-  emits: ['edit', 'update', 'delete'],
+  emits: ['edit', 'update', 'delete', 'selectDir'],
 };
 </script>

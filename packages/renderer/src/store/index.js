@@ -85,24 +85,14 @@ const store = new createStore({
           state.packagesQueue.length === 0 ? '' : state.packagesQueue[0].id,
       });
     },
-    retrieve() {
-      const keys = ['projects', 'boards', 'cards', 'workspaces'];
+    async retrieve() {
+      const keys = ['projects', 'boards', 'cards'];
 
-      const promises = Promise.allSettled(
-        keys.map(async (key) => {
-          const data = await storage.get(key, []);
+      for (const key of keys) {
+        const data = await storage.get(key, []);
 
-          return { key, data };
-        })
-      );
-
-      promises.then((result) => {
-        result.forEach(({ status, value }) => {
-          if (status === 'fulfilled') {
-            models[value.key.slice(0, -1)].create({ data: value.data });
-          }
-        });
-      });
+        models[key.slice(0, -1)].create({ data });
+      }
     },
     saveToStorage({ getters }, key) {
       return new Promise((resolve, reject) => {
