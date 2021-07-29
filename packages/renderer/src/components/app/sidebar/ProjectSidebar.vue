@@ -43,7 +43,7 @@
   </ui-list>
 </template>
 <script>
-import { computed, watch, ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Project from '@/models/project';
 

@@ -43,7 +43,6 @@ export default async function(cwd) {
   const isLernaWorkspace = existsSync(join(cwd, 'lerna.json'));
 
   if (isLernaWorkspace) {
-    const lernaJson = await readJson({ cwd, file: 'lerna.json' });
     const lernaFolders = (await getPackages(cwd)).map((pkg) => pkg.location);
 
     return Promise.all(lernaFolders.map(formatWorkspace));

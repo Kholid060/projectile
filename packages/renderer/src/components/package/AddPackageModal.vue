@@ -139,6 +139,7 @@ import { getPackageIcon } from '@/utils/helper';
 import Project from '@/models/project';
 
 export default {
+  emits: ['update:modelValue'],
   setup() {
     const store = useStore();
     const { ipcRenderer } = window.electron;
