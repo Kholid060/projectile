@@ -10,11 +10,6 @@ const config = {
     output: 'dist',
     buildResources: 'buildResources',
   },
-  publish: {
-    provider: 'github',
-    owner: 'kholid060',
-    token: process.env.GITHUB_TOKEN,
-  },
   files: [
     'packages/**/dist/**',
   ],
