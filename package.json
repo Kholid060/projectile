@@ -14,7 +14,7 @@
     "test": "node tests/app.spec.js",
     "watch": "node scripts/watch.js",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "rebuild": "./node_modules/.bin/electron-rebuild.cmd"
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": {
     "type": "git",
