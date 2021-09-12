@@ -61,7 +61,9 @@
         ></package-card>
       </div>
     </selection-area>
-    <add-package-modal v-model="state.addPackage"></add-package-modal>
+    <ui-modal v-model="state.addPackage" custom-content @close="state.addPackage = false">
+      <add-package-modal :show="state.addPackage"></add-package-modal>
+    </ui-modal>
     <package-details></package-details>
   </div>
 </template>
