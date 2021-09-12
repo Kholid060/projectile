@@ -15,7 +15,7 @@
     :class="{ 'border-t': !state.showTerminals }"
   >
     <v-mdi
-      v-tooltip="'Terminals'"
+      v-tooltip="'Terminals (Ctrl+`)'"
       name="mdi-console"
       size="20"
       class="cursor-pointer focus:outline-none"
@@ -35,10 +35,12 @@
   <bottom-terminals
     v-if="state.showTerminals"
     @close="state.showTerminals = false"
+    @show="state.showTerminals = true"
   ></bottom-terminals>
 </template>
 <script>
 import { shallowReactive } from 'vue';
+import Mousetrap from 'mousetrap';
 import BottomTerminals from './bottom/BottomTerminals.vue';
 import BottomPackagesQueue from './bottom/BottomPackagesQueue.vue';
 
@@ -47,6 +49,10 @@ export default {
   setup() {
     const state = shallowReactive({
       showTerminals: false,
+    });
+
+    Mousetrap.bind('mod+`', () => {
+      state.showTerminals = !state.showTerminals;
     });
 
     return {

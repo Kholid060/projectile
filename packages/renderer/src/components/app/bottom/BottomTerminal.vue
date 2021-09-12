@@ -17,6 +17,7 @@ export default {
       default: '',
     },
   },
+  emits: ['title'],
   setup(props, { emit }) {
     let observer = null;
     let terminal = null;

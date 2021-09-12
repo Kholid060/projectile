@@ -5,7 +5,7 @@ import merge from 'deepmerge';
 import 'xterm/css/xterm.css';
 
 export const defaultOptions = {
-  fontFamily: 'Fira Code, monospace',
+  fontFamily: 'Cascadia Code, monospace',
   theme: {
     background: '#0e131f',
     blue: '#3B82F6',

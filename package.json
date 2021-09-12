@@ -17,8 +17,8 @@
     "rebuild": "./node_modules/.bin/electron-rebuild.cmd"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/kholid060/projectile.git"
+    "type": "git",
+    "url": "https://github.com/kholid060/projectile.git"
   },
   "browserslist": [
     "Chrome 91"
