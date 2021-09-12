@@ -24,6 +24,7 @@
     ></v-mdi>
     <bottom-packages-queue></bottom-packages-queue>
     <div class="flex-grow"></div>
+    <span class="mr-4 text-gray-400 text-sm"> v{{ state.version }} </span>
     <a
       href="https://github.com/Kholid060/projectile"
       target="_blank"
@@ -49,10 +50,15 @@ export default {
   setup() {
     const state = shallowReactive({
       showTerminals: false,
+      version: '0.0.0',
     });
 
     Mousetrap.bind('mod+`', () => {
       state.showTerminals = !state.showTerminals;
+    });
+
+    window.electron.ipcRenderer.callMain('app:version').then((result) => {
+      state.version = result;
     });
 
     return {

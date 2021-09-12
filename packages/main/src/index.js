@@ -103,6 +103,8 @@ app.on('window-all-closed', () => {
   }
 });
 
+ipcMain.answerRenderer('app:version', () => app.getVersion());
+
 ipcMain.answerRenderer('get:workspaces', getWorkspaces);
 ipcMain.answerRenderer('get:repository', helper.getRepository);
 ipcMain.answerRenderer('get:package-manager', helper.getPackageManager);

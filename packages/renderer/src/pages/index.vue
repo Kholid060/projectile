@@ -1,5 +1,10 @@
 <template>
-  <div class="container flex flex-col h-full">
+  <div
+    class="container flex flex-col h-full z-40"
+    @drop="handleDrop"
+    @dragover.prevent
+    @dragenter.prevent
+  >
     <home-nav
       v-model:viewType="state.viewType"
       v-model:search="state.search"
@@ -32,6 +37,7 @@
 </route>
 <script>
 import { computed, shallowReactive, onMounted } from 'vue';
+import { nanoid } from 'nanoid';
 import Project from '@/models/project';
 import HomeNav from '@/components/home/HomeNav.vue';
 import HomeProjects from '@/components/home/HomeProjects.vue';
@@ -39,6 +45,8 @@ import HomeProjects from '@/components/home/HomeProjects.vue';
 export default {
   components: { HomeNav, HomeProjects },
   setup() {
+    const { ipcRenderer, existsSync, path } = window.electron;
+
     const state = shallowReactive({
       search: '',
       viewType: 'list',
@@ -56,7 +64,7 @@ export default {
         .get()
         .map((project) => ({
           ...project,
-          isPathExist: window.electron.existsSync(project.path),
+          isPathExist: existsSync(project.path),
         }));
       const filteredProjects = filterProjects(projects);
 
@@ -75,6 +83,62 @@ export default {
 
       return result;
     }
+    async function handleDrop({ dataTransfer }) {
+      const projectPromises = Object.values(dataTransfer.items).map(
+        async (item) => {
+          try {
+            const projects = [];
+            const { name, path: projectDir } = item.getAsFile();
+            const isPkgJsonExists = existsSync(
+              path.join(projectDir, 'package.json')
+            );
+            const projectExists = Project.query()
+              .where('path', projectDir)
+              .exists();
+
+            if (!isPkgJsonExists || projectExists) return;
+
+            const id = nanoid();
+            const repository = await ipcRenderer.callMain(
+              'get:repository',
+              projectDir
+            );
+            projects.push({
+              id,
+              name,
+              repository,
+              path: projectDir,
+              createdAt: Date.now(),
+            });
+
+            const workspaces = await ipcRenderer.callMain(
+              'get:workspaces',
+              projectDir
+            );
+
+            workspaces.forEach((workspace) => {
+              projects.push({
+                ...workspace,
+                rootId: id,
+                isMonorepo: true,
+                repository: projects[0]?.repository ?? '',
+              });
+            });
+
+            return projects;
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      );
+      Promise.allSettled(projectPromises).then((projects) => {
+        projects.forEach(({ status, value }) => {
+          if (status === 'fulfilled' && value) {
+            Project.insert({ data: value });
+          }
+        });
+      });
+    }
 
     onMounted(() => {
       state.viewType = localStorage.getItem('view-type') || 'list';
@@ -83,6 +147,7 @@ export default {
     return {
       state,
       projects,
+      handleDrop,
       allProjects,
     };
   },

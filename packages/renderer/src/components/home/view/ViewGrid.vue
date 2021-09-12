@@ -4,8 +4,7 @@
       <ui-card
         v-for="project in projects"
         :key="project.id"
-        hover
-        class="list-transition"
+        class="list-transition hover:ring-2 hover:ring-gray-700"
       >
         <router-link :to="`/project/${project.id}`" class="block text-overflow">
           {{ project.name }}

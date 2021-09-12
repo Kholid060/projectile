@@ -1,5 +1,5 @@
 <template>
-  <label :class="[block ? 'block' : 'inline-block']">
+  <label :class="[block ? 'block' : 'inline-block']" class="relative">
     <span v-if="label" class="text-gray-200 text-sm ml-2">{{ label }}</span>
     <select
       class="
@@ -10,8 +10,12 @@
         transition
         bg-gray-100 bg-opacity-5
         hover:bg-opacity-10
-        px-4
+        pl-4
+        pr-8
         py-2
+        z-10
+        relative
+        appearance-none
       "
       :value="modelValue"
       @change="emitValue"
@@ -21,6 +25,11 @@
       </option>
       <slot></slot>
     </select>
+    <v-mdi
+      name="mdiChevronDown"
+      class="absolute top-1/2 right-0 mr-3 z-0"
+      style="transform: translateY(-50%)"
+    />
   </label>
 </template>
 <script>
@@ -55,10 +64,6 @@ export default {
 };
 </script>
 <style>
-.ui-select__arrow {
-  top: 50%;
-  transform: translateY(-50%) rotate(90deg);
-}
 .ui-select option,
 .ui-select optgroup {
   background-color: theme('colors.gray.700');

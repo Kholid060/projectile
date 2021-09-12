@@ -36,6 +36,7 @@ import {
   mdiHomeVariantOutline,
   mdiBackspaceOutline,
   mdiFolderEditOutline,
+  mdiChevronDown,
 } from '@mdi/js';
 
 VMdijs.add({
@@ -75,6 +76,7 @@ VMdijs.add({
   mdiHomeVariantOutline,
   mdiBackspaceOutline,
   mdiFolderEditOutline,
+  mdiChevronDown,
 });
 
 export default VMdijs;
