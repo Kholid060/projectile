@@ -16,6 +16,11 @@ const config = {
   extraMetadata: {
     version: packageJSON.version,
   },
+  mac: {
+    target: 'default',
+    category: 'public.app-category.developer-tools',
+    darkModeSupport: true,
+  },
   win: {
     target: 'nsis',
     artifactName: '${productName}Setup-${arch}-${version}.${ext}',
