@@ -3,7 +3,7 @@
   "private": false,
   "description": "An app to manage your JS projects",
   "main": "packages/main/dist/index.cjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Ahmad Kholid <kholid060@gmail.com>",
   "scripts": {
     "buildEnvTypes": "node scripts/buildEnvTypes.js",
