@@ -3,6 +3,7 @@
     <h2 class="text-2xl font-semibold">Projects</h2>
     <div class="flex-grow"></div>
     <ui-input
+      id="search-project"
       :model-value="search"
       placeholder="Search"
       prepend-icon="mdi-magnify"
@@ -23,6 +24,7 @@
     <ui-button
       variant="primary"
       class="ml-2"
+      title="Ctrl+Shift+N"
       @click="state.showAddProjectModal = true"
     >
       <v-mdi name="mdi-plus" class="mr-1 -ml-2"></v-mdi>
@@ -35,7 +37,8 @@
   </div>
 </template>
 <script>
-import { shallowReactive } from 'vue';
+import { shallowReactive, onMounted, onUnmounted } from 'vue';
+import Mousetrap from 'mousetrap';
 import AddProjectModal from './AddProjectModal.vue';
 
 export default {
@@ -64,6 +67,19 @@ export default {
       emit('update:viewType', type);
       localStorage.setItem('view-type', type);
     }
+
+    onMounted(() => {
+      Mousetrap.bind('mod+shift+n', () => {
+        state.showAddProjectModal = !state.showAddProjectModal;
+      });
+      Mousetrap.bind('mod+f', () => {
+        document.querySelector('#search-project input')?.focus();
+      });
+    });
+    onUnmounted(() => {
+      Mousetrap.unbind('mod+shift+n');
+      Mousetrap.unbind('mod+f');
+    });
 
     return {
       state,

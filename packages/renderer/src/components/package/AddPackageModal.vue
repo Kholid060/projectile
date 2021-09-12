@@ -5,7 +5,7 @@
       <v-mdi
         name="mdi-close"
         class="cursor-pointer"
-        @click="$emit('update:modelValue', false)"
+        @click="$emit('close', false)"
       ></v-mdi>
     </div>
     <form class="flex items-center px-5 pb-5" @submit.prevent="searchPackage">
@@ -17,9 +17,7 @@
         prepend-icon="mdi-magnify"
       >
       </ui-input>
-      <ui-button variant="primary" :loading="state.loading">
-        Search
-      </ui-button>
+      <ui-button variant="primary" :loading="state.loading"> Search </ui-button>
     </form>
     <div v-if="state.searchResults.total" class="px-5 mb-2 flex items-center">
       <ui-select v-model="state.installOn" placeholder="Install on">
@@ -90,9 +88,8 @@
               </div>
               <ui-list v-else class="space-y-1 max-h-64 overflow-auto scroll">
                 <ui-list-item
-                  v-for="(version, name) in state.pkgVersion[
-                    item.package.name
-                  ].versions"
+                  v-for="(version, name) in state.pkgVersion[item.package.name]
+                    .versions"
                   :key="name"
                   v-close-popover
                   small
@@ -140,6 +137,7 @@ export default {
   props: {
     show: Boolean,
   },
+  emits: ['close'],
   setup(props) {
     const store = useStore();
     const { ipcRenderer } = window.electron;
@@ -233,9 +231,12 @@ export default {
       });
     }
 
-    watch(() => props.show, (value) => {
-      if (!value) cleanUp();
-    });
+    watch(
+      () => props.show,
+      (value) => {
+        if (!value) cleanUp();
+      }
+    );
 
     return {
       state,

@@ -11,7 +11,7 @@
       @change="$emit('update:search', $event)"
     ></ui-input>
     <ui-button
-      v-tooltip="'Add package'"
+      v-tooltip="'Add package (Ctrl+Shift+N)'"
       variant="primary"
       icon
       class="ml-4"
