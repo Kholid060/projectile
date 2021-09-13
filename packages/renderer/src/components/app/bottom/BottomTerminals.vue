@@ -26,26 +26,27 @@
         manual
       >
         <ui-tab
-          v-for="(terminal, id) in state.terminals"
+          v-for="(item, id) in state.terminals"
           :key="id"
           :value="id"
           class="flex-shrink-0 group flex items-center text-left px-2 w-32 h-10"
           style="border-right-color: rgba(255, 255, 255, 0.05)"
           padding=""
         >
-          <p :title="terminal.title" class="flex-1 text-overflow">
-            {{ terminal.title || '~' }}
+          <p :title="item.title" class="flex-1 text-overflow">
+            {{ item.title || '~' }}
           </p>
           <v-mdi
             name="mdi-close"
             size="18"
             class="invisible group-hover:visible text-gray-200"
+            title="Remove terminal (Ctrl+Shift+W)"
             @click.stop="removeTerminal(id, index)"
           ></v-mdi>
         </ui-tab>
       </ui-tabs>
       <button
-        v-tooltip="'Add terminal'"
+        v-tooltip="'Add terminal (Ctrl+Shift+`)'"
         class="h-10 focus:ring-0 focus:outline-none flex-shrink-0 mx-2"
         @click="createTerminal"
       >
@@ -67,8 +68,9 @@
   </div>
 </template>
 <script>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { nanoid } from 'nanoid';
+import Mousetrap from 'mousetrap';
 import BottomTerminal from './BottomTerminal.vue';
 
 export default {
@@ -145,6 +147,34 @@ export default {
 
       state.terminals[state.activeTerminal].title = isValidValue ? value : '~';
     }
+    function navigateTerminal(type = 'next') {
+      if (!state.activeTerminal) return;
+
+      const terminalsArr = Object.keys(state.terminals);
+      const activeTerminalIndex = terminalsArr.indexOf(state.activeTerminal);
+
+      let newIndex;
+
+      if (type === 'next') {
+        newIndex = (activeTerminalIndex + 1) % terminalsArr.length;
+      } else if (type === 'previous') {
+        newIndex =
+          (activeTerminalIndex + terminalsArr.length - 1) % terminalsArr.length;
+      }
+
+      state.activeTerminal = terminalsArr[newIndex];
+    }
+
+    const shortcuts = {
+      'mod+shift+w': () => {
+        if (!state.activeTerminal) return;
+
+        removeTerminal(state.activeTerminal);
+      },
+      'mod+shift+`': createTerminal,
+      'mod+tab': () => navigateTerminal('next'),
+      'mod+shift+tab': () => navigateTerminal('previous'),
+    };
 
     onMounted(() => {
       const cacheHeight = localStorage.getItem('terminal-height');
@@ -170,6 +200,13 @@ export default {
           state.activeTerminal = activeTerminal;
         }
       });
+
+      Mousetrap.bind(Object.keys(shortcuts), (event, combo) => {
+        shortcuts[combo]();
+      });
+    });
+    onUnmounted(() => {
+      Mousetrap.unbind(Object.keys(shortcuts));
     });
 
     return {

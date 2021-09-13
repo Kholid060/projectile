@@ -26,9 +26,9 @@
           py-2
           max-w-2xl
         "
-        style="font-family: 'Fira Code', monospace"
+        style="font-family: 'Cascadia Code', monospace"
       >
-        {{ packageJSON?.scripts[state.activeScript] }}
+        {{ packageJSON?.scripts[state.activeScript] ?? '' }}
       </p>
     </div>
     <div class="flex h-full items-start">
@@ -36,9 +36,10 @@
         <p class="text-gray-300 mb-3 pt-5 px-5">Scripts</p>
         <ui-list class="px-5 pb-5 max-h-96 overflow-auto scroll space-y-1">
           <ui-list-item
-            v-for="(val, name) in packageJSON.scripts"
+            v-for="(val, name, index) in packageJSON.scripts"
             :key="name"
             :active="name === state.activeScript"
+            :title="`${name} (alt+${index + 1})`"
             class="cursor-pointer"
             @click="state.activeScript = name"
           >
@@ -50,7 +51,7 @@
               ]"
               class="h-3 w-3 rounded-full mr-2"
             ></span>
-            <span :title="name" class="flex-1 text-overflow">{{ name }}</span>
+            <span class="flex-1 text-overflow">{{ name }}</span>
           </ui-list-item>
         </ui-list>
       </div>
@@ -61,6 +62,7 @@
             state.status[terminalId] === 'running' ? 'danger' : 'primary'
           "
           :disabled="state.activeScript === ''"
+          title="Space"
           @click="toggleScript"
         >
           <v-mdi
@@ -84,7 +86,7 @@
           ref="container"
           style="
             height: calc(100vh - 175px);
-            font-family: 'Fira Code', monospace;
+            font-family: 'Cascadia Code', monospace;
           "
           class="
             flex-1
@@ -106,7 +108,8 @@
   </div>
 </template>
 <script>
-import { watch, reactive, computed, onUnmounted, ref } from 'vue';
+import { watch, reactive, computed, onMounted, onUnmounted, ref } from 'vue';
+import Mousetrap from 'mousetrap';
 import Project from '@/models/project';
 
 export default {
@@ -219,7 +222,26 @@ export default {
       { immediate: true }
     );
 
+    const scriptShortcuts = Array.from(
+      { length: 9 },
+      (_, index) => `alt+${index + 1}`
+    );
+
+    onMounted(() => {
+      Mousetrap.bind('space', () => {
+        toggleScript();
+      });
+      Mousetrap.bind(scriptShortcuts, (event, combo) => {
+        const scripts = Object.keys(props.packageJSON?.scripts ?? {});
+        const index = +combo.substr(4) - 1;
+        const script = scripts[index];
+
+        if (script) state.activeScript = script;
+      });
+    });
     onUnmounted(() => {
+      Mousetrap.unbind('space');
+      Mousetrap.unbind(scriptShortcuts);
       ptyDataListener();
       ptyExitListener();
     });

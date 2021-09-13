@@ -19,6 +19,7 @@
     <form @submit.prevent="importProject">
       <ui-input
         v-model="project.name"
+        autofocus
         label="Project name"
         placeholder="Name"
         class="w-full my-2"

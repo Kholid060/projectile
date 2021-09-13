@@ -3,12 +3,14 @@ import { contextBridge } from 'electron';
 import { ipcRenderer } from 'electron-better-ipc';
 import { homedir } from 'os';
 import { existsSync } from 'fs';
+import { join } from 'path';
 
 const apiKey = 'electron';
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
  */
 const api = {
+  path: { join },
   existsSync,
   ipcRenderer,
   homedir: homedir(),

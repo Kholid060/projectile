@@ -10,20 +10,23 @@ const config = {
     output: 'dist',
     buildResources: 'buildResources',
   },
-  publish: {
-    provider: 'github',
-    owner: 'kholid060',
-    token: process.env.GITHUB_TOKEN,
-  },
   files: [
     'packages/**/dist/**',
   ],
   extraMetadata: {
     version: packageJSON.version,
   },
+  mac: {
+    category: 'public.app-category.developer-tools',
+    darkModeSupport: true,
+  },
   win: {
     target: 'nsis',
     artifactName: '${productName}Setup-${arch}-${version}.${ext}',
+  },
+  nsis: {
+    allowToChangeInstallationDirectory: true,
+    oneClick: false,
   },
 };
 

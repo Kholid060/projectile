@@ -61,7 +61,16 @@
         ></package-card>
       </div>
     </selection-area>
-    <add-package-modal v-model="state.addPackage"></add-package-modal>
+    <ui-modal
+      v-model="state.addPackage"
+      custom-content
+      @close="state.addPackage = false"
+    >
+      <add-package-modal
+        :show="state.addPackage"
+        @close="state.addPackage = false"
+      ></add-package-modal>
+    </ui-modal>
     <package-details></package-details>
   </div>
 </template>
@@ -71,8 +80,16 @@
 }
 </route>
 <script>
-import { computed, watch, shallowReactive, ref, onUnmounted } from 'vue';
+import {
+  computed,
+  watch,
+  shallowReactive,
+  ref,
+  onMounted,
+  onUnmounted,
+} from 'vue';
 import { useStore } from 'vuex';
+import Mousetrap from 'mousetrap';
 import SelectionArea from '@viselect/vue';
 import PackageCard from '@/components/package/PackageCard.vue';
 import AddPackageModal from '@/components/package/AddPackageModal.vue';
@@ -272,8 +289,14 @@ export default {
       { immediate: true }
     );
 
+    onMounted(() => {
+      Mousetrap.bind('mod+shift+n', () => {
+        state.addPackage = !state.addPackage;
+      });
+    });
     onUnmounted(() => {
       state.packageCache = {};
+      Mousetrap.unbind('mod+shift+n');
       enableSelection();
     });
 

@@ -3,22 +3,20 @@
   "private": false,
   "description": "An app to manage your JS projects",
   "main": "packages/main/dist/index.cjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Ahmad Kholid <kholid060@gmail.com>",
   "scripts": {
     "buildEnvTypes": "node scripts/buildEnvTypes.js",
     "build": "node scripts/build.js",
     "precompile": "cross-env MODE=production npm run build",
-    "compile": "electron-builder build --config electron-builder.config.js --publish always",
-    "pretest": "cross-env MODE=test npm run build",
-    "test": "node tests/app.spec.js",
+    "compile": "electron-builder build --config electron-builder.config.js --dir",
     "watch": "node scripts/watch.js",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "rebuild": "./node_modules/.bin/electron-rebuild.cmd"
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/kholid060/projectile.git"
+    "type": "git",
+    "url": "https://github.com/kholid060/projectile.git"
   },
   "browserslist": [
     "Chrome 91"
@@ -37,7 +35,6 @@
     "electron-better-ipc": "^2.0.1",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
-    "fast-glob": "^3.2.7",
     "gitconfiglocal": "^2.1.0",
     "globby": "^11.0.4",
     "highlight.js": "11.1.0",
@@ -53,7 +50,7 @@
     "tiny-emitter": "^2.1.0",
     "tippy.js": "^6.3.1",
     "tree-kill": "^1.2.2",
-    "vue": "3.1.4",
+    "vue": "^3.2.11",
     "vue-mdijs": "0.5.12",
     "vue-router": "4.0.10",
     "vue-toastification": "^2.0.0-rc.1",
@@ -66,7 +63,7 @@
   "devDependencies": {
     "@rollup/plugin-eslint": "^8.0.1",
     "@tailwindcss/typography": "^0.4.1",
-    "@vitejs/plugin-vue": "1.2.5",
+    "@vitejs/plugin-vue": "^1.6.2",
     "autoprefixer": "10.3.1",
     "cross-env": "^7.0.3",
     "electron": "13.1.6",
