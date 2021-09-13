@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, dialog } from 'electron';
 import { join } from 'path';
 import { URL } from 'url';
 import { ipcMain } from 'electron-better-ipc';
@@ -67,13 +67,11 @@ const createWindow = async () => {
     mainWindow.setMenuBarVisibility(false);
   });
 
-  if (env.MODE === 'production') {
-    mainWindow?.webContents.on('new-window', (event, url) => {
-      event.preventDefault();
+  mainWindow?.webContents.on('new-window', (event, url) => {
+    event.preventDefault();
 
-      shell.openExternal(url);
-    });
-  }
+    shell.openExternal(url);
+  });
 
   /**
    * URL for main window.
@@ -103,7 +101,12 @@ app.on('window-all-closed', () => {
   }
 });
 
-ipcMain.answerRenderer('app:version', () => app.getVersion());
+ipcMain.answerRenderer('dialog:message', (param) => dialog.showMessageBox(param));
+
+ipcMain.answerRenderer('app:info', () => ({
+  name: app.getName(),
+  version: app.getVersion(),
+}));
 
 ipcMain.answerRenderer('get:workspaces', getWorkspaces);
 ipcMain.answerRenderer('get:repository', helper.getRepository);

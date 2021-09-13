@@ -235,7 +235,7 @@ export default {
         const scripts = Object.keys(props.packageJSON?.scripts ?? {});
         const index = +combo.substr(4) - 1;
         const script = scripts[index];
-        console.log('still here');
+
         if (script) state.activeScript = script;
       });
     });

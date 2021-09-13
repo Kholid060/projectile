@@ -24,7 +24,12 @@
     ></v-mdi>
     <bottom-packages-queue></bottom-packages-queue>
     <div class="flex-grow"></div>
-    <span class="mr-4 text-gray-400 text-sm"> v{{ state.version }} </span>
+    <span
+      class="mr-4 text-gray-400 text-sm cursor-pointer"
+      @click="state.showAbout = true"
+    >
+      v{{ state.version }}
+    </span>
     <a
       href="https://github.com/Kholid060/projectile"
       target="_blank"
@@ -38,28 +43,37 @@
     @close="state.showTerminals = false"
     @show="state.showTerminals = true"
   ></bottom-terminals>
+  <ui-modal v-model="state.showAbout" custom-content>
+    <bottom-about v-bind="{ name: state.name, version: state.version }" />
+  </ui-modal>
 </template>
 <script>
 import { shallowReactive } from 'vue';
 import Mousetrap from 'mousetrap';
+import BottomAbout from './bottom/BottomAbout.vue';
 import BottomTerminals from './bottom/BottomTerminals.vue';
 import BottomPackagesQueue from './bottom/BottomPackagesQueue.vue';
 
 export default {
-  components: { BottomTerminals, BottomPackagesQueue },
+  components: { BottomAbout, BottomTerminals, BottomPackagesQueue },
   setup() {
     const state = shallowReactive({
-      showTerminals: false,
+      showAbout: false,
       version: '0.0.0',
+      name: 'Projectile',
+      showTerminals: false,
     });
 
     Mousetrap.bind('mod+`', () => {
       state.showTerminals = !state.showTerminals;
     });
 
-    window.electron.ipcRenderer.callMain('app:version').then((result) => {
-      state.version = result;
-    });
+    window.electron.ipcRenderer
+      .callMain('app:info')
+      .then(({ name, version }) => {
+        state.name = name;
+        state.version = version;
+      });
 
     return {
       state,
