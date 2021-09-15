@@ -37,6 +37,7 @@
 </route>
 <script>
 import { computed, shallowReactive, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import { nanoid } from 'nanoid';
 import Project from '@/models/project';
 import HomeNav from '@/components/home/HomeNav.vue';
@@ -45,6 +46,7 @@ import HomeProjects from '@/components/home/HomeProjects.vue';
 export default {
   components: { HomeNav, HomeProjects },
   setup() {
+    const store = useStore();
     const { ipcRenderer, existsSync, path } = window.electron;
 
     const state = shallowReactive({
@@ -137,6 +139,8 @@ export default {
             Project.insert({ data: value });
           }
         });
+
+        store.dispatch('saveToStorage', 'projects');
       });
     }
 
