@@ -12,6 +12,7 @@
     "build-electron": "electron-builder build --config electron-builder.config.js",
     "precompile": "cross-env MODE=production yarn build",
     "compile": "yarn build-electron --dir",
+    "package:linux": "yarn build-electron --linux",
     "watch": "node scripts/watch.js",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "postinstall": "electron-builder install-app-deps"
