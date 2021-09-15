@@ -32,7 +32,7 @@ body {
 
 .prose pre,
 .prose code {
-  font-family: 'Cascadia Code', sans-serif;
+  font-family: 'Jetbrains mono', sans-serif;
   @apply bg-black bg-opacity-20 rounded-lg;
 }
 

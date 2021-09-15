@@ -26,7 +26,7 @@
           py-2
           max-w-2xl
         "
-        style="font-family: 'Cascadia Code', monospace"
+        style="font-family: 'Jetbrains mono', monospace"
       >
         {{ packageJSON?.scripts[state.activeScript] ?? '' }}
       </p>
@@ -86,7 +86,7 @@
           ref="container"
           style="
             height: calc(100vh - 175px);
-            font-family: 'Cascadia Code', monospace;
+            font-family: 'Jetbrains mono', monospace;
           "
           class="
             flex-1

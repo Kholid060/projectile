@@ -3,42 +3,58 @@
     v-if="$store.state.packagesQueue.length !== 0"
     trigger="click mouseenter"
     class="ml-2"
+    placement="top"
+    :tippy-options="{ maxWidth: 'none' }"
+    @show="getLogs"
   >
     <template #trigger>
       <ui-spinner size="18" class="cursor-pointer"></ui-spinner>
     </template>
-    <p class="text-sm mb-2">Packages Queue</p>
-    <ul class="w-48 space-y-1 max-h-40 block scroll overflow-auto">
-      <li
-        v-for="pkg in $store.state.packagesQueue"
-        :key="pkg.id"
-        class="flex items-center group"
+    <div class="flex">
+      <div class="w-48 mr-2">
+        <p class="text-sm mb-2">Packages Queue</p>
+        <ul class="w-48 space-y-1 max-h-40 block scroll overflow-auto">
+          <li
+            v-for="pkg in $store.state.packagesQueue"
+            :key="pkg.id"
+            class="flex items-center group"
+          >
+            <p
+              class="flex-1 text-overflow pr-2"
+              :class="[
+                pkg.id === $store.state.currentQueue
+                  ? 'text-blue-400'
+                  : 'text-gray-200',
+              ]"
+              :title="getText(pkg)"
+            >
+              {{ getText(pkg) }}
+            </p>
+            <v-mdi
+              name="mdi-close"
+              class="text-gray-200 cursor-pointer group-hover:visible"
+              size="20"
+              title="Abort action"
+              :class="{ invisible: pkg.id !== $store.state.currentQueue }"
+              @click="abortAction(pkg.id)"
+            ></v-mdi>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="bg-gray-900 text-gray-200 text-sm rounded-lg min-w-[200px]"
       >
-        <p
-          class="flex-1 text-overflow pr-2"
-          :class="[
-            pkg.id === $store.state.currentQueue
-              ? 'text-blue-400'
-              : 'text-gray-200',
-          ]"
-          :title="getText(pkg)"
-        >
-          {{ getText(pkg) }}
-        </p>
-        <v-mdi
-          name="mdi-close"
-          class="text-gray-200 cursor-pointer group-hover:visible"
-          size="20"
-          title="Abort action"
-          :class="{ invisible: pkg.id !== $store.state.currentQueue }"
-          @click="abortAction(pkg.id)"
-        ></v-mdi>
-      </li>
-    </ul>
+        <p class="flex-1 text-gray-400 p-2">Logs</p>
+        <pre
+          class="max-h-64 max-w-sm overflow-auto scroll px-2 pb-2"
+          style="font-family: 'Jetbrains mono', monospace;"
+        >{{ logs }}</pre>
+      </div>
+    </div>
   </ui-popover>
 </template>
 <script>
-import { onUnmounted, onMounted } from 'vue';
+import { onUnmounted, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import emitter from 'tiny-emitter/instance';
 
@@ -46,6 +62,8 @@ export default {
   setup() {
     const { ipcRenderer } = window.electron;
     const store = useStore();
+
+    const logs = ref('');
 
     const ptyExitListener = ipcRenderer.answerMain(
       'package-pty-exit',
@@ -142,6 +160,17 @@ export default {
         });
       });
     }
+    function getLogs() {
+      logs.value = '';
+
+      ipcRenderer.callMain('terminal:log').then((data) => {
+        const terminalId = Object.keys(data).find((item) => item.startsWith('package'));
+
+        if (!terminalId) return;
+
+        logs.value += data[terminalId]?.log ?? '';
+      });
+    }
 
     onMounted(() => {
       ipcRenderer.callMain('terminal:log').then((data) => {
@@ -173,7 +202,9 @@ export default {
     });
 
     return {
+      logs,
       getText,
+      getLogs,
       abortAction,
     };
   },

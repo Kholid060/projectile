@@ -5,7 +5,7 @@
     </div>
     <div
       ref="content"
-      class="ui-popover__content bg-gray-700 p-4 rounded-lg shadow-xl"
+      class="ui-popover__content bg-gray-800 border p-4 rounded-lg shadow-xl"
     >
       <slot></slot>
     </div>
@@ -32,6 +32,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    tippyOptions: {
+      type: Object,
+      default: () => ({}),
     },
   },
   emits: ['show', 'trigger'],
@@ -74,6 +78,7 @@ export default {
           isShow.value = false;
         },
         onTrigger: () => emit('trigger'),
+        ...props.tippyOptions,
       });
     });
     onUnmounted(() => {
