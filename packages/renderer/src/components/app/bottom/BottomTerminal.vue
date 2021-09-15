@@ -29,7 +29,7 @@ export default {
     const ptyDataListener = ipcRenderer.answerMain(
       'terminal-pty-data',
       ({ data, name }) => {
-        if (!terminal || !name.startsWith('terminal') || !isDone.value) return;
+        if (!terminal || name !== props.activeTerminal || !isDone.value) return;
 
         terminal.write(data);
       }
