@@ -24,6 +24,10 @@ const config = {
     target: 'nsis',
     artifactName: '${productName}Setup-${arch}-${version}.${ext}',
   },
+  linux: {
+    target: 'deb',
+    category: 'Development',
+  },
   nsis: {
     allowToChangeInstallationDirectory: true,
     oneClick: false,

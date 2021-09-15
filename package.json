@@ -6,10 +6,16 @@
   "version": "0.1.2",
   "author": "Ahmad Kholid <kholid060@gmail.com>",
   "scripts": {
+    "clean": "rimraf -y dist",
     "buildEnvTypes": "node scripts/buildEnvTypes.js",
     "build": "node scripts/build.js",
-    "precompile": "cross-env MODE=production npm run build",
-    "compile": "electron-builder build --config electron-builder.config.js --dir",
+    "build-electron": "electron-builder build --config electron-builder.config.js",
+    "precompile": "cross-env MODE=production yarn build",
+    "compile": "yarn build-electron --dir",
+    "package:all": "yarn build-electron --lwm",
+    "package:linux": "yarn build-electron --linux",
+    "package:win": "yarn build-electron --win",
+    "package:mac": "yarn build-electron --mac",
     "watch": "node scripts/watch.js",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "postinstall": "electron-builder install-app-deps"
@@ -75,6 +81,7 @@
     "eslint-plugin-prettier-vue": "^3.1.0",
     "eslint-plugin-vue": "7.13.0",
     "postcss": "8.3.5",
+    "rimraf": "^3.0.2",
     "tailwindcss": "2.2.4",
     "vite": "2.4.2",
     "vite-plugin-pages": "0.15.0"
