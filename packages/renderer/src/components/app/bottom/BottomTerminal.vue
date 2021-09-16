@@ -43,8 +43,8 @@ export default {
       ipcRenderer
         .callMain('terminal:log', props.activeTerminal)
         .then((data) => {
-          terminal.reset();
-          terminal.write(data.log);
+          terminal?.reset();
+          terminal?.write(data?.log ?? '');
           isDone.value = true;
         });
     }
