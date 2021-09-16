@@ -36,9 +36,19 @@
 }
 </route>
 <script>
-import { computed, shallowReactive, onMounted } from 'vue';
+import {
+  computed,
+  shallowRef,
+  shallowReactive,
+  onMounted,
+  onUnmounted,
+  watch,
+} from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import { nanoid } from 'nanoid';
+import { debounce } from '@/utils/helper';
+import KeyboardNavigation from '@/utils/keyboardNavigation';
 import Project from '@/models/project';
 import HomeNav from '@/components/home/HomeNav.vue';
 import HomeProjects from '@/components/home/HomeProjects.vue';
@@ -47,8 +57,11 @@ export default {
   components: { HomeNav, HomeProjects },
   setup() {
     const store = useStore();
+    const router = useRouter();
+
     const { ipcRenderer, existsSync, path } = window.electron;
 
+    const keyboardNavigation = shallowRef(null);
     const state = shallowReactive({
       search: '',
       viewType: 'list',
@@ -143,9 +156,64 @@ export default {
         store.dispatch('saveToStorage', 'projects');
       });
     }
+    function deleteProject(name, id) {
+      const confirm = window.confirm(`Are you sure want to delete "${name}"?`);
+
+      if (confirm) Project.delete(id);
+    }
+
+    const navigationBreakpoints = {
+      default: 2,
+      '(min-width: 1024px)': 3,
+      '(min-width: 1280px)': 4,
+    };
+
+    watch(
+      projects,
+      debounce(() => {
+        keyboardNavigation.value?.refresh();
+      }, 200)
+    );
+    watch(
+      () => state.viewType,
+      debounce((value) => {
+        keyboardNavigation.value?.setOptions({
+          breakpoints:
+            value === 'grid' ? navigationBreakpoints : { default: 1 },
+        });
+      }, 200)
+    );
 
     onMounted(() => {
       state.viewType = localStorage.getItem('view-type') || 'list';
+
+      keyboardNavigation.value = new KeyboardNavigation({
+        itemSelector: '.project-card',
+      });
+
+      keyboardNavigation.value.on('keydown', ({ key }, activeItem) => {
+        if (!activeItem) return;
+
+        const { projectId, projectName } = activeItem.dataset;
+
+        switch (key) {
+          case 'Enter':
+            router.push(`/project/${projectId}`);
+            break;
+          case 'Backspace':
+          case 'Delete':
+            deleteProject(projectName, projectId);
+            break;
+          default:
+        }
+      });
+
+      setTimeout(() => {
+        keyboardNavigation.value.refresh();
+      }, 250);
+    });
+    onUnmounted(() => {
+      keyboardNavigation.value.destroy();
     });
 
     return {

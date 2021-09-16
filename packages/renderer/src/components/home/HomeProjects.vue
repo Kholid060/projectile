@@ -87,3 +87,8 @@ export default {
   },
 };
 </script>
+<style>
+.project-card.is-active {
+  @apply ring-2 ring-primary;
+}
+</style>

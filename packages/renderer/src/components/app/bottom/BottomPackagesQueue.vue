@@ -41,14 +41,13 @@
           </li>
         </ul>
       </div>
-      <div
-        class="bg-gray-900 text-gray-200 text-sm rounded-lg min-w-[200px]"
-      >
+      <div class="bg-gray-900 text-gray-200 text-sm rounded-lg min-w-[200px]">
         <p class="flex-1 text-gray-400 p-2">Logs</p>
         <pre
           class="max-h-64 max-w-sm overflow-auto scroll px-2 pb-2"
-          style="font-family: 'Jetbrains mono', monospace;"
-        >{{ logs }}</pre>
+          style="font-family: 'Jetbrains mono', monospace"
+          >{{ logs }}</pre
+        >
       </div>
     </div>
   </ui-popover>
@@ -164,7 +163,9 @@ export default {
       logs.value = '';
 
       ipcRenderer.callMain('terminal:log').then((data) => {
-        const terminalId = Object.keys(data).find((item) => item.startsWith('package'));
+        const terminalId = Object.keys(data).find((item) =>
+          item.startsWith('package')
+        );
 
         if (!terminalId) return;
 
