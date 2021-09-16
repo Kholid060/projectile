@@ -53,7 +53,7 @@
           lazy
         ></ui-img>
         <div class="text-overflow flex-1 mr-4">
-          <p class="text-overflow">
+          <p class="text-overflow cursor-pointer" @click="packageDetails(item.package.name)">
             {{ item.package.name }}
             <span class="text-gray-300 text-sm"
               >({{ item.package.version }})</span

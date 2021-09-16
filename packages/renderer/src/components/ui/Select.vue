@@ -11,7 +11,7 @@
         bg-gray-100 bg-opacity-5
         hover:bg-opacity-10
         pl-4
-        pr-8
+        pr-10
         py-2
         z-10
         relative
