@@ -111,6 +111,10 @@ ipcMain.answerRenderer('app:info', () => ({
   version: app.getVersion(),
 }));
 
+ipcMain.answerRenderer('updater:check', () => {
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
 ipcMain.answerRenderer('get:workspaces', getWorkspaces);
 ipcMain.answerRenderer('get:repository', helper.getRepository);
 ipcMain.answerRenderer('get:package-manager', helper.getPackageManager);
