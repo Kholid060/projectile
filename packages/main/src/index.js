@@ -1,5 +1,6 @@
 import { app, BrowserWindow, shell, dialog } from 'electron';
 import { join } from 'path';
+import { autoUpdater } from 'electron-updater';
 import { URL } from 'url';
 import { ipcMain } from 'electron-better-ipc';
 import { userStore } from './lib/electron-store';
@@ -61,6 +62,8 @@ const createWindow = async () => {
     if (env.MODE === 'development') {
       mainWindow?.webContents.openDevTools();
     }
+
+    autoUpdater.checkForUpdatesAndNotify();
   });
 
   mainWindow.webContents.once('did-finish-load', () => {
