@@ -26,7 +26,7 @@
     </option>
   </ui-select>
   <ui-list class="space-y-1 text-gray-200">
-    <ui-list-item tag="router-link" to="/">
+    <ui-list-item tag="router-link" to="/" title="Ctrl+Shift+1">
       <v-mdi name="mdi-home-variant-outline" class="mr-2"></v-mdi>
       <span>Home</span>
     </ui-list-item>
@@ -35,6 +35,7 @@
       :key="item.id"
       :active="item.id === $route.name"
       :to="`/project/${$route.params.id}/${item.path}`"
+      :title="item.title"
       tag="router-link"
     >
       <v-mdi :name="item.icon" class="mr-2"></v-mdi>
@@ -43,8 +44,9 @@
   </ui-list>
 </template>
 <script>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Mousetrap from 'mousetrap';
 import Project from '@/models/project';
 
 export default {
@@ -55,18 +57,21 @@ export default {
         id: 'project-packages',
         icon: 'mdi-puzzle-outline',
         path: '',
+        title: 'Ctrl+Shift+2',
       },
       {
         name: 'Scripts',
         id: 'project-id-scripts',
         icon: 'mdi-clipboard-text-outline',
         path: 'scripts',
+        title: 'Ctrl+Shift+3',
       },
       {
         name: 'Boards',
         id: 'project-id-boards',
         icon: 'mdi-view-dashboard-outline',
         path: 'boards',
+        title: 'Ctrl+Shift+4',
       },
     ];
 
@@ -74,6 +79,13 @@ export default {
     const router = useRouter();
 
     const rootId = ref('');
+
+    const shortcuts = {
+      'mod+shift+1': () => router.push('/'),
+      'mod+shift+2': () => router.push(`/project/${route.params.id}`),
+      'mod+shift+3': () => router.push(`/project/${route.params.id}/scripts`),
+      'mod+shift+4': () => router.push(`/project/${route.params.id}/boards`),
+    };
 
     const projects = computed(() =>
       Project.query()
@@ -98,6 +110,13 @@ export default {
       const project = Project.find(route.params.id);
 
       rootId.value = project.isMonorepo ? project.rootId : route.params.id;
+
+      Mousetrap.bind(Object.keys(shortcuts), (event, combo) => {
+        shortcuts[combo]();
+      });
+    });
+    onUnmounted(() => {
+      Mousetrap.unbind(Object.keys(shortcuts));
     });
 
     return {

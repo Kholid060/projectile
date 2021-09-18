@@ -3,7 +3,9 @@
     <ui-list-item
       v-for="project in projects"
       :key="project.id"
-      class="group even:bg-gray-500 even:bg-opacity-5"
+      :data-project-id="project.id"
+      :data-project-name="project.name"
+      class="group even:bg-gray-500 even:bg-opacity-5 project-card"
     >
       <ui-button
         class="mr-4"

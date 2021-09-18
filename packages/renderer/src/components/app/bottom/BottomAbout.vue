@@ -59,18 +59,23 @@ function checkUpdate() {
 
   fetch(`https://api.github.com/repos/kholid060/projectile/releases/latest`)
     .then((response) => response.json())
-    .then((result) => {
+    .then(async (result) => {
       if (!result.tag_name) throw new Error();
 
       const isLatest = result.tag_name === `v${props.version}`;
+      const { ipcRenderer } = window.electron;
 
-      window.electron.ipcRenderer.callMain('dialog:message', {
+      await ipcRenderer.callMain('dialog:message', {
         type: 'info',
         title: isLatest ? 'Check for update' : 'Found Updates',
         message: isLatest
           ? "You're using the latest version of the app"
-          : `Found updates, Projectile ${result.tag_name}`,
+          : `Found update for Projectile ${result.tag_name}`,
       });
+
+      if (!isLatest) {
+        await ipcRenderer.callMain('updater:check');
+      }
 
       loading.value = false;
     })

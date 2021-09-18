@@ -3,7 +3,7 @@
     <div class="flex items-center mb-8">
       <h2 class="text-2xl font-semibold text-overflow">Boards</h2>
       <div class="flex-grow"></div>
-      <ui-button variant="primary" @click="addBoard">
+      <ui-button variant="primary" title="Ctrl+Shift+N" @click="addBoard">
         <v-mdi name="mdi-plus" class="mr-1 -ml-2"></v-mdi>
         <span>Board</span>
       </ui-button>
@@ -42,10 +42,11 @@
   </div>
 </template>
 <script>
-import { computed, shallowReactive } from 'vue';
+import { computed, shallowReactive, onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import Draggable from 'vuedraggable/src/vuedraggable';
+import Mousetrap from 'mousetrap';
 import { useDialog } from '@/composable/dialog';
 import Board from '@/models/board';
 import AddCard from '@/components/boards/AddCard.vue';
@@ -122,6 +123,13 @@ export default {
       modalState.data = null;
       store.dispatch('saveToStorage', 'cards');
     }
+
+    onMounted(() => {
+      Mousetrap.bind('mod+shift+n', addBoard);
+    });
+    onUnmounted(() => {
+      Mousetrap.unbind('mod+shift+n');
+    });
 
     return {
       boards,
